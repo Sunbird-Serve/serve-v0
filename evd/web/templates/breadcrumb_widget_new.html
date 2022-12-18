@@ -439,7 +439,7 @@
 
             </li> -->
 <span class="divider">|</span>
-<li class="dropdown">
+<!--<li class="dropdown">
 
     <a class="dropdown-toggle" data-toggle="dropdown">Manage Donations<b class="caret"></b></a>
     <ul class="dropdown-menu" style="display: none; ">
@@ -455,7 +455,7 @@
 
     </ul>
     <span class="divider">|</span>
-</li>
+</li>-->
 {% endif %} {% if is_superuser or is_pam_delivery %}
 <li class="dropdown">
 
@@ -552,7 +552,7 @@
             <a href="/v2/demand/stats/">Demand Dashboard</a>
         </li>
         {% endif %} {% if is_superuser or is_orgUnit or is_delivery or is_pam_funding or is_delivery_coordinator or is_field_coordinator or is_classassistant or is_centeradmin or is_pam_delivery or is_teacher or is_well_wisher%}
-        <li class="dropdown-submenu dropdown"><a>Analytics<span class="caret"></span></a>
+        <!--<li class="dropdown-submenu dropdown"><a>Analytics<span class="caret"></span></a>
             <ul class="dropdown-menu" style="position: relative;">
                 {% if is_superuser or is_orgUnit or is_delivery_coordinator or is_partner_account_manager or is_vol_coordinator or is_vol_admin %}
                 <li> <a href='/v2/class_completion_dashboard/'>Class Completion Dashboard</a></li>
@@ -567,7 +567,7 @@
 
 
             </ul>
-        </li>
+        </li>-->
     </ul>
     {%endif%}
     <span class="divider">|</span>
@@ -612,9 +612,9 @@
         <li>
             <a href="/v2/bulkUploadTask/">Bulk Upload Task</a>
         </li>
-        <li>
+        <!--<li>
             <a href="/manage_tttinfo/">Manage Tv Shedule</a>
-        </li>
+        </li>-->
         {% endif %} {% if is_superuser or is_digital_partner %}
         <li>
             <a href="/bulk-upload-digital-school/">Bulk school upload</a>
