@@ -32,7 +32,7 @@
         <nav class="navbar navbar-inverse" style="margin-bottom: 0px;min-height: 30px;padding: 0.2em 0 0 0;">
             <div class="container-fluid">
                 <ul class="nav navbar-nav">
-                    <li style="display:inline-flex;"><i class="fa fa-skype" style="padding-top:9%;color: #44a7c7;font-size: 14px;"></i>
+                    <!--<li style="display:inline-flex;"><i class="fa fa-skype" style="padding-top:9%;color: #44a7c7;font-size: 14px;"></i>
                         <a class="" href="mailto:evidyaloka.helpdesk"> : evidyaloka.helpdesk</a>
                     </li>
                     <li style="display:inline-flex;"><i class="fa fa-headphones mr-2" style="padding-top:12%;color:#dd4b39"></i>
@@ -40,7 +40,7 @@
                     </li>
                     <li style="display:inline-flex;"><i class="fa fa-whatsapp mr-2" style="padding-top:12%;color:#04a941"></i>
                         <a href="tel:+91 6361517776">: +91 6361517776</a>
-                    </li>
+                    </li>-->
 
 
                     {% if user.is_authenticated %}
@@ -51,9 +51,9 @@
            </div>
           </li> -->
 
-                    <li style="display:inline-flex;"><i class="fa fa-hand-pointer-o mr-2" style="padding-top:11%;color:#a29626"></i>
+                   <!-- <li style="display:inline-flex;"><i class="fa fa-hand-pointer-o mr-2" style="padding-top:11%;color:#a29626"></i>
                         <a href="javascript:void(0);" onclick="makeRequest('Raise a request')">: Raise a request</a>
-                    </li>
+                    </li>-->
 
                     <!--  <li class="list-inline-item mr-3">
            <div class="d-flex align-items-center">
@@ -63,9 +63,9 @@
            </div>
           </li> -->
 
-                    <li style="display:inline-flex;"><i class="fa fa-exclamation-circle mr-2" style="padding-top:11%;color:#029688"></i>
+                    <!--<li style="display:inline-flex;"><i class="fa fa-exclamation-circle mr-2" style="padding-top:11%;color:#029688"></i>
                         <a href="javascript:void(0);" onclick="makeRequest('Report an issue')">: Report an issue</a>
-                    </li>
+                    </li>-->
 
                     <!--   <li class="list-inline-item mr-3" style="font-size: 13px !important;">
            <div class="d-flex align-items-center">
@@ -75,9 +75,9 @@
            </div>
           </li> -->
 
-                    <li style="display:inline-flex;"><i class="fa fa-comment mr-2" style="padding-top:11%;color:#206194"></i>
+                    <!--<li style="display:inline-flex;"><i class="fa fa-comment mr-2" style="padding-top:11%;color:#206194"></i>
                         <a href="javascript:void(0);" onclick="makeRequest('Share a feedback')">: Share a feedback</a>
-                    </li>
+                    </li>-->
 
                     {% endif %}
 
@@ -156,25 +156,29 @@
 </header>
 <!-- END site header-->
 
-<div class="row top_cls" style="background:white;padding: 0.7em 0 0 0;z-index: 1020;height:91px;margin:0px;position:sticky !important;top:7.7% !important;">
+<div class="row top_cls" style="
+z-index: 1020;
+height: 100%;
+margin: 0px;
+position: sticky !important;
+top: 6.5%;
+">
 
     <nav class="row ec-nav sticky-top bg-white" style="margin-left:0px;width:100%;">
-        <div class="container">
-            <div class="navbar p-0 navbar-expand-lg" style="padding:0px;margin-bottom: 0px;">
-
-
+        <div class="container" style="max-width: 100%">
+            <div class="navbar p-0 navbar-expand-lg">
                 <!--      <div class="col-md-2 col-sm-3" style="display:inline-flex;"> -->
-                <div class="col-md-5 col-sm-3" style="display:flex;">
+                <div class="col-sm-3" style="float:left;">
                     <!--        <ul class="nav navbar-nav ec-nav__navbar " style="display:inline-flex;"> -->
                     <!--        <li class="nav-item nav-item__has-megamenu megamenu-col-2"> -->
                     <a style="padding-top:0.7rem" class="" href='/' style="padding-right:0px !important;">
-                        <img class="img_css" alt="" src="/static/images/evidyalogo.jpg" width="55px" height="50px" style="border-radius:100%;">
+                        <img class="img_css" alt="" src="https://sunbird.org/images/logo/logo.svg" width="170px" height="50px" style="border-radius:100%;">
                     </a>
                     <!--          </li> -->
                     <!--           <li class="nav-item nav-item__has-megamenu megamenu-col-2"> -->
-                    <a style="padding-top:0.4rem" class="" href='/' style="padding-left:0px !important;">
+                    <!-- <a style="padding-top:0.4rem" class="" href='/' style="padding-left:0px !important;">
                         <img class="img_css1" alt="" src="/static/images/evidyaban_1000x250.png" width="275px">
-                    </a>
+                    </a> -->
                     <!--           </li> -->
                     <!--        </ul> -->
 
@@ -186,124 +190,78 @@
                </div>
            </span>
                 </div>
+                
+                <div style="float:right;">
+                    <a
+                      style="padding-top: 0.7rem"
+                      class=""
+                      href="/"
+                      style="padding-right: 0px !important"
+                    >
+                      <img
+                        class="img_css"
+                        alt="evidyaloka logo"
+                        src="/static/images/evidyalogo.jpg"
+                        width="55px"
+                        height="50px"
+                        style="border-radius: 100%"
+                      />
+                    </a>
+                    <a
+                      style="padding-top: 0.4rem"
+                      class=""
+                      href="/"
+                      style="padding-left: 0px !important"
+                    >
+                      <img
+                        class="img_css1"
+                        alt="evidyaloka banner"
+                        src="/static/images/evidyaban_1000x250.png"
+                        width="275px"
+                      />
+                    </a>
+                    <span
+                      aria-expanded="false"
+                      class="navbar-toggler ml-auto collapsed mt-2"
+                      data-target="#ec-nav__collapsible"
+                      data-toggle="collapse"
+                    >
+                      <div class="hamburger hamburger--spin js-hamburger">
+                        <div class="hamburger-box">
+                          <div class="hamburger-inner"></div>
+                        </div>
+                      </div>
+                    </span>
+                  </div>
 
-
-
-
-
-
-
-                <div class="collapse navbar-collapse when-collapsed" id="ec-nav__collapsible">
+                  <div class="collapse navbar-collapse when-collapsed" id="ec-nav__collapsible">
 
                     <ul class="nav navbar-nav ec-nav__navbar ">
 
-                        <!--  <li class="nav-item nav-item__has-megamenu megamenu-col-2">
-              <a  style="padding-top:1rem" class="nav-link" href='/about/'>
-                <img alt="" src="/static/images/evidyalogo.jpg" width="55px" height="50px" style="border-radius:100%;">
-              </a>
-         </li>
-         
-          <li class="nav-item nav-item__has-megamenu megamenu-col-2">
-              <a  style="padding-top:1rem" class="nav-link" href='/about/'>
-              <img alt="" src="/static/images/evidyaban_1000x250.png" width="275px" style="float:left;">
-              </a>
-          </li> -->
-
-                        <!-- <div class="navbar-brand">
-          <a class="logo-default" href="/?home=true">
-             <img alt="" src="/static/images/evidyalogo.jpg" width="55px" height="50px" style="border-radius:100%;display:inline;position:absolute">
-             <img alt="" src="/static/images/evidyaban_1000x250.png" width="275px" style="margin-left:50px;float:left;display:inline;position:absolute">
-          </a>
-        </div> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <li class="nav-item nav-item__has-megamenu megamenu-col-12">
-                            <pre style="background:white;border:none;">&nbsp;                             &nbsp;</pre>
-                        </li>
-
-                        <li class="nav-item nav-item__has-megamenu megamenu-col-2">
-                            <a class="nav-link" href='/about/'>About</a>
-                        </li>
-
-                        <li class="nav-item nav-item__has-megamenu megamenu-col-2">
-                        </li>
+                        <li class="nav-item nav-item__has-dropdown dropdown">
+                            <a
+                              class="dropdown-toggle nav-link"
+                              style="color: black"
+                              data-toggle="dropdown"
+                              >About</a
+                            >
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="https://www.sunbird.org/about-us"
+                                >Sunbird Overview</a
+                              >
+                              <a class="dropdown-item" href="/about/"
+                                >eVidyaloka Overview</a
+                              >
+                             
+                            </div>
+                          </li> 
 
                         <li class="nav-item nav-item__has-megamenu megamenu-col-2">
                             <a class="nav-link" href='/volunteer/'>Volunteer</a>
                         </li>
-
-                        <li class="nav-item nav-item__has-megamenu megamenu-col-2">
-                            <a class="nav-link" href='/sponsor/'>Donate</a>
-                        </li>
-
-                        <!--  {% if user.is_authenticated %}
-             <li class="nav-item nav-item__has-dropdown" >
-                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Volunteer Helpline</a>
-                <div class="dropdown-menu">
-                <ul class="list-unstyled">
-                <div style="padding:25px;line-height: 25px;">
-                  <label style=" font-size: 14px">Phone :</label>
-                  <p>(+91-80-46808983)</p>
-                  <img src="/static/images/wats.png" width="20px" height="20px"/>
-                  <p style="margin-top: -25px; margin-left: 25px;">+91 6361517776 </p>
-                  <label style=" font-size: 14px">Skype HelpDesk (Chat Only) :</label>
-                  <p>evidyaloka.helpdesk</p>
-                  
-                      <p><a href="javascript:void(0);" onclick="makeRequest('Raise a request')" >Raise a request</a></p>
-                      <p><a href="javascript:void(0);" onclick="makeRequest('Report an issue')" >Report an issue</a></p>
-                      <p><a href="javascript:void(0);" onclick="makeRequest('Share a feedback')">Share a feedback</a></p>
-                       
-                </div>
-                </ul>
-                </div>
-            </li>
-            {% endif %}    -->
-
-
-
-
-
-                        <!--  <li class="nav-item nav-item__has-dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"> Partner </a>
-                <div class="dropdown-menu">
-                  <ul class="list-unstyled">
-                    <li>
-                      <a class="nav-link__list" href="/funding_parter/"> Funding Partner </a>
-                    </li>
-                    <li>
-                      <a class="nav-link__list" href="/request_for_proposal/"> Start in a School </a>
-                    </li>
-                    <li>
-                      <a class="nav-link__list" href="/volunteer_partner/"> Volunteer Partner </a>
-                    </li>
-                  </ul>
-                </div>
-              </li> -->
-
-
                         <li>
-                            <a class="text_color" href="{% if user.is_authenticated %} / {% else %} /partner/become_partner/ {% endif %}">Partner</a>
-                            <!--<div class="navbar" style="padding:0px;margin-bottom:0px;">-->
-                            <!--<div class="dropdown" style="    padding: 2.4rem 0rem 3.7rem 2rem;cursor:pointer;font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;color:black;">-->
-                            <!--Partner &lt;!&ndash; <i class="fa fa-caret-down" style="font-size:17px"></i> &ndash;&gt;-->
-                            <!--<div class="dropdown-content" style="border-top: 4px #02cc26 solid;margin-top:54%;min-width:220px;">-->
-                            <!--<a class="nav-link__list" href="/funding_parter/"> Funding Partner </a>-->
-                            <!--<a class="nav-link__list" href="/request_for_proposal/"> Start in a School </a>-->
-                            <!--<a class="nav-link__list" href="/volunteer_partner/"> Volunteer Partner </a>-->
-                            <!--</div>-->
-                            <!--</div> -->
-                            <!--</div>-->
+                            <a class="text_color" href="{% if user.is_authenticated %} / {% else %} /partner/new_signup/ {% endif %}">Partner</a>
+                            
                         </li>
 
 
