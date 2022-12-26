@@ -1001,8 +1001,12 @@ font-size:18px;
 
                 <div class="col-sm-3" style="float:right;">
                     <a class="navbar-brand scroll" href="/">
+                        {% if user|partnerLogo %}
+                        <img class="logo_img_css1" src="/{{ user|partnerLogo }}" alt="" height="75px" class="banner_large" width="275px" style="margin-left:50px;margin-top:-20px;float:left;display:inline;position:absolute"/>
+                        {% else  %}
                         <img class="logo_img_css" src="/static/images/evidyalogo.jpg" alt="evidyaloka logo" width="55px" height="51px" style="margin-top:-14px;border-radius:100%;display:inline;position:absolute"/>
-                        <img class="logo_img_css1" src="/static/images/evidyaban_1000x250.png" alt="evidyaloka banner" height="75px" class="banner_large" width="275px" style="margin-left:50px;margin-top:-20px;float:left;display:inline;position:absolute">
+                        <img class="logo_img_css1" src="/static/images/evidyaban_1000x250.png" alt="evidyaloka banner" height="75px" class="banner_large" width="275px" style="margin-left:50px;margin-top:-20px;float:left;display:inline;position:absolute"/  >
+                        {% endif %}
                     </a>
                 </div>
 
