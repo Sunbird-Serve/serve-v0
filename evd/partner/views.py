@@ -2006,6 +2006,7 @@ def partner_signup(request):
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         org_address = request.POST.get('org_address')
+        logo = request.FILES['logo']
         poc_fname = request.POST.get('poc_fname')
         poc_lname = request.POST.get('poc_lname')
         poc_email = request.POST.get('poc_email')
@@ -2043,7 +2044,7 @@ def partner_signup(request):
             userp = user.userprofile
             userp.phone = poc_phone
             ### Creating Partner Info
-            partner_model = Partner.objects.create(contactperson=user,name = name,name_of_organization = name_of_organization,phone = phone,email = email,address = org_address,status = 'New')
+            partner_model = Partner.objects.create(contactperson=user,name = name,name_of_organization = name_of_organization,phone = phone,email = email,address = org_address, logo=logo, status = 'New')
             partner_model.save()
             ### Creating Reference Channel Entry
             try:

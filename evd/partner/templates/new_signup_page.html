@@ -10,7 +10,7 @@
         <strong>Success!</strong> {{successmsg}}
     </div>
     {% endif %}
-    <form method="post" action="/partner/new_signup/">
+    <form method="post" action="/partner/new_signup/" enctype="multipart/form-data">
         {% csrf_token %}
         <h2 style="font-size: 16px;font-weight: bold;padding: 15px;">Organization Details</h2>
         <div class="col-lg-12 col-md-12 col-sm-12" style="padding-bottom:7px;">
@@ -34,6 +34,11 @@
             <div class="col-lg-6 col-md-6 col-sm-6">
                 <label>
                     Organization Phone <input type='phone' class="form-control" title="it should contain 10 digits only" pattern="[1-9]{1}[0-9]{9}"  name='phone' placeholder="Organization Phone" required=""/>
+                </label>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <label>
+                    Organization Logo <input type='file' id="logo" class="form-control" title="Select your Organization Logo"  name='logo' placeholder="Select your Organization Logo" required=""/>
                 </label>
             </div>
         </div>
