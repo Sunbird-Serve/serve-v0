@@ -396,10 +396,10 @@ def breadcrumb(context, user, user_id=None):
             pass
         else:
             try:
-                current_ay = Ayfy.objects.get(start_date__year = datetime.datetime.now().year, board = center_board)
+                current_ay = Ayfy.objects.filter(board = center_board).order_by('-id')[0]
             except:
                 last_year = (datetime.datetime.now()+relativedelta(years=-1)).year
-                current_ay = Ayfy.objects.get(start_date__year = last_year, board = center_board)
+                current_ay = Ayfy.objects.filter(board = center_board).order_by('-id')[0]
             center.ay = current_ay.id
 
     centers = Center.objects.all()
