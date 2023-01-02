@@ -931,3 +931,11 @@ def vol_of_month_centerName(userid):
     else:
         center=None
     return center
+
+
+@register.filter
+def partnerLogo(user):
+    try:
+        return Partner.objects.get(contactperson=user).logo
+    except:
+        pass
