@@ -4210,11 +4210,11 @@ def getSelCentersBaseOnUser(request):
     for center in center_data:
         center_board = center['board']
         try:
-            current_ay = Ayfy.objects.get(start_date__year=datetime.datetime.now().year, board=center_board)
+            current_ay = Ayfy.objects.filter(board=center_board).order_by('-id')[0]
         except  Exception as e:
 
             last_year = (datetime.datetime.now() + relativedelta(years=-1)).year
-            current_ay = Ayfy.objects.get(start_date__year=last_year, board=center_board)
+            current_ay = Ayfy.objects.filter(board=center_board).order_by('-id')[0]
         center['ay'] = current_ay.id
 
     dict_cur.close()
@@ -4257,8 +4257,8 @@ def getSchools(request):
     except:
         pass
 
-    db.close()
     dict_cur.close()
+    db.close()
     # schools = list(School.objects.filter(Q(name__icontains=search_term) | Q(village__icontains=search_term) | Q(school_code__contains=search_term) | Q(block__icontains=search_term)).values_list("id", "name", "village", "school_code", "block").order_by("name"))
     return HttpResponse(simplejson.dumps(schools))
 
