@@ -437,3 +437,83 @@
         </div>
     </div>
 {% endblock %}
+
+{% block bottom_scripts %}
+ {{ block.super }}
+
+<script>
+
+var current_selected_country_id, current_selected_state_id, current_selected_city_id;
+
+$(document).ready(function() {
+
+    //$(".inner.clearfix").css("width","85%");
+
+    $.get("/v2/get_country_state_city", function(response) {
+		for ( var i = 0; i < response['data'].length; ++i ) {
+			var option = $('<option />');
+			option.attr('value', response['data'][i]['country_name']).text(response['data'][i]['country_name']);
+			option.attr('countryId', response['data'][i]['custom_country_id']);
+
+			$('.countries').append(option);
+		}
+		$(".countries").prop("disabled",false);
+	});
+
+	$(".countries").on("change", function(ev) {
+		var countryId = $("option:selected", this).attr('countryId');
+		$(".states option:gt(0)").remove();
+		current_selected_country_id = -1;
+		if(countryId != '') {
+			current_selected_country_id = countryId;
+            $(".cities option:gt(0)").remove();
+
+            $.get("/v2/get_country_state_city/?country=" + countryId, function(response) {
+				for ( var i = 0; i < response['data'].length; ++i ) {
+					var option = $('<option />');
+					option.attr('value', response['data'][i]['state_name']).text(response['data'][i]['state_name']);
+					option.attr('stateid', response['data'][i]['custom_state_id']);
+					$('.states').append(option);
+				}
+				$(".states").prop("disabled",false);
+				$(".states").prop("selectedIndex", 0);
+
+				if($('.states').children().length == 1){
+					$('.states').append('<option val="others">Others</option>');
+					$('.cities').append('<option val="others">Others</option>');
+				}
+            });
+		}
+	});
+
+	$(".states").on("change", function(ev) {
+		var stateId = $("option:selected", this).attr('stateid');
+		$(".cities option:gt(0)").remove();
+		current_selected_state_id = -1;
+		if ( stateId != '' ) {
+			current_selected_state_id = stateId;
+			$.get("/v2/get_country_state_city/?country=" + current_selected_country_id + "&state=" + stateId, function(response) {
+				for ( var i = 0; i < response['data'].length; ++i ) {
+					var option = $('<option />');
+					option.attr('value', response['data'][i]['city_name']).text(response['data'][i]['city_name']);
+					option.attr('cityid', response['data'][i]['custom_city_id']);
+					$('.cities').append(option);
+				}
+				$(".cities").prop("disabled",false);
+				$(".cities").prop("selectedIndex", 0);
+
+				if($('.cities').children().length <= 1) {
+					$('.cities').append('<option val="others">Others</option>');
+				}
+            });
+		}
+	});
+
+});
+</script>
+{% endblock %}
+
+
+
+
+
