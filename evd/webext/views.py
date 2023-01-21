@@ -10959,7 +10959,7 @@ class StatsDemand(View):
                 is_partner = True
             
             centerObj = getAllCenters(request)
-            centers_all = centerObj.exclude(state__isnull=True).exclude(state__exact='').exclude(is_test=1)
+            centers_all = centerObj.exclude(state__isnull=True).exclude(state__exact='')
             states_all = centers_all.values_list('state',flat=True).distinct().order_by('state')
             partners_list = centers_all.values('delivery_partner_id',"delivery_partner__name_of_organization").distinct()
             del_coordinator_list = centers_all.values('delivery_coordinator_id','delivery_coordinator__first_name','delivery_coordinator__last_name').distinct()
@@ -10979,6 +10979,7 @@ class StatsDemand(View):
             return render(request,'demand_dash.html', context)
         
         except Exception as e:
+            print("Printing within stat",e.message)
             logService.logException("ContentDemand GET Exception error", e.message)
             return genUtility.error_404(request, e.message)
     

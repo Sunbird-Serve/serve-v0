@@ -4468,8 +4468,9 @@ def centeradmin(request, center_id_value=None):
                         partner_id = [str(each['value']) for each in dict_cur.fetchall()]
                         partner_id.sort()	   
                         center  = Center.objects.get(Q(id = center_id) &( Q(funding_partner_id__in=partner_id) | Q(delivery_partner_id__in=partner_id)))
-                        db.close()
+                        
                         dict_cur.close()
+                        db.close()
                     except Center.DoesNotExist:
                         return HttpResponseRedirect('/partner/centers/')
                 else:
@@ -5961,7 +5962,7 @@ def getAllCenters(request):
         centers_all = Center.objects.filter(status='Active')
     dict_cur.close()
     db.close()
-    return centers_all.filter(is_test=False) if centers_all else centers_all
+    return centers_all if centers_all else centers_all
 
 
 @login_required
@@ -10097,8 +10098,9 @@ def lr_bulk_upload(request):
             partner_id= tuple(partner_id)
             partner_id= partner_id[0]
 
-            db.close()
+            
             dict_cur.close()
+            db.close()
         except:
             pass
 
@@ -15002,8 +15004,9 @@ def students_dashboard(request):
                                 states = Center.objects.filter(( Q(funding_partner_id__in=partner_id) | Q(delivery_partner_id__in=partner_id))).order_by('state').values('state').distinct()
                                 centers =Center.objects.filter(( Q(funding_partner_id__in=partner_id) | Q(delivery_partner_id__in=partner_id))).order_by('name').values('name').distinct()
                                 print "centers",centers
-                                db.close()
+                                
                                 dict_cur.close()
+                                db.close()
         elif len(request.user.userprofile.role.filter(name="Partner Admin")) > 0 or ref:
             partner = None
             if len(request.user.userprofile.role.filter(name="Partner Admin")) > 0:
@@ -15171,8 +15174,9 @@ def get_total_attendance(statenames,delivery_partner,funding_partner, centername
         query += " and wo.end_date <='" + end_date + "'"
     dict_cur.execute(query)
     total_attendance_from_query = dict_cur.fetchall()[0]
-    db.close()
+    
     dict_cur.close()
+    db.close()
     return total_attendance_from_query
 
 
@@ -15198,8 +15202,9 @@ def get_attendance_trends(statenames,delivery_partner,funding_partner, centernam
     query += " group by date(ws.date_start) order by ws.date_start asc "
     dict_cur.execute(query)
     total_attendance_trends = dict_cur.fetchall()
-    db.close()
+    
     dict_cur.close()
+    db.close()
     attendance_trends_data = []
     if total_attendance_trends:
         for attendance_trends in total_attendance_trends:
@@ -15243,8 +15248,9 @@ def get_attendance_courses_per_grade(statenames,delivery_partner,funding_partner
     total_attendance_grade_and_course_wise = list(dict_cur.fetchall());
     grade_wise_json_data = []
     tot_user_cur.close()
-    db.close()
+    
     dict_cur.close()
+    db.close()
     if total_attendance_grade_and_course_wise:
         for attendance in total_attendance_grade_and_course_wise:
             if attendance['total_presents'] > 0:
@@ -15298,8 +15304,9 @@ def get_scholastic_outcome(statenames,delivery_partner,funding_partner, centerna
     dict_cur.execute(query)
     scholastic_outcome = list(dict_cur.fetchall());
     tot_user_cur.close()
-    db.close()
+    
     dict_cur.close()
+    db.close()
     final_scholastic_outcome = []
     if scholastic_outcome:
         for outcome in scholastic_outcome:
@@ -15368,8 +15375,9 @@ def get_co_scholastic_outcome(statenames,delivery_partner,funding_partner, cente
     dict_cur.execute(query)
     co_scholastic_outcome = list(dict_cur.fetchall());
     tot_user_cur.close()
-    db.close()
+    
     dict_cur.close()
+    db.close()
     return co_scholastic_outcome
 
 
@@ -15400,8 +15408,9 @@ def get_aggregate_level_subject_wise(statenames,delivery_partner,funding_partner
     dict_cur.execute(query)
     total_aggregate_level_subject_wise = list(dict_cur.fetchall());
     tot_user_cur.close()
-    db.close()
+    
     dict_cur.close()
+    db.close()
     return total_aggregate_level_subject_wise
 
 
@@ -15430,8 +15439,9 @@ def get_diagonostic_outcome(statenames,delivery_partner,funding_partner, centern
     dict_cur.execute(query)
     diagonostic_outcome = list(dict_cur.fetchall());
     tot_user_cur.close()
-    db.close()
+    
     dict_cur.close()
+    db.close()
     return diagonostic_outcome
 
 
@@ -15649,8 +15659,9 @@ def students_progress_report(request):
         states = Center.objects.filter(( Q(funding_partner_id__in=partner_id) | Q(delivery_partner_id__in=partner_id))& Q(status='Active') ).order_by('state').values('state').distinct()
        
         centers  =Center.objects.filter(( Q(funding_partner_id__in=partner_id) | Q(delivery_partner_id__in=partner_id))& Q(status='Active')).order_by('name').values('name').distinct()
-        db.close()
+        
         dict_cur.close()
+        db.close()
     elif len(request.user.userprofile.role.filter(name="Partner Admin")) > 0 or ref:
         partner = None
         if len(request.user.userprofile.role.filter(name="Partner Admin")) > 0:
@@ -16162,8 +16173,9 @@ def reportCard(request):
         partner_id = [str(each['value']) for each in dict_cur.fetchall()]
         partner_id.sort()
         states = Center.objects.filter( (Q(funding_partner_id__in=partner_id) | Q(delivery_partner_id__in=partner_id))& Q(status='Active')).order_by('state').values('state').distinct()
-        db.close()
-        dict_cur.close()       
+        
+        dict_cur.close()
+        db.close()       
     elif len(request.user.userprofile.role.filter(name="Partner Admin")) > 0 or ref:
         partner = None
         if len(request.user.userprofile.role.filter(name="Partner Admin")) > 0:
@@ -16437,8 +16449,9 @@ def get_Courses(request):
                             partner_id = [str(each['value']) for each in dict_cur.fetchall()]
                             partner_id.sort()
                             centers = Center.objects.filter(( Q(funding_partner_id__in=partner_id) | Q(delivery_partner_id__in=partner_id)),status='Active')
-                            db.close()
+                            
                             dict_cur.close()
+                            db.close()
                         elif len(request.user.userprofile.role.filter(name="Partner Admin")) > 0 or ref:
                             partner = None
                             if len(request.user.userprofile.role.filter(name="Partner Admin")) > 0:
@@ -16476,8 +16489,9 @@ def get_Courses(request):
                             partner_id = [str(each['value']) for each in dict_cur.fetchall()]
                             partner_id.sort()
                             centers  =Center.objects.filter(state=state).filter(( Q(funding_partner_id__in=partner_id) | Q(delivery_partner_id__in=partner_id)),status='Active')
-                            db.close()
-                            dict_cur.close() 
+                            
+                            dict_cur.close()
+                            db.close() 
                         elif has_role(request.user.userprofile, "Delivery co-ordinator"):
                             centers=Center.objects.filter(state=state).filter(delivery_coordinator=request.user,status='Active')
 
@@ -16879,8 +16893,9 @@ def system_generated_task(request):
     query = "select au.username,au.id,wup.user_id,wr.id,wr.name from web_userprofile_role wupr, web_userprofile wup, web_role wr, auth_user au where wupr.userprofile_id = wup.id and wr.id = wupr.role_id and wr.name = 'vol_admin' and wup.user_id = au.id  order by wup.id "
     dict_cur.execute(query)
     totalListOfUser = dict_cur.fetchall();
-    db.close()
+    
     dict_cur.close()
+    db.close()
     assignee_length = len(totalListOfUser)
     if datas:
         count = 0
@@ -17084,8 +17099,9 @@ def userActivityHistoryFilter(request):
         query += " order by activity_date_time desc "
         dict_cur.execute(query)
         listActivity = dict_cur.fetchall();
-        db.close()
+        
         dict_cur.close()
+        db.close()
         allActivity = listActivity;
         if len(allActivity) > 0:
             for activity in allActivity:
@@ -17437,8 +17453,9 @@ def approve_offering(request):
         partner_id= partner_id[0]
         centers  =Center.objects.filter( Q(funding_partner_id__in=partner_id) | Q(delivery_partner_id__in=partner_id)).values_list("id",flat=True)
         offerings = Offering.objects.filter(status='not_approved',center_id__in=centers)
-        db.close()
+        
         dict_cur.close()
+        db.close()
     otherTasks = Task.objects.filter(Q(taskType='OTHER') & Q(task_other_status='not_approved'))
     print 'otherTasks.taskfor', otherTasks
     message = request.GET.get('message', '')
@@ -18511,9 +18528,9 @@ def get_stat_table(request):
                         table_data.append(details)
             global_data['table_data_single'] = table_data
             
-        db.close()
+        
         dict_cur.close()
-
+        db.close()
         return HttpResponse(simplejson.dumps(global_data), mimetype = 'application/json')
     except Exception as e:
         print(e)
@@ -18655,8 +18672,9 @@ def get_session_table(request):
             status_count = dict_cur.fetchall()
 
 
-    db.close()
-    dict_cur.close()       
+    
+    dict_cur.close()
+    db.close()       
     return HttpResponse(simplejson.dumps({'session_table':session_table,'attnd_table':attnd_table, 'status_count':status_count, 'cancle_status_count':cancle_status_count}), mimetype = 'application/json')
 
 
@@ -18672,13 +18690,16 @@ def get_course_coverage(request):
     funding_partner=[int(x) for x in data['donor_id']]
     ay_id= data['ay_id'][0]
     
+    print(data)
     date_start = datetime.datetime.strptime(data["from_date"][0] ,"%Y-%m-%d")
+    print(date_start)
     date_end = datetime.datetime.strptime(data["to_date"][0] ,"%Y-%m-%d")
+    print(date_end)
     
     # print "summary inputs",funding_partner,state,partner, center, date_start, date_end, ay_id
 
     all_centers = getAllCenters(request)
-
+    print(all_centers)
     if '-1' not in state:
         all_centers = all_centers.filter(state__in=state).distinct().order_by('name')
     if -1 not in  partner:
@@ -18716,8 +18737,9 @@ def get_course_coverage(request):
 
     dict_cur.execute(query)
     sessions = dict_cur.fetchall()
-    db.close()
+    
     dict_cur.close()
+    db.close()
     return HttpResponse(simplejson.dumps(sessions), mimetype = 'application/json')
 
 
