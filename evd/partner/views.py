@@ -1174,13 +1174,13 @@ def get_partner_school(request):
             grades_in_school = []
 
             if request.POST.get('grade5') == 'true':
-                grades_in_school.append('5')
+                grades_in_school.append('Primary')
             if request.POST.get('grade6') == 'true':
-                grades_in_school.append('6')
+                grades_in_school.append('Upper Primary')
             if request.POST.get('grade7') == 'true':
-                grades_in_school.append('7')
+                grades_in_school.append('High School')
             if request.POST.get('grade8') == 'true':
-                grades_in_school.append('8')
+                grades_in_school.append('All')
 
             grades_in_school = ",".join(grades_in_school)
             teachers_available = request.POST.get('teachers_available', '') if request.POST.get('teachers_available', '') else '0'
