@@ -155,6 +155,15 @@ class Topic(models.Model):
     def __unicode__(self):
         return self.title
 
+class ClassType(models.Model):
+    title = models.CharField(max_length=400)
+    status = models.CharField(max_length=256,choices=(('Not Started', 'Not Started'),
+            ('In Progress', 'In Progress'), ('Partially Complete', 'Partially Complete'),
+            ('Complete','Complete'), ('Inactive', 'Inactive')), default="Not Started")
+    priority = models.IntegerField(default=0)
+    def __unicode__(self):
+        return self.title
+
 class Attribute(models.Model):
     types = models.CharField(max_length=256,choices=(('TextBook', 'TextBook'), ('Lesson Plan', 'Lesson Plan'),
             ('Transliteration','Transliteration'),('Videos','Videos'), ('Pictures', 'Pictures'), 

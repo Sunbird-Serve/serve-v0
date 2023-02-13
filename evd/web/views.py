@@ -4616,6 +4616,7 @@ def centeradmin(request, center_id_value=None):
         make_course_centeradmin(offering, unassigned_coursesBackfill)  
     
     topics = Topic.objects.all()
+    classType = ClassType.objects.all()
     teachers = User.objects.filter(userprofile__pref_roles__name="Teacher",
                                    userprofile__pref_medium=center.language).exclude(first_name="", last_name="")
     teacher_profiles_arr = []
@@ -5015,6 +5016,7 @@ def centeradmin(request, center_id_value=None):
           'selected_month' : calendar.month_name[selected_month],
           "selected_year" : selected_year,
           "selected_academic_year" : selected_academic_year,
+          "classType" : classType,
           "current_academic_year_available" : current_academic_year_available
           })
 
