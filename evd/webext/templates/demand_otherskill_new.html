@@ -1,0 +1,293 @@
+{% extends 'new_base_temp.html' %}
+<!DOCTYPE html>
+<html>
+{% block head %}
+{{ block.super }}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/themes/dot-luv/jquery-ui.css">
+    <link rel="stylesheet" href="/static/css/demandpage.css">
+{% endblock %}
+{% block content %}
+<style >
+.ui-datepicker-today a.ui-state-highlight {
+    border: 1px solid #333333;
+    background: #00498f url(images/ui-bg_dots-small_20_333333_2x2.png) 50% 50% repeat;
+}
+.dropdown-menu.sub_logout {
+    left: 45px;
+}
+.modal-body {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}
+#loading{
+	top : 50%;
+	left : 60%;
+} 
+.thumbnail{
+padding: 0px;
+border-radius: 4px !important;
+}
+.heading_div{
+height: 75px;
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+}
+.heading{
+font-size:25px;
+color:white;
+text-align: center;
+padding-top: 22px;
+padding-bottom: 22px;
+}
+.caption {
+   padding: 10px !important;
+   background-color: white;
+   border-bottom-left-radius: 4px;
+   border-bottom-right-radius: 4px;
+   height: 225px;
+}
+.subject_styling{
+font-size: 18px;
+font-family: "Montserrat", sans-serif;
+font-weight: 500px;
+height:50px;
+word-wrap: break-word;
+
+}
+</style>
+    <section>
+    <div class="modal fade" id="myModal" role="dialog">
+   <div class="modal-dialog"> 
+     <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Comment</h4>
+        </div>
+       <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+   <div class="modal fade" id="myModalSubject" role="dialog">
+   <div class="modal-dialog"> 
+     <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Subject</h4>
+        </div>
+       <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+    
+    <div class='container' style='margin-top:80px;'  >
+      
+       <div class='row' >
+        <div class="w-full text-center font-bold pt-4 text-3xl"><h1>Other Skills Demand</h1></div>
+       </div>
+       <div class='row'>
+        <div class='col-xs-12 col-sm-6 col-md-6 col-lg-6 pull-right'>
+                <a class='btn btn-danger' style='margin-bottom:25px;float:right;' href='/v2/demand/'> Show All Opportunities </a>
+            </div>
+          <div class='col-sm-offset-10 col-sm-2'>
+              <div class='btn btn-warning myevd' style='margin-bottom:5px;float:center;'><a href='/myevidyaloka/'><i class="fa fa-home fa-lg" aria-hidden="true"></i> &nbsp Go Back to My eVidyaloka</a></div>
+          </div>
+       </div>
+       <br/>
+		<div id="message_div"></div>
+		<div class='row' id='preloader' style='display:none'>
+            <div class='col-sm-offset-5 col-sm-1' style='padding:10px;'>
+                <img src='/static/images/loader_demand.gif' style='margin-left:50px;' />
+            </div>
+       </div>
+       <div class='row'>
+       <div class='col-sm-3' style='margin-top:6px;'>
+               <div class='row filter_section' id='filter_days' >
+               <input type="hidden" value= "{{other_category}}" id="otherCategoryId"/>
+               <input type="hidden" value= "{{pref_subject}}" id="prefSubjectId"/>
+               <input type="hidden" value= "{{user.is_superuser}}" id="user"/>
+               <input type="hidden" value= "{{category_list}}" id="category_listId"/>
+               <input type="hidden" value= "{{pref_category}}" id="pref_categoryId"/>
+               <input type="hidden" value="{{ request.GET.category }}" id="category_skill">
+               <!--<h4> Select Due Date</h4>
+               <hr style='margin:0px !important'>
+                <div class="col-md-12 input-group fil_opts">
+							<div id="due_dateId"></div>-->
+				</div>
+           </div>
+           <input type="hidden" value= "{{pref_category}}" id="prefcategoryId"/>
+            <!--<div class='row filter_section' id='filter_category'>
+                 <h4>Preferred Category <span style='display:inline;font-size:12px;margin-left:55px;cursor:pointer'>▼</span></h4>
+                    <hr style='margin:0px !important'>
+                    <div class='optns'>
+                        {% for skill in skill_data %}
+                        <div class="checkbox">
+                            <label class='demand_label'>
+								{% if skill.category == pref_category %}
+								<input type="checkbox" data-value='{{ category }}' class='fil_opts' checked="checked">{{ skill.category }}
+								{% else %}
+                                <input type="checkbox" data-value='{{ category }}' class='fil_opts'>{{ skill.category }}
+                                {% endif %}
+                            </label>
+                         </div>
+                        {% endfor %}
+                </div>
+           </div>-->
+       </div><!-- filter col -->
+       <br>
+       <div class='col-sm-1 col-md-1'></div>
+         <div class='col-sm-8 col-md-8'>
+           <div class="alert alert-danger .alert-dismissible hidden" id='medium_alert' role="alert" style="margin-top:17px;margin-bottom:0px !important;color:red;background-color:#F77D7D">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <strong style='color:white;'>Warning!</strong> <p class='alert_msg'style="font-weight:bold !important;color:white;">Your preferred language is not matching your filter</p>
+           </div>
+           <input type="hidden" value="{{is_authenticated}}" id="authenticatedId"/>
+           <div class='row' id='thumbs_div' >
+         </div>
+    </div>
+       </div>
+       <!--thumbs-div-col -->
+       </div>
+</section>
+
+{% if user.is_authenticated %}
+<p class="usr hidden" id="true">
+{% else %}
+<p class="usr hidden" id="false">
+{% endif %}
+{% endblock %}
+{% block import_scripts %}
+    <script src="/static/js_new/jquery-1.10.2.min.js"></script>
+    <script src="/static/js_new/classie.min.js"></script>
+    <script src="/static/js_new/cbpAnimatedHeader.min.js"></script>
+    <script src="/static/js_new/owl.carousel.min.js"></script>
+    <script src="/static/js_new/scrollReveal.min.js"></script>
+    <script src="/static/js_new/jquery.scrollTo.js" defer="defer"></script>
+    <!--<script src="/static/js_new/jquery.nav.js" defer="defer"></script>-->
+    <script src="/static/js_new/imagesloaded.pkgd.min.js" defer="defer"></script>
+    <script src="/static/js_new/isotope.min.js" defer="defer"></script>
+    <script src="/static/js_new/jquery.magnific-popup.min.js" defer="defer"></script>
+    <script src="/static/js_new/jqBootstrapValidation.min.js" defer="defer"></script>
+    <script src="https://code.jquery.com/ui/1.9.1/jquery-ui.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/static/js_new/custom.min.js"></script>
+    <script src="/static/js_new/login_modal.min.js"></script>
+    <script src="/static/js_new/login_function.js"></script>
+    <script>
+    $(function() {
+        $("#datepicker").datepicker();
+    });
+</script>
+	<script>
+	$(".readonly").keydown(function(e) {
+		e.preventDefault();
+	});
+	$(document).ready(
+			function() {
+				var date_input = $('div[id="due_dateId"]');
+				var is_superuser = $('#user').val();
+				var container = $('.bootstrap-iso form').length > 0 ? $(
+						'.bootstrap-iso form').parent() : "body";
+// 				if (is_superuser == "True"){
+					var options = {
+							format : 'dd-mm-yyyy',
+							container : container,
+							todayHighlight : true,
+							autoclose : true,
+							startDate : '0d',
+						};
+// 				}
+		/* 		else{
+					var options = {
+							format : 'dd-mm-yyyy',
+							container : container,
+							todayHighlight : true,
+							autoclose : true,
+							startDate : '0d',
+							minDate : '0',
+					};
+				} */
+				date_input.datepicker(options);	
+			})
+// 	$(".select2_multiple").select2({
+// 		maximumSelectionLength : 1000
+// 	});	$(".select2_multiple").select2({
+// 		maximumSelectionLength : 1000
+// 	});
+	
+	
+// 	$("#due_dateId").datepicker({
+// 	    onSelect: function() {
+// 	    	alert("fdsafds");
+	        /* var date = $(this).val();
+	        var time = $('#time').val();
+	        alert('on select triggered');
+	        $("#start").val(date + time.toString(' HH:mm').toString()); */
+
+// 	    }
+// 	});
+	
+	
+	</script>
+   <script >
+   function toggleDataModelForSubject(data){
+	   if (data!=null && data!='' && data!='undefined'){
+           var subject = $("#"+data).attr('data-sub');
+          $("#myModalSubject .modal-body").html(subject);
+             $("#myModalSubject").modal();
+ 		}
+   }
+   function toggleDataModelForComment(data){
+	          if (data!=null && data!='' && data!='undefined'){
+	                   var comment = $("#"+data).val();
+	                  $("#myModal .modal-body").html(comment);
+	                     $("#myModal").modal();
+	           }
+   }
+   function updateOtherOpportunity(id){
+	   $("#message_div").empty();
+       if (id!=null && id!='' && id!='undefined'){
+               var ajaxUrl = '/ajax/updateOfferingOrOthersStatus?demand=demand&id='+id;
+               $.ajax({
+                       url : ajaxUrl,
+                       success : function(data){
+                    	   if (data!=null && data!='' && data!='undefined'){
+                    		   if (data['status'].indexOf('success')>-1){
+                    			   $("#message_div").html('<div class="alert alert-success alert-dismissable" style="color:black;padding-left:50px;margin-top:20px"><a href="#" data-dismiss="alert" class="close" style="font-size: 15px;">&times;</a>'+data['message']+'</div>');
+                    		   }
+                    		   else{
+                    			   $("#message_div").html('<div class="alert alert-danger alert-dismissable" style="color:black;padding-left:50px;margin-top:20px"><a href="#" data-dismiss="alert" class="close" style="font-size: 15px;">&times;</a>'+data['message']+'</div>');
+                    		   }
+                    	   }
+                               refresh_data();
+                       },
+                       error : function(){
+                       }
+                       
+               });
+       }
+}
+   
+   function addDataValue(){
+	   $("#login-trigger2").attr('data-value','support');
+   }
+   
+   </script>
+     <script type="text/javascript" src="/static/js/underscore-min.js"></script>
+     <script type="text/javascript" src="/static/js/demandViewForOtherSkill.js"></script>
+     <script src="https://cdn.jsdelivr.net/scrollreveal.js/3.1.1/scrollreveal.min.js"></script>
+     {% endblock import_scripts %}
+</html>

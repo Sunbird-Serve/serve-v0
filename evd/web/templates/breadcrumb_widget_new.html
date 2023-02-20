@@ -848,12 +848,13 @@
                         <li>
                             <p style="font-weight: bold;">Class Type:</p>
                             <select multiple="multiple" id="classType" style="float:left; width:300px">
-                                {% for classType in all_classType %}
-                                    <option value="{{ classType.id }}">{{ classType.title }}</option>
+                                {% for classtype in classtype %}
+                                    <option value="{{ classtype.id }}">{{ classtype.title }}</option>
                                 {% endfor %}
                             </select>
-                                <a href="/admin/web/topic/add/" class="btn add_topic_dj" target="_blank" style="margin-left:10px;width:20px;height:20px;line-height:18px;float:left;">+</a>
+                                <a href="/admin/web/classtype/add/" class="btn add_topic_dj" target="_blank" style="margin-left:10px;width:20px;height:20px;line-height:18px;float:left;">+</a>
                         </li>
+                        
                         <li>Batch Type: 
                             <select name="batch">
                                 <option selected value="0">None</option>
@@ -904,6 +905,7 @@
                     </select>
                     </li>
                     <input type="hidden" name="students" />
+                    <input type="hidden" name="classtype"/>
                     <input type="hidden" name="planned_topics" />
                     <input type="hidden" name="center_id" value="{{ center_id }}" />
                 </ul>

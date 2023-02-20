@@ -10075,8 +10075,11 @@ class Demand(View):
             
             content_demand = Content_Demand.objects.values('workstream__name').annotate(workstream_count=Count('workstream__name'))    
             
+            other_skill = Task.objects.values('category').annotate(otherskill_count=Count('category')).filter(taskType='OTHER') 
+            print(other_skill)
+            print(content_demand)
             context = {'teaching_data':simplejson.dumps(teaching_data),'content_dev':['Math','Science', 'English Foundation'], 'flt_data':simplejson.dumps(flt_data), 
-                        'content_demand':list(content_demand),'is_content_developer':is_content_developer, 'is_flt_teacher':is_flt_teacher, 'is_teacher':is_teacher}
+                        'content_demand':list(content_demand),'otherskilldata':list(other_skill),'is_content_developer':is_content_developer, 'is_flt_teacher':is_flt_teacher, 'is_teacher':is_teacher}
             return render(request, 'demand.html',context)
         except Exception as e:
             logService.logException("Demand GET Exception error", e.message)
@@ -10693,6 +10696,32 @@ class BookFtDemand(View):
             logService.logException("BookFtDemand PUT Exception error", e.message)
             return genUtility.getStandardErrorResponse(request, 'kInvalidRequest')
 
+def demandListForOtherSkills(request):
+    sel_days = json.loads(request.POST.get('sel_days',''))
+    pref_category = json.loads(request.POST.get('pref_category',''))
+    category_skill = request.POST.get('category_skill')
+    print("Hello")
+    print(request.POST)
+    sel_cats = request.POST.get('sel_cats','')
+
+    other_task_opportunity = Task.objects.filter(Q(taskType='OTHER') & Q(task_other_status='pending') & (Q(taskStatus='Open') | Q(taskStatus='WIP')) & ~Q(category='')).exclude(category=None)
+    if pref_category and len(pref_category)>0:
+        other_task_opportunity = other_task_opportunity.filter(category__in=pref_category)
+    elif sel_cats and sel_cats!='All':
+        other_task_opportunity = other_task_opportunity.filter(category=sel_cats)
+    if sel_days:
+        select_date = datetime.datetime.strptime(sel_days, "%m/%d/%Y").date()
+        other_task_opportunity = other_task_opportunity.filter(dueDate=select_date)
+    other_skill_list = []
+    for other in other_task_opportunity:
+        #subject = ((other.subject)[:65] + '<span style="color:black;cursor:pointer">...</span>') if len(other.subject)>65 else other.subject
+        data = {'id':other.id,'category':other.category,'dueDate':str(other.dueDate),'subject':other.subject,'comment':other.comment}
+        other_skill_list.append(data)
+    rel_data = {}
+    rel_data['data']   =  other_skill_list
+    #return render(request, 'demand_content.html', {'demand': list(other_skill_list)})
+    return HttpResponse(simplejson.dumps(rel_data), mimetype='application/json')
+
 
 class ContentDemand(View):
 
@@ -10830,6 +10859,155 @@ class ContentDemand(View):
             logService.logException("ContentDemand PUT Exception error", e.message)
             return genUtility.getStandardErrorResponse(self.request, 'kInvalidRequest')
 
+
+
+
+
+class OtherSkill(View):
+
+    def get(self, request,  *args, **kwargs):
+
+        try:
+            user_details = {'is_content_developer': None,
+                            'profile_status': None, 'preferred_language': []}
+            known_languages = []
+            if request.user.is_authenticated():
+                known_languages_json = UserProfile.objects.get(
+                    user=request.user).languages_known
+                known_languages = [i['lang']
+                                   for i in ast.literal_eval(known_languages_json)]
+                user_details = {
+                    'is_content_developer': True if self.request.user.is_superuser else has_pref_role(request.user.userprofile, "Content Developer"),
+                    'profile_status': True if request.user.userprofile.profile_completion_status else False,
+                    'preferred_language': known_languages
+                }
+            subject = request.GET.get('subject', '')
+
+            if request.user.is_authenticated() and not request.user.is_superuser and not has_pref_role(request.user.userprofile, "Content Admin"):
+                contents = Task.objects.filter(taskType='OTHER', topic__course_id__language__name__in=known_languages).values('id', 'topic__id', 'topic__title', 'topic__course_id__board_name',
+                                                                                                                                'topic__course_id__subject', 'topic__course_id__grade', 'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'workstream__id')
+            else:
+                contents = Content_Demand.objects.filter(status=1).values('id', 'topic__id', 'topic__title', 'topic__course_id__board_name',
+                                                                          'topic__course_id__subject', 'topic__course_id__grade', 'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'workstream__id')
+            contents = self.groupby_multiple_keys(contents, ['topic__id', 'topic__course_id__board_name',
+                                                  'topic__course_id__subject', 'topic__course_id__grade', 'workstream__name'], 'subtopic__name')
+
+            # check previous booking
+            previous_booking = {'is_booked': False}
+            if self.request.user.is_authenticated():
+                booked_demadslot = Content_Demand.objects.filter(author=self.request.user, status=2).values('id', 'topic__id',
+                                                                                                            'topic__title', 'topic__course_id__board_name', 'topic__course_id__subject', 'topic__course_id__grade',
+                                                                                                            'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'updated_on')
+                if len(booked_demadslot) > 0:
+                    previous_booking['is_booked'] = True
+                    previous_booking['slots'] = list(booked_demadslot)
+
+            other_task_opportunity = Task.objects.filter(Q(taskType='OTHER') & (Q(taskStatus='Open') | Q(taskStatus='WIP')) & ~Q(category='')).exclude(category=None)
+            
+            other_skill_list = []
+            for other in other_task_opportunity:
+                #subject = ((other.subject)[:65] + '<span style="color:black;cursor:pointer">...</span>') if len(other.subject)>65 else other.subject
+                data = {'id':other.id,'category':other.category,'dueDate':str(other.dueDate),'subject':other.subject,'comment':other.comment}
+                other_skill_list.append(data)
+            rel_data = {}
+            rel_data['data']   =  other_skill_list
+            print(other_skill_list)
+            return render(request, 'demand_otherskill_new.html', {'pref_subject': subject, 'user_details': user_details, 'skill_data': list(other_skill_list), 'previous_booking': simplejson.dumps(previous_booking, default=str)})
+
+        except Exception as e:
+            logService.logException("ContentDemand GET Exception error", e.message)
+            return genUtility.error_404(request, e.message)
+
+    def groupby_multiple_keys(self, lst, groups, key):
+        l = [list(y) for x, y in itertools.groupby(sorted(lst, key=lambda x: tuple(
+            x[y] for y in groups)), lambda x: tuple(x[y] for y in groups))]
+        return [{k: (v if k != key else list(set([x[key] for x in i]))) for k, v in i[0].items()} for i in l]
+
+    @method_decorator(login_required)
+    def post(self, request,  *args, **kwargs):
+        try:
+            requestParams = json.loads(self.request.body)
+            topic_id = requestParams.get('topic_id', None)
+            grade = requestParams.get('grade', None)
+            subject = requestParams.get('subject', None)
+            workstream_id = requestParams.get('workstream_id', None)
+            author_id = requestParams.get('author_id', None)
+
+            author = request.user
+            if author_id is not None:
+                author = get_object_or_none(User, id=author_id)
+            if author is None:
+                return genUtility.getStandardErrorResponse(request, "kCustomErrorMsg, 1, User not exist.")
+
+            user_role = get_object_or_none(
+                RolePreference, userprofile=author.userprofile, role_id=3)
+            if user_role is None:
+                return genUtility.getStandardErrorResponse(request, "kCustomErrorMsg, 1, User do not have role.")
+            # elif user_role.role_outcome != 'Recommended': return genUtility.getStandardErrorResponse(request, "kCustomErrorMsg, 2, Please complete selection discution.")
+
+            booked_demadslot = Content_Demand.objects.filter(
+                author=author, status__in=[2, 3])
+            if len(booked_demadslot) > 0:
+                return genUtility.getStandardErrorResponse(request, "kCustomErrorMsg, 2, Please complete your previous booking.")
+            demand = Content_Demand.objects.filter(
+                topic__id=topic_id, topic__course_id__subject=subject, topic__course_id__grade=grade, workstream__id=workstream_id)
+            demand.update(author=author, status=2)
+            username = author.get_full_name()
+            to = [author.email]
+            cc = []
+            admin = AlertUser.objects.get(role__name='vol_admin')
+            if admin: cc.extend([user.email for user in admin.user.all()])
+            demand = demand[0]
+            args = {'username': username,
+                    'topic_name': demand.topic.title,
+                    'workstream': demand.workstream.name,
+                    'grade': demand.topic.course_id.grade,
+                    'subject': demand.topic.course_id.subject,
+                    'board': demand.topic.course_id.board_name
+                    }
+            body_template = 'mail/content/book.txt'
+            body = genUtility.get_mail_content(body_template, args)
+            try:
+                thread.start_new_thread(
+                    genUtility.send_mail_thread, ("Your content has been booked", body, settings.DEFAULT_FROM_EMAIL, to, cc))
+            except Exception as e: logService.logException("ContentDemandBook email Exception error", e.message)
+
+            return genUtility.getSuccessApiResponse(self.request, 'Success')
+        except Exception as e:
+            logService.logException("ContentDemand POST Exception error", e.message)
+            return genUtility.getStandardErrorResponse(self.request, 'kInvalidRequest')
+
+    @method_decorator(login_required)
+    def put(self, request,  *args, **kwargs):
+        try:
+            demands = Content_Demand.objects.filter(author=request.user, status=2)
+            username = request.user.get_full_name()
+            to = [request.user.email]
+            cc = []
+            content_admins = AlertUser.objects.filter(role__name='vol_admin')
+            content_admins = content_admins[0].user.all()
+            if content_admins:
+                cc.extend([user.email for user in content_admins])
+            demand = demands[0]
+            args = {'username': username,
+                    'topic_name': demand.topic.title,
+                    'workstream': demand.workstream.name,
+                    'grade': demand.topic.course_id.grade,
+                    'subject': demand.topic.course_id.subject,
+                    'board': demand.topic.course_id.board_name,
+                    'language': demand.topic.course_id.language.name
+                    }
+            demands.update(author=None, status=1)
+            body_template = 'mail/content/release_booking.txt'
+            body = genUtility.get_mail_content(body_template, args)
+            try:
+                thread.start_new_thread(
+                    genUtility.send_mail_thread, ("Your content has been released", body, settings.DEFAULT_FROM_EMAIL, to, cc))
+            except Exception as e: logService.logException("ContentRelease email Exception error", e.message)
+            return genUtility.getSuccessApiResponse(self.request, 'Success')
+        except Exception as e:
+            logService.logException("ContentDemand PUT Exception error", e.message)
+            return genUtility.getStandardErrorResponse(self.request, 'kInvalidRequest')
 
 
 

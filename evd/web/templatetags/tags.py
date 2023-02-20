@@ -181,6 +181,7 @@ def breadcrumb(context, user, user_id=None):
         if user.partner_set.values()[0]['status'] == 'Approved': partner_status = True
 
     print '2 : ' + str(datetime.datetime.now())
+    classtype = ClassType.objects.all()
     partner = user.partner_set.all()
     if partner:
         partner_types = partner[0].partnertype.values()
@@ -403,6 +404,7 @@ def breadcrumb(context, user, user_id=None):
             center.ay = current_ay.id
 
     centers = Center.objects.all()
+    
     all_ay = Ayfy.objects.filter(types= 'Academic Year')
     print '10 : ' + str(datetime.datetime.now())
 
@@ -442,7 +444,7 @@ def breadcrumb(context, user, user_id=None):
                         'is_partner' : is_partner, 'is_delivery' : is_delivery, 'is_funding' : is_funding, 'is_digital_partner':is_digital_partner,
                         'is_volunteer' : is_volunteer, 'partner_status' : partner_status, 'all_ay': all_ay, 'current_ay':current_ay,
                         'is_field_coordinator':is_field_coordinator,'is_delivery_coordinator':is_delivery_coordinator,'is_fc_partnerchannel':is_fc_partnerchannel,
-                        'assigned_usr_offering_id':assigned_usr_offering_id,'assigned_usr_center_id':assigned_usr_center_id,'tsd_panel_member':tsd_panel_member,'is_orgUnit':is_orgUnit,'is_well_wisher':is_well_wisher})
+                        'assigned_usr_offering_id':assigned_usr_offering_id,'assigned_usr_center_id':assigned_usr_center_id,'tsd_panel_member':tsd_panel_member,'is_orgUnit':is_orgUnit,'is_well_wisher':is_well_wisher, 'classtype':classtype})
 
 @register.inclusion_tag('time_slot.html', takes_context=True)
 def time_slots(context, id = None, w_days = None, w_slots = None, title = None):

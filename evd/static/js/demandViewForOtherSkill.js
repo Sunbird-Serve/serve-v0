@@ -3,6 +3,7 @@ window.pref_med= $(".med").attr("id");
 window.pref_category= $("#prefcategoryId").val();
 window.authenticatedId= $("#authenticatedId").val();
 window.sel_category= $("#pref_categoryId").val();
+window.category_skill=$("#category_skill").val();
 window.sel_dueDate = '';
 $(function(){
 /*	var date_input = $('input[id="due_dateId"]');
@@ -86,7 +87,12 @@ var refresh_data  =  function()
                 $('#demand_alert').addClass('hide');
             }
             $('#filter_days,#filter_times').tooltip('hide');
-            $.post('/v2/demandListForOtherSkills/',{'csrfmiddlewaretoken':csrftoken,'sel_days':JSON.stringify(fil_data[0]),'pref_category':JSON.stringify(fil_data[1]),'sel_cats':window.sel_category},function(resp){
+			console.log(window.sel_cat);
+			console.log(window.pref_category);
+            $.post('/v2/demandListForOtherSkills',{'csrfmiddlewaretoken':csrftoken,
+													'sel_days':JSON.stringify(fil_data[0]),
+													'pref_category':JSON.stringify(fil_data[1]),
+													'sel_cats':window.sel_category, 'category_skill':'REPORTING',},function(resp){
             resp9=resp;
             var demand_list_data = '';
             /*var colors = ['rgb(66, 173, 111)', '#df4a43', '#1799dd','#ea964c'];*/
