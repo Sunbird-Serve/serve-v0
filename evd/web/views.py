@@ -5223,8 +5223,7 @@ def add_course(request):
         start_date = request.POST['start_date']
         end_date = request.POST['end_date']
         batch = request.POST['batch']
-        program_type = request.POST['classtype']
-        program_type=6
+        program_type = request.POST['program_type']
         
         print(start_date)
         print(end_date)

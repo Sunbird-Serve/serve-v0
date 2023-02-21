@@ -1,7 +1,8 @@
 $(document).ready(function(){
 window.pref_med= $(".med").attr("id");
 window.pref_category= $("#prefcategoryId").val();
-window.authenticatedId= $("#authenticatedId").val();
+//const authenticatedId= $("#authenticatedId").val();
+//window.authenticatedId=$("#authenticatedId").val();
 window.sel_category= $("#pref_categoryId").val();
 window.category_skill=$("#category_skill").val();
 window.sel_dueDate = '';
@@ -79,6 +80,7 @@ var refresh_data  =  function()
 			/*window.sr = ScrollReveal();
 			sr.reveal('.thumbnail');*/
             var fil_data = get_filter_data();
+			var authenticatedId=localStorage.getItem("user");
             loading();
             var csrftoken = getCookie('csrftoken');
             if( (fil_data[0]).length < 2 ){
@@ -87,14 +89,13 @@ var refresh_data  =  function()
                 $('#demand_alert').addClass('hide');
             }
             $('#filter_days,#filter_times').tooltip('hide');
-			console.log(window.sel_cat);
-			console.log(window.pref_category);
             $.post('/v2/demandListForOtherSkills',{'csrfmiddlewaretoken':csrftoken,
 													'sel_days':JSON.stringify(fil_data[0]),
 													'pref_category':JSON.stringify(fil_data[1]),
 													'sel_cats':window.sel_category, 'category_skill':'REPORTING',},function(resp){
             resp9=resp;
             var demand_list_data = '';
+			console.log("printed data");
             /*var colors = ['rgb(66, 173, 111)', '#df4a43', '#1799dd','#ea964c'];*/
             var colors = ['rgba(9, 87, 165, 0.8)', 'rgba(30, 148, 82, 0.9)',  'rgba(218,93,44,0.9)'];
             var j = 0;
@@ -150,10 +151,12 @@ var refresh_data  =  function()
             			 else{
             				 demand_list_data += '<p style="padding-top: 15px;padding-bottom: 15px;height:60px;color:'+colors[j]+';">No comment available.</p>';
             			 }
-            			 if(window.authenticatedId == "True"){
+            			 if(authenticatedId == "True"){
             				 demand_list_data += '<div style="text-align:center;margin-top: -10px;"><a class="btn btn-lg btn-primary scroll " onclick="updateOtherOpportunity('+jsonObjs[i]['id']+');" role="button" style=" cursor: pointer; text-decoration:none;font-size:14px;background-color: darkturquoise;">I Am Interested</a></div>';
+							 console.log("checking true");
             			 }
             			 else{
+							console.log("checking false");
             				 demand_list_data += '<div style="text-align:center;margin-top: -10px;"><a class="btn btn-lg btn-primary scroll already"  data-toggle="modal" data-target="#login-modal" id="login-trigger2" style="cursor:pointer;text-decoration:none;background-color: darkturquoise;" onclick="addDataValue();">I Am Interested</a></div>';
             			 }
             			 demand_list_data += '<div style="text-align:center; margin-top:-10px;">';

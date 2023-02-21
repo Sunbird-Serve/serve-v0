@@ -845,7 +845,7 @@
                         <a href="/admin/web/course/add/" target="_blank" class="btn add_course_dj">+</a>
                     </li>
                     <div class="" style="display: grid; grid-auto-flow: column dense;grid-column-gap: -15px ">
-                        <li>
+                        <!--<li>
                             <p style="font-weight: bold;">Class Type:</p>
                             <select multiple="multiple" id="classType" style="float:left; width:300px">
                                 {% for classtype in classtype %}
@@ -853,6 +853,18 @@
                                 {% endfor %}
                             </select>
                                 <a href="/admin/web/classtype/add/" class="btn add_topic_dj" target="_blank" style="margin-left:10px;width:20px;height:20px;line-height:18px;float:left;">+</a>
+                        </li>-->
+
+                        <li>
+                            <p style="font-weight: bold;">Program Type:</p>
+                            <select name="program_type" required>
+                                <option value="0" selected>None</option>
+                                <option value="1">Digital Classroom</option>
+                                <option value="2">LFH</option>
+                                <option value="3">Worksheets</option>
+                                <option value="4">Alumni</option>
+                                <option value="5">Digital School</option>
+                            </select>
                         </li>
                         
                         <li>Batch Type: 

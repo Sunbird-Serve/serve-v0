@@ -10075,9 +10075,7 @@ class Demand(View):
             
             content_demand = Content_Demand.objects.values('workstream__name').annotate(workstream_count=Count('workstream__name'))    
             
-            other_skill = Task.objects.values('category').annotate(otherskill_count=Count('category')).filter(taskType='OTHER') 
-            print(other_skill)
-            print(content_demand)
+            other_skill = Task.objects.values('category').annotate(otherskill_count=Count('category')).filter(taskType='OTHER',task_other_status='pending') 
             context = {'teaching_data':simplejson.dumps(teaching_data),'content_dev':['Math','Science', 'English Foundation'], 'flt_data':simplejson.dumps(flt_data), 
                         'content_demand':list(content_demand),'otherskilldata':list(other_skill),'is_content_developer':is_content_developer, 'is_flt_teacher':is_flt_teacher, 'is_teacher':is_teacher}
             return render(request, 'demand.html',context)
@@ -10721,6 +10719,127 @@ def demandListForOtherSkills(request):
     rel_data['data']   =  other_skill_list
     #return render(request, 'demand_content.html', {'demand': list(other_skill_list)})
     return HttpResponse(simplejson.dumps(rel_data), mimetype='application/json')
+
+
+
+@csrf_exempt
+def updateOfferingOrOthersStatus(request):
+    if request.is_ajax():
+        flag = request.GET.get('flag')
+        demand_page = request.GET.get('demand');
+        task_id = request.GET.get('id')
+        userId = request.GET.get('userId')
+        
+        message = ''
+        status = ''
+        user = request.user
+        if user:
+            if demand_page and demand_page is not None:
+                if task_id and task_id is not None:
+                    task_demand = Task.objects.filter(id=task_id).update(task_other_status='not_approved',
+                                                                         taskFor=user.username, assignedTo='')
+                    if task_demand == 1:
+                        message = 'Your request successfully submitted, someone will be reaching to you shortly via email.'
+                        status = 'success'
+                    else:
+                        status = 'failure'
+                        message = 'Request rejected.'
+                message_data = {'message': message, 'status': status}
+                return HttpResponse(simplejson.dumps(message_data), mimetype='application/json')
+        if flag:
+            if flag == 'offering':
+                offering_id = request.GET.get('offering_id', '')
+                if offering_id:
+                    check_update = Offering.objects.filter(id=offering_id).update(status='pending')
+                    if check_update == 1:
+                        message = 'Offering approved successfully.'
+                        status = 'success'
+                        offering = Offering.objects.get(pk=offering_id)
+                        if offering:
+                            center_admin = offering.center.admin
+                            if center_admin and center_admin.email:
+                                email = center_admin.email
+                                recipients = []
+                                name = center_admin.first_name + ' ' + center_admin.last_name
+                                if not name:
+                                    name = center_admin.username
+                                recipients.append(email)
+                                args = {'user': name, 'boardName': offering.course.board_name,
+                                        'subject': offering.course.subject, 'grade': offering.course.grade,
+                                        'startDate': offering.start_date, 'endDate': offering.end_date,
+                                        'confirm_url': "www.evidyaloka.org//centeradmin/?center_id=" + str(
+                                            offering.center_id) + ""}
+                                body_template = 'mail/custom_offering_email.txt'
+                                body = get_mail_content(body_template, args)
+                                send_mail(" Your request has been Approved for New Custom offering", body,
+                                          settings.DEFAULT_FROM_EMAIL, recipients)
+                    else:
+                        message = 'Offering can not be approved.'
+                        status = 'failure'
+                else:
+                    message = 'Offering Id can not be null.'
+                    status = 'failure'
+            elif flag == 'other':
+                task_id = request.GET.get('task_id')
+                if task_id:
+                    task = Task.objects.get(pk=task_id)
+                    check_task_update = Task.objects.filter(id=task_id).update(task_other_status='approved',
+                                                                               assignedTo=task.taskFor)
+                    if check_task_update == 1:
+                        task = Task.objects.get(pk=task_id)
+                        try:
+                            assign_user = User.objects.get(username=task.assignedTo)
+                        except:
+                            assign_user = ''
+                        if assign_user and assign_user.email:
+                            recipients = [assign_user.email]
+                            name = assign_user.first_name + ' ' + assign_user.last_name
+                            if not name:
+                                name = assign_user.username
+                            args = {'user': name, 'subject': task.subject, 'category': task.category}
+                            body_template = 'mail/task/other_skill_confirm_full.txt'
+                            body = get_mail_content(body_template, args)
+                            send_mail("Your request has been Approved for Other Skills offerings.", body,
+                                      settings.DEFAULT_FROM_EMAIL, recipients)
+                        message = 'Task approved successfully.'
+                        status = 'success'
+                    else:
+                        message = 'Task can not be approved.'
+                        status = 'failure'
+                else:
+                    message = 'Task Id can not be null.'
+                    status = 'failure'
+            elif flag == 'reject':
+                task_id = request.GET.get('task_id')
+                if task_id:
+                    check_task_update = Task.objects.filter(id=task_id).update(task_other_status='pending')
+                    if check_task_update == 1:
+                        task = Task.objects.get(pk=task_id)
+                        try:
+                            taskFor_user = User.objects.get(username=task.taskFor)
+                        except:
+                            taskFor_user = ''
+                        if taskFor_user and taskFor_user.email:
+                            recipients = [taskFor_user.email]
+                            name = taskFor_user.first_name + ' ' + taskFor_user.last_name
+                            if not name:
+                                name = taskFor_user.username
+                            args = {'user': name, 'subject': task.subject, 'category': task.category}
+                            body_template = 'mail/task/other_skill_reject_full.txt'
+                            body = get_mail_content(body_template, args)
+                            send_mail("Your request has been Rejected for Other Skills offerings.", body,
+                                      settings.DEFAULT_FROM_EMAIL, recipients)
+                        message = 'Task rejected successfully.'
+                        status = 'success'
+                    else:
+                        message = 'Task can not be rejected.'
+                        status = 'failure'
+                else:
+                    message = 'Task Id can not be null.'
+                    status = 'failure'
+        message_data = {'message': message, 'status': status}
+        return HttpResponse(simplejson.dumps(message_data), mimetype='application/json')
+
 
 
 class ContentDemand(View):
