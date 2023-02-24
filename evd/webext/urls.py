@@ -237,6 +237,7 @@ urlpatterns = [
     url(r'^sql-editor/', SqlView.as_view(), name='SqlView'),
     # demand api's
     url(r'^demand/?$', Demand.as_view(), name='DemandView'),
+    url(r'^demand/search/?$', beckn_view, name='beckn_view'),
     url(r'^demand/online/?$', OnlineDemand.as_view(), name='OnlineDemandView'),
     url(r'^demand/online/book/?$', BookOnlineDemand.as_view(), name='OnlineDemandView'),
     url(r'^demand/ft/?$', FtDemand.as_view(), name='FtDemandView'),
@@ -248,6 +249,7 @@ urlpatterns = [
     url(r'^content_review_check_list/?$', ContentReviewCheckList.as_view(), name='ContentReviewCheckListView'),
     url(r'^search-teacher/?$', search_teacher, name='search_teacher'),
     url(r'^assistance/?$', Assistance.as_view(), name='Assistance'),
+    
     
     url(r'^book-slots/?$', BookSlots.as_view(), name='BookSlotsView'),   
     url(r"^publish_booking_slots/?$", PublishBookingSlots.as_view(), name="PublishBookingSlots"), 

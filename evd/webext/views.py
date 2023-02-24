@@ -76,6 +76,7 @@ from web.views import has_mail_receive_accepted, save_user_activity, create_task
 from web.views import confirm_reject_slot, add_dynamic_session_accept, auto_login_wikividya, create_wikividya_account, make_date_time, make_number_verb, cummulative, transpose, _send_mail
 import calendar
 from datetime import timedelta
+from django.http import HttpResponse
 
 WIKI_BASE_URL = 'http://wikividya.evidyaloka.org/'
 WIKI_FAILURE_MESSAGE = 'Failure_wiki'
@@ -5537,6 +5538,33 @@ def submitt_appreciation(request):
 @login_required
 def add_vol_of_month(request):
     return render_response(request, "add_vol_of_month.html", {})
+
+
+def beckn_view(request):
+    if request.method == 'POST':
+        # Parse the request JSON data
+        json_data = request.body
+        intent_item = json_data.get('message', {}).get('intent', {}).get('item', {})
+        descriptor_name = intent_item.get('descriptor', {}).get('name', '')
+        
+        # Check if the descriptor name is "Management"
+        if descriptor_name.lower() == 'management':
+            # Send the acknowledgement response
+            response_data = {'message': {'ack': {'status': 'ACK'}}}
+            return HttpResponse(response_data)
+    
+    elif request.method == 'GET':
+        # Parse the GET parameters
+        descriptor_name = request.GET.get('descriptor', '')
+        
+        # Check if the descriptor name is "Management"
+        if descriptor_name.lower() == 'management':
+            # Send the acknowledgement response
+            response_data = {'message': {'ack': {'status': 'ACK'}}}
+            return HttpResponse(response_data)
+    
+    # Return a 400 Bad Request response if the request is not valid
+    return HttpResponse({'error': 'Invalid request.'}, status=400)
 
 
 def get_vol_of_month(request):
