@@ -34,17 +34,20 @@
                                 <div id="btn3" onclick="showStuff('3', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Content Development</div>
                             {% endif %}
                             <div id="btn4" onclick="showStuff('4', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Other Skills</div>
+                            <div id="btn5" onclick="showStuff('5', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">From Network BPPs/BAPs</div>
                         {% else %} 
                             <div id="btn1" onclick="showStuff('1', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Online Teaching</div>
                             <div id="btn2" onclick="showStuff('2', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Facilitated Teaching</div>
                             <div id="btn3" onclick="showStuff('3', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Content Development</div>
                             <div id="btn4" onclick="showStuff('4', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Other Skills</div>
+                            <div id="btn5" onclick="showStuff('5', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">From Network BPPs/BAPs</div>
                         {% endif %} 
                     {% else %}
                     <div id="btn1" onclick="showStuff('1', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Online Teaching</div>
                     <div id="btn2" onclick="showStuff('2', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Facilitated Teaching</div>
                     <div id="btn3" onclick="showStuff('3', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Content Development</div>
                     <div id="btn4" onclick="showStuff('4', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">Other Skills</div>
+                    <div id="btn5" onclick="showStuff('5', this)" class="w-full p-2 rounded-l-3xl border-l-2 border-t-2 border-b-2 border-teal-700 hover:bg-green-500 text-center cursor-pointer">From Network BPPs/BAPs</div>
                     {% endif %}
                 </div>
             </div>
@@ -74,22 +77,42 @@
                     </div>
                     <div id="otherskill" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 </section>
+                <section id="tab5" class="tab max-w-auto mx-auto px-4 sm:px-6 lg:px-4 py-6 hidesection">
+                    <div class="w-full h-full md:px-48 pb-6">
+                        <div onclick="window.location.href='/v2/demand/gatewaysearch'" class="w-full p-2 text-center font-bold text-xl rounded-full bg-white text-green-600 hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in cursor-pointer">Lookup Needs (BPP)</div>
+                    </div>
+                    <div id="becknBPP" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                </section>
+                <section id="tab6" class="tab max-w-auto mx-auto px-4 sm:px-6 lg:px-4 py-6 hidesection">
+                    <div class="w-full h-full md:px-48 pb-6">
+                        <div onclick="window.location.href='/v2/demand/search'" class="w-full p-2 text-center font-bold text-xl rounded-full bg-white text-green-600 hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in cursor-pointer">Lookup Volunteers (BAP)</div>
+                    </div>
+                    <div id="becknBPP" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                </section>
+                <section id="tab7" class="tab max-w-auto mx-auto px-4 sm:px-6 lg:px-4 py-6 hidesection">
+                    <div class="w-full h-full md:px-48 pb-6">
+                        <div onclick="window.location.href='/v2/demand/dsepsearch'" class="w-full p-2 text-center font-bold text-xl rounded-full bg-white text-green-600 hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in cursor-pointer">DSEP Network</div>
+                    </div>
+                    <div id="becknBPP" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                </section>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}{% block scripts %} {{ teaching_data|json_script:"teaching_data" }} {{ content_dev|json_script:"content_dev" }} {{ flt_data|json_script:"flt_data" }}
-{{ content_demand|json_script:"content_demand_data" }} {{ otherskilldata|json_script:"otherskilldata" }}
+{{ content_demand|json_script:"content_demand_data" }} {{ otherskilldata|json_script:"otherskilldata" }} {{ search_response|json_script:"search_response" }}
 <script>
     var teachingData = JSON.parse(JSON.parse(document.getElementById('teaching_data').textContent));
     var contentData = JSON.parse(document.getElementById('content_demand_data').textContent);
     var fltData = JSON.parse(JSON.parse(document.getElementById('flt_data').textContent));
     var otherskilldata = JSON.parse(document.getElementById('otherskilldata').textContent);
+    var search_response = JSON.parse(document.getElementById('search_response').textContent);
     
     console.log(teachingData);
     console.log(contentData);
     console.log(fltData);
     console.log(otherskilldata);
+    console.log(search_response)
     
 
     function getTeachingData() {
@@ -176,6 +199,31 @@
         }
     }
 
+    function getBPPData() {
+        var div = document.getElementById('otherskill');
+        if (otherskilldata != null && otherskilldata != '' && otherskilldata != 'undefined') {
+            for (var i = 0; i < otherskilldata.length; i++) {
+                const item = otherskilldata[i];
+                const category = item['category'];
+                icon = '<i class="fa-solid fa-photo-film fa-4x"></i>';
+                console.log(item)
+                if (category.includes('REPORTING')) {
+                    icon = '<i class="fa-solid fa-photo-film fa-4x"></i>';
+                } else if (category.includes('MARKETING')) {
+                    icon = '<i class="fa-solid fa-puzzle-piece fa-4x"></i>';
+                } else if (category.includes('IT')) {
+                    icon = '<i class="fa-solid fa-microchip fa-4x"></i>';
+                } 
+                let link = "'/v2/demand/otherskill?category=" + category + "'";
+
+                div.innerHTML += '<div onclick="window.location.href=' + link + '" class="w-full bg-white hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in rounded-lg p-8 flex flex-col justify-center items-center cursor-pointer">\
+                <div class="mb-4">' + icon + '</div>\
+                <div class="text-lg text-green-600 font-bold">' + category + '</div>\
+                </div>'
+            }
+        }
+    }
+
     function getFltData() {
         var div = document.getElementById('flt');
         if (fltData != null && fltData != '' && fltData != 'undefined') {
@@ -218,7 +266,7 @@
     
 
     function showStuff(id, id2) {
-        for (var i = 1; i <= 4; i++) {
+        for (var i = 1; i <= 5; i++) {
             document.getElementById("tab" + i).style.display = "none";
             
             try {

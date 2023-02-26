@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Workflow Progress</title>
+    <style>
+      .progress {
+        width: 100%;
+        height: 20px;
+        background-color: #ddd;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      
+      .progress-bar {
+        height: 100%;
+        background-color: #4CAF50;
+        border-radius: 10px;
+        transition: width 0.5s;
+      }
+      
+      .step {
+        position: relative;
+        margin-bottom: 100px;
+        padding-left: 30px;
+      }
+      
+      .step:last-child {
+        margin-bottom: 0;
+      }
+      
+      .step:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ddd;
+        border-radius: 50%;
+        background-color: white;
+      }
+      
+      .step .step-text {
+        font-size: 18px;
+        line-height: 20px;
+      }
+      
+      .step .step-number {
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        width: 30px;
+        height: 30px;
+        border: 2px solid #ddd;
+        border-radius: 50%;
+        background-color: white;
+        text-align: center;
+        font-size: 18px;
+        line-height: 26px;
+        font-weight: bold;
+      }
+
+      .step-number {
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+  }
+      
+      .step.done:before {
+        border-color: #4CAF50;
+        background-color: #4CAF50;
+      }
+      
+      .step.done .step-number {
+        border-color: #4CAF50;
+        background-color: #4CAF50;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Needs Workflow Progress</h1>
+    
+    <div class="progress">
+      <div class="progress-bar" id="progress-bar" style="width: 0%;"></div>
+    </div>
+    
+    <div class="step" id="step-1">
+      <div class="step-number">1</div>
+      <div class="step-text">Serve BAP Client - /search call to Beckn Gateway</div>
+    </div>
+    
+    <div class="step" id="step-2">
+      <div class="step-number">2</div>
+      <div class="step-text">Serve BPP - /search triggered</div>
+    </div>
+    
+    <div class="step" id="step-3">
+      <div class="step-number">3</div>
+      <div class="step-text">Serve BAP Client - /on_search triggered</div>
+    </div>
+
+    <div class="step" id="step-4">
+        <div class="step-number">4</div>
+        <div class="step-text">Serve BAP Client - /select called</div>
+      </div>
+    
+    <!-- jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+      $(document).ready(function() {
+        // when step 1 is completed, update the progress bar and color
+        $('#step-1').click(function() {
+          // update the progress bar width
+          $('#progress-bar').animate({ width: '25%' }, 500);
+          
+          // update the step color
+          $(this).addClass('done');
+
+          // Retrieve the search_response data from the Django context
+          var beckngateway_response = JSON.parse('{{ beckngateway_response|escapejs }}');
+
+         // Print the search_response data to the console
+         console.log(beckngateway_response);
+         // Print the ack message below step 1
+        var ack_message = JSON.stringify(beckngateway_response);
+        $('#step-1').append('<span class="ack">' + 'ACK Message is Successfully Logged from the Beckn Gateway - ' + '</span>');
+        $('#step-1').append('<span class="ack">' + ack_message + '</span>');
+        //$('#step-1').append('<span class="ack">' + 'Ack message recieved by Beckn Gateway' + '</span>');
+        });
+        
+        // when step 2 is completed, update the progress bar and color
+        $('#step-2').click(function() {
+          // update the progress bar width
+          $('#progress-bar').animate({ width: '50%' }, 500);
+          
+          // update the step color
+          $(this).addClass('done');
+          console.log('{{ search_response|escapejs }}');
+
+          // Retrieve the search_response data from the Django context
+          //var search_response = JSON.parse('{{ search_response|escapejs }}');
+
+         // Print the search_response data to the console
+         //console.log(search_response);
+         
+         // Print the ack message below step 1
+        //var ack_message1 = JSON.stringify(search_response);
+        //$('#step-1').append('<span class="ack">' + ack_message1 + '</span>');
+        $('#step-2').append('<span class="ack">' + 'ACK message received successfully from BPP /search call through Beckn Gateway' + '</span>');
+        });
+        
+        // when step 3 is completed, update the progress bar and color
+        $('#step-3').click(function() {
+          // update the progress bar width
+          $('#progress-bar').animate({ width: '75%' }, 500);
+          
+          // update the step color
+          $(this).addClass('done');
+
+          $('#step-3').append('<span class="ack">' + 'Serve BAP Client - Rendering Received Needs' + '</span>');
+          setTimeout(function() {
+  var anchor = $('<a>').attr('href', '/v2/demand/bppcall');
+  $(document.body).append(anchor);
+  anchor[0].click();
+}, 2000);
+        
+           
+
+        });
+        
+      });
+    </script>
+  </body>
+</html>

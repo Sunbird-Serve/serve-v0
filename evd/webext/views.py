@@ -5540,19 +5540,79 @@ def add_vol_of_month(request):
     return render_response(request, "add_vol_of_month.html", {})
 
 
+
+@csrf_exempt
 def beckn_view(request):
     if request.method == 'POST':
         # Parse the request JSON data
-        json_data = request.body
+        # json_data = request.body
+        json_data = json.loads(request.body)
         intent_item = json_data.get('message', {}).get('intent', {}).get('item', {})
         descriptor_name = intent_item.get('descriptor', {}).get('name', '')
+        now_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        query = '''SELECT web_center.name as centerName, group_concat(distinct(web_center.id)) as centerId, web_offering.id as offeringId,
+                    web_course.subject, web_course.id as courseId, web_course.grade, group_concat(web_demandslot.day) as days, 
+                    genutilities_language.name as language, min(web_demandslot.start_time) as start_time, max(web_demandslot.end_time) as end_time,
+                    (select count(distinct(id)) from web_offering where course_id=web_course.id and active_teacher_id is not null and status='running') as teaching, 
+                    count(distinct(web_offering.id)) as required, web_center.district as district,
+                    (select count(id) from web_offering where course_id=web_course.id and active_teacher_id is null and status='running' AND web_offering.end_date > '{now_time}') as backfill
+                    FROM web_course INNER JOIN web_offering ON web_course.id = web_offering.course_id LEFT JOIN web_center ON web_offering.center_id = web_center.id 
+                    INNER JOIN genutilities_language ON web_course.language_id = genutilities_language.id LEFT JOIN web_demandslot ON web_center.id = web_demandslot.center_id 
+                    WHERE web_demandslot.start_time >= '09:00:00' AND web_demandslot.end_time <= '17:00:00'
+                    AND web_offering.end_date > '{now_time}' and web_course.status = 'active'  AND web_offering.active_teacher_id is null AND web_center.digital_school_id IS NULL 
+                    AND web_offering.status IN ('running', 'pending') AND web_demandslot.status = 'Unallocated' AND web_demandslot.status != 'Booked'  AND web_center.status != 'Closed' 
+                    AND (CASE WHEN (select count(id) from web_demandslot wd where wd.offering_id=web_offering.id)>0 THEN web_demandslot.offering_id=web_offering.id ELSE web_demandslot.offering_id is null END)
+                    group by web_course.grade, web_course.subject, genutilities_language.name'''.format(now_time=now_time)
+
+        db = MySQLdb.connect(host=settings.DATABASES['default']['HOST'], user=settings.DATABASES['default']['USER'],
+                                 passwd=settings.DATABASES['default']['PASSWORD'], db=settings.DATABASES['default']['NAME'], charset="utf8", use_unicode=True)
+        users_cur = db.cursor(MySQLdb.cursors.DictCursor)
+        users_cur.execute('SET SESSION group_concat_max_len = 999999')
+        users_cur.execute(query)
+        demand_course = users_cur.fetchall()
+        users_cur.close()
+        db.close()
+
+        for demand in demand_course:
+            demand['days'] = demand['days'].split(',')
+            demand['centerId'] = demand['centerId'].split(',')
+            demand['start_time'] = demand['start_time'].total_seconds()
+            demand['end_time'] = demand['end_time'].total_seconds()
+            demand['subject'] = demand['subject'].split(',')
+            #response_data = {'message': {'ack': {'status': demand['subject']}}}
+            #return HttpResponse(json.dumps(response_data), content_type='application/json')
+           
+        #data = {}
+        #data['flt_data'] = demand_course
+        # data['subject'] = subject
+        # subject2 = ['mentoring','english','math']
         
-        # Check if the descriptor name is "Management"
-        if descriptor_name.lower() == 'management':
-            # Send the acknowledgement response
-            response_data = {'message': {'ack': {'status': 'ACK'}}}
-            return HttpResponse(response_data)
+
+        # Create an empty list to store the matching grades
+        matching_demands = []
+        matching_grades = []
+        matching_subjects = []
+
+        # Loop through each demand
+        for demand in demand_course:
+            subject2 = demand['subject']
+            grade = demand['grade']
+            offer_id = demand['offeringId']
     
+        # Loop through each subject in the demand
+            for value in subject2:
+                # Check if the descriptor name matches
+                if descriptor_name == value:
+                    # Append each matching grade to the list
+                    #matching_demands.append({'Demand': value + ' ' + grade + ' ' + offer_id})
+                    matching_demands.append({'subject': value, 'grade': grade, 'offer_id': offer_id})
+
+        # Send the acknowledgement response with the list of matching grades
+        if matching_demands:
+            response_data = {'message': {'ack': matching_demands}}
+        else:
+            response_data = {'message': {'ack': {'Demand': 'No Such demands'}}}
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
     elif request.method == 'GET':
         # Parse the GET parameters
         descriptor_name = request.GET.get('descriptor', '')
@@ -5561,10 +5621,346 @@ def beckn_view(request):
         if descriptor_name.lower() == 'management':
             # Send the acknowledgement response
             response_data = {'message': {'ack': {'status': 'ACK'}}}
-            return HttpResponse(response_data)
+            return HttpResponse(json.dumps(response_data), content_type='application/json')
     
     # Return a 400 Bad Request response if the request is not valid
     return HttpResponse({'error': 'Invalid request.'}, status=400)
+
+
+@csrf_exempt
+def beckn_volsearch(request):
+    if request.method == 'POST':
+        # Parse the request JSON data
+        # json_data = request.body
+        json_data = json.loads(request.body)
+        intent_item = json_data.get('message', {}).get('intent', {}).get('item', {})
+        descriptor_name = intent_item.get('descriptor', {}).get('name', '')
+        print(descriptor_name)
+        query = '''SELECT web_userprofile.id as userId, web_userprofile.pref_subjects as subject from web_userprofile'''
+
+        db = MySQLdb.connect(host=settings.DATABASES['default']['HOST'], user=settings.DATABASES['default']['USER'],
+                                 passwd=settings.DATABASES['default']['PASSWORD'], db=settings.DATABASES['default']['NAME'], charset="utf8", use_unicode=True)
+        users_cur = db.cursor(MySQLdb.cursors.DictCursor)
+        users_cur.execute('SET SESSION group_concat_max_len = 999999')
+        users_cur.execute(query)
+        vol_details = users_cur.fetchall()
+        users_cur.close()
+        db.close()
+        
+        # Create an empty list to store the matching grades
+        matching_vols = []
+        matching_ids = []
+        matching_subjects = []
+
+        # Loop through each vol
+        for vol in vol_details:
+            user_id = vol['userId']
+            subject = vol['subject']
+            # Loop through each subject in the demand
+            if(subject == descriptor_name):
+                matching_vols.append({'subject': subject, 'userId': user_id})
+
+        print(matching_vols)
+        # Send the acknowledgement response with the list of matching grades
+        if matching_vols:
+            response_data = {'message': {'ack': matching_vols}}
+        else:
+            response_data = {'message': {'ack': {'Demand': 'No Users with this preference'}}}
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+    elif request.method == 'GET':
+        # Parse the GET parameters
+        descriptor_name = request.GET.get('descriptor', '')
+        
+        # Check if the descriptor name is "Management"
+        if descriptor_name.lower() == 'management':
+            # Send the acknowledgement response
+            response_data = {'message': {'ack': {'status': 'ACK'}}}
+            return HttpResponse(json.dumps(response_data), content_type='application/json')
+    
+    # Return a 400 Bad Request response if the request is not valid
+    return HttpResponse({'error': 'Invalid request.'}, status=400)
+
+
+@csrf_exempt
+def beckn_select(request):
+    if request.method == 'POST':
+        # Parse the request JSON data
+        # json_data = request.body
+        json_data = json.loads(request.body)
+        intent_item = json_data.get('message', {}).get('order', {}).get('item', {})
+        offering_id = intent_item.get('id', '')
+        query = '''SELECT web_offering.id as offeringId
+                    from web_offering'''
+
+        db = MySQLdb.connect(host=settings.DATABASES['default']['HOST'], user=settings.DATABASES['default']['USER'],
+                                 passwd=settings.DATABASES['default']['PASSWORD'], db=settings.DATABASES['default']['NAME'], charset="utf8", use_unicode=True)
+        users_cur = db.cursor(MySQLdb.cursors.DictCursor)
+        #users_cur.execute('SET SESSION group_concat_max_len = 999999')
+        users_cur.execute(query)
+        offering_list = users_cur.fetchall()
+        users_cur.close()
+        db.close()
+
+        for offerId in offering_list:
+            if offerId["offeringId"] == int(offering_id):
+                response_data = {'message': {'ack': {'Status': 'ACK'}}}
+                break
+        else:
+            response_data = {'message': {'ack': {'Status': 'No Such offerings'}}}
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+    elif request.method == 'GET':
+        # Parse the GET parameters
+        descriptor_name = request.GET.get('descriptor', '')
+        
+        # Check if the descriptor name is "Management"
+        if descriptor_name.lower() == 'management':
+            # Send the acknowledgement response
+            response_data = {'message': {'ack': {'status': 'ACK'}}}
+            return HttpResponse(json.dumps(response_data), content_type='application/json')
+    
+    # Return a 400 Bad Request response if the request is not valid
+    return HttpResponse({'error': 'Invalid request.'}, status=400)
+
+
+@csrf_exempt
+def beckn_searchbg(request):
+    url = 'https://serve.evidyaloka.org/v2/volunteer/searchneed'
+    payload = {
+        "context": {
+            "domain": "dsep:mentoring",
+            "action": "search",
+            "bap_id": "serve.evidyaloka.org/v2/demand",
+            "bap_uri": "https://serve.evidyaloka.org/v2/demand",
+            "timestamp": "2022-12-15T15:38:16.226Z",
+            "message_id": "64109204-bdff-4af6-a76b-5a33f8aa8675",
+            "version": "1.0.0",
+            "ttl": "PT10M",
+            "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228"
+        },
+        "message": {
+            "intent": {
+                "item": {
+                    "descriptor": {
+                        "name": "English"
+                    }
+                }
+            }
+        }
+    }
+
+    response = requests.post(url, json=payload)
+    print(response.json())
+    if response.ok:
+        # Do something with the response data
+        print(response.json())
+        response_data = {'message': {'ack': {'Status': 'ACK'}}}
+        data = response.json()
+        #return HttpResponse(json.dumps(data), content_type='application/json')
+        # Get the matching demands from the response
+        matching_demands = data['message']['ack']
+
+        # Render the HTML template with the matching demands and JSON response
+        return render(request, 'matching_demands.html', {'matching_demands': matching_demands, 'json_response': json.dumps(data)})
+    else:
+        # Handle the error
+        print("Error: {response.status_code}")
+
+
+@csrf_exempt
+def beckn_postvol(request):
+    url = 'https://serve.evidyaloka.org/v2/demand/searchvolunteer'
+    payload = {
+        "context": {
+            "domain": "dsep:mentoring",
+            "action": "search",
+            "bap_id": "serve.evidyaloka.org/v2/demand",
+            "bap_uri": "https://serve.evidyaloka.org/v2/demand",
+            "timestamp": "2022-12-15T15:38:16.226Z",
+            "message_id": "64109204-bdff-4af6-a76b-5a33f8aa8675",
+            "version": "1.0.0",
+            "ttl": "PT10M",
+            "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228"
+        },
+        "message": {
+            "intent": {
+                "item": {
+                    "descriptor": {
+                        "name": "English"
+                    }
+                }
+            }
+        }
+    }
+
+    response = requests.post(url, json=payload)
+    print(response.json())
+    if response.ok:
+        # Do something with the response data
+        print(response.json())
+        response_data = {'message': {'ack': {'Status': 'ACK'}}}
+        data = response.json()
+        #return HttpResponse(json.dumps(data), content_type='application/json')
+        # Get the matching demands from the response
+        matching_vols = data['message']['ack']
+
+        # Render the HTML template with the matching demands and JSON response
+        return render(request, 'matching_vols.html', {'matching_vols': matching_vols, 'json_response': json.dumps(data)})
+    else:
+        # Handle the error
+        print("Error: {response.status_code}")
+
+@csrf_exempt
+def beckn_search(request):
+    
+    print(request.body)
+    response = {'message': {'ack': {'Status': 'ACK2'}}}
+    #print(response_data)
+
+    return render(request, 'beckn_network.html', {'search_response': simplejson.dumps(response)})
+
+
+@csrf_exempt
+def beckn_volsearch2(request):
+    url = 'https://gateway.becknprotocol.io/bg/search'
+    payload = {
+        "context": {
+            "domain": "dsep:mentoring",
+            "action": "search",
+            "bap_id": "serve.evidyaloka.org/v2/demand",
+            "bap_uri": "https://serve.evidyaloka.org/v2/demand",
+            "timestamp": "2022-12-15T15:38:16.226Z",
+            "message_id": "64109204-bdff-4af6-a76b-5a33f8aa8675",
+            "version": "1.0.0",
+            "ttl": "PT10M",
+            "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228"
+        },
+        "message": {
+            "intent": {
+                "item": {
+                    "descriptor": {
+                        "name": "Management"
+                    }
+                }
+            }
+        }
+    }
+
+    response = requests.post(url, json=payload)
+    response = {'message': {'ack': {'Status': 'ACK'}}}
+    print(response)
+
+    return render(request, 'beckn_network_vol.html', {'search_response': simplejson.dumps(response)})
+
+    
+    
+@csrf_exempt
+def beckn_bgsearch(request):
+    url = 'https://gateway.becknprotocol.io/bg/search'
+    payload = {
+        "context": {
+            "domain": "dsep:mentoring",
+            "action": "search",
+            "bap_id": "serve.evidyaloka.org/v2/demand",
+            "bap_uri": "https://serve.evidyaloka.org/v2/demand",
+            "timestamp": "2022-12-15T15:38:16.226Z",
+            "message_id": "64109204-bdff-4af6-a76b-5a33f8aa8675",
+            "version": "1.0.0",
+            "ttl": "PT10M",
+            "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228"
+        },
+        "message": {
+            "intent": {
+                "item": {
+                    "descriptor": {
+                        "name": "Management"
+                    }
+                }
+            }
+        }
+    }
+
+    response = requests.post(url, json=payload)
+    print(response.json())
+    return render(request, 'beckn_network.html', {'beckngateway_response': simplejson.dumps(response.json())})
+    #return HttpResponse(json.dumps(response.json()), content_type='application/json')
+
+@csrf_exempt
+def beckn_dsepsearch(request):
+    url = 'https://dsep-protocol-client.becknprotocol.io/search'
+    payload = {
+        "context": {
+            "domain": "dsep:mentoring",
+            "action": "search",
+            "bap_id": "dsep-protocol.becknprotocol.io",
+            "bap_uri": "https://dsep-protocol-network.becknprotocol.io/",
+            "timestamp": "2022-12-15T15:38:16.226Z",
+            "message_id": "64109204-bdff-4af6-a76b-5a33f8aa8675",
+            "version": "1.0.0",
+            "ttl": "PT10M",
+            "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228"
+        },
+        "message": {
+            "intent": {
+                "item": {
+                    "descriptor": {
+                        "name": "Management"
+                    }
+                }
+            }
+        }
+    }
+
+    response = requests.post(url, json=payload)
+    mentorshipSession = {
+        'id': 22195,
+        'userSavedItem': False,
+        'userAppliedItem': False,
+        'language': 'English',
+        'timingStart': '2023-02-19T23:23:16',
+        'timingEnd': '2023-02-20T01:23:16',
+        'type': 'ONLINE',
+        'status': 'Live',
+    'timezone': 'Asia/Calcutta'
+    }
+
+    print(mentorshipSession)
+    #return render(request, 'beckn_network.html', {'beckngateway_response': simplejson.dumps(response.json())})
+    return HttpResponse(json.dumps(response.json()), content_type='application/json')
+    
+
+@csrf_exempt
+def beckn_bap_onsearch(request):
+    
+    #json_data = json.loads(request.body)
+    #intent_item = json_data.get('context', {}).get('bap_uri', {})
+
+
+    #print(json_data)
+
+    json_data = json.loads(request.body)
+    intent_item = json_data.get('context', {})
+    bap_id = intent_item.get('bap_id', '')
+    bpp_id = ""
+    bpp_uri = ""
+    response_data = {
+        "context": {
+            "domain": "dsep:mentoring",
+            "action": "on_search",
+            "bap_id": "dsep-protocol.becknprotocol.io",
+            "bap_uri": "https://dsep-protocol-network.becknprotocol.io/",
+            "bpp_id": "serve.evidyaloka.org/v2/demand/",
+            "bpp_uri": "https://serve.evidyaloka.org/v2/volunteer",
+            "timestamp": "2023-02-26T06:18:09.160Z",
+            "ttl": "PT10M",
+            "version": "1.0.0",
+            "message_id": "8f3c039d-a18f-4f0d-8f5c-f7415a5a0924",
+            "transaction_id": "bdb5ba09-2241-4f00-b434-73466cd06228"
+        }
+    }
+    #print(response_data)
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
 
 
 def get_vol_of_month(request):
@@ -10205,6 +10601,9 @@ class OnlineDemand(View):
         except Exception as e:
             logService.logException("OnlineDemand GET Exception error", e.message)
             return genUtility.error_404(request, e.message)
+
+
+
 
     # @method_decorator(login_required)
     def post(self, request,  *args, **kwargs):

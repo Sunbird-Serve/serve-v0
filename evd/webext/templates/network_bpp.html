@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>BPP</title>
+</head>
+<body>
+  <h1>JSON Response:</h1>
+  <pre id="json-response"></pre>
+
+  <script>
+    // Get the JSON response from the server
+    var jsonResponse = {{ json_response|safe }};
+
+    // Display the JSON response in the <pre> element
+    document.getElementById("json-response").textContent = JSON.stringify(jsonResponse, null, 2);
+  </script>
+</body>
+</html>

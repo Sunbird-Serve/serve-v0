@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>BPP Catalog</title>
+</head>
+<body>
+  <h1>BPP Catalog</h1>
+
+  <h2>BPP Details:</h2>
+  <ul>
+    <li><strong>Name:</strong> {{ message.catalog.name }}</li>
+    <li><strong>Description:</strong> {{ message.catalog.long_desc }}</li>
+    <li><strong>Provider Count:</strong> {{ message.providers|length }}</li>
+  </ul>
+
+</body>
+</html>

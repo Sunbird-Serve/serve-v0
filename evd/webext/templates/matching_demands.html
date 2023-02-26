@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Matching Demands</title>
+	<!-- Include Bootstrap CSS -->
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="/static/js/underscore-min.js"></script>
+    <script src="/static/js/student_log.js"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/student-module.css">
+    <link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+    
+    <style>
+        .card {
+            background-color: #f2f2f2;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 300px;
+            height: 150px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card-text {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .btn-book {
+            background-color: #007bff;
+            border: none;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .btn-book:hover {
+            background-color: #0069d9;
+        }
+    </style>
+    <head>
+        <title>Needs Workflow Progress</title>
+        <style>
+          .progress {
+            width: 100%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+          }
+          
+          .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            transition: width 0.5s;
+          }
+          
+          .step {
+            position: relative;
+            margin-bottom: 100px;
+            padding-left: 30px;
+          }
+          
+          .step:last-child {
+            margin-bottom: 0;
+          }
+          
+          .step:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            background-color: white;
+          }
+          
+          .step .step-text {
+            font-size: 18px;
+            line-height: 20px;
+          }
+          
+          .step .step-number {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            background-color: white;
+            text-align: center;
+            font-size: 18px;
+            line-height: 26px;
+            font-weight: bold;
+          }
+          
+          .step.done:before {
+            border-color: #4CAF50;
+            background-color: #4CAF50;
+          }
+          
+          .step.done .step-number {
+            border-color: #4CAF50;
+            background-color: #4CAF50;
+            color: white;
+          }
+        </style>
+</head>
+<body>
+    <h2>Needs Workflow Progress</h2>
+    
+    <div class="progress">
+      <div class="progress-bar" id="progress-bar" style="width: 75%;"></div>
+    </div>
+	<div class="container">
+		<h3 class="my-5">Needs List</h3>
+		{% if matching_demands %}
+			{% for demand in matching_demands %}
+			<div class="card">
+				<div class="card-header">
+					<h5 class="card-title">{{ demand.subject }} {{ demand.grade }}</h5>
+				</div>
+				<div class="card-body">
+					<p class="card-text">Offering ID: {{ demand.offer_id }}</p>
+					<button class="btn btn-book" onclick="openPopup({{ demand.offer_id }})">Book</button>
+				</div>
+			</div>
+			{% endfor %}
+		{% else %}
+			<p>No matching demands found.</p>
+		{% endif %}
+	</div>
+</body>
+
+<!-- Popup Window HTML -->
+<div id="popup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background-color:white; width:400px; height:200px; border-radius:10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); z-index:100;">
+	<h2>Fulfillment</h2>
+	<p id="popup-message"></p>
+	<button id="close-popup" onclick="closePopup()">Close</button>
+</div>
+
+<!-- JavaScript Code -->
+<script>
+	function openPopup(offer_id) {
+		// Get the popup and popup message elements
+        $('#progress-bar').animate({ width: '100%' }, 500);
+		var popup = document.getElementById("popup");
+		var popup_message = document.getElementById("popup-message");
+
+		// Set the popup message to the offer ID
+		popup_message.innerHTML = "Offering ID: " + offer_id + " is booked! <br><br>Thank You!";
+
+		// Show the popup
+		popup.style.display = "block";
+	}
+
+	function closePopup() {
+		// Get the popup element
+		var popup = document.getElementById("popup");
+
+		// Hide the popup
+		popup.style.display = "none";
+	}
+</script>
+    
+</html>
