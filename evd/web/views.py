@@ -10,6 +10,8 @@ from django.core import serializers
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
+from evd.genutilities.docStorageUtility import getDocStorageServiceCredentials
+import genutilities.docStorageUtility as docStorageService
 from templatetags.tags import crop, thumbnail
 from django.utils.datetime_safe import strftime
 from django.utils.http import int_to_base36
@@ -106,7 +108,7 @@ from student.models import Quiz_History, Quiz_History_Detail
 from django.db.models import Q
 
 import requests
-
+from django.core.files.storage import FileSystemStorage
 from partner.views import profile as partner_profile
 from partner.views import deliverypartner_org, organization_details
 import base64
@@ -14777,12 +14779,27 @@ def saveTask(request):
         assignedTo = request.POST.get('assign_name_id', '')
         performedOn_name = request.POST.get('prfm_name', '')
         category = request.POST.get('categoryId', '')
+        #attachment = request.POST.get('attachment', '')
         taskCreatedBy_userId = request.user.username
         taskCreatedDate = datetime.datetime.now()
         dueDate = datetime.datetime.strptime(dd, "%d-%m-%Y").date()
         date_joined = None
         todayDate = datetime.datetime.today()
         todayDay = calendar.day_name[todayDate.weekday()]
+        attachment = request.POST.get('attachment')
+        
+        
+        #upload_file = request.FILES['attachment']
+
+        uploaded_file = request.FILES['attachment']
+        fs = FileSystemStorage(location='/var/www/serve-beta/evd/tempfiles')
+        filename = fs.save(uploaded_file.name, uploaded_file)
+        
+        cloudFolderName = "user_documents/task_documents"
+        filePathToBeuploaded = '/var/www/serve-beta/evd/tempfiles' + "/" + filename
+        permissionType = docStorageService.kSTORAGE_SUPPORTED_PERMISSION_PUBLIC
+        uploadedUrl = docStorageService.uploadDocument(cloudFolderName, filePathToBeuploaded, filename,permissionType)
+        
         if userId:
             user = User.objects.get(id=userId)
             date_joined = user.date_joined
@@ -14793,7 +14810,7 @@ def saveTask(request):
             task = Task(comment=comment, subject=subject, assignedTo='', dueDate=dueDate, priority=priority,
                         taskCreatedBy_userId=taskCreatedBy_userId, taskStatus=taskStatus, performedOn_userId='',
                         taskCreatedDate=taskCreatedDate, user_date_joined=date_joined, performedOn_name='',
-                        taskType=task_type, task_other_status=task_other_status, category=category)
+                        taskType=task_type, task_other_status=task_other_status, category=category, reminderUrl=uploadedUrl)
         else:
             task = Task(comment=comment, subject=subject, assignedTo=assignedTo, dueDate=dueDate, priority=priority,
                         taskCreatedBy_userId=taskCreatedBy_userId, taskStatus=taskStatus, performedOn_userId=userId,
@@ -17835,7 +17852,7 @@ def create_task_for_EVD(request,dueDate,comment,category,subject,mail_subject,as
         date_joined = usrobj.date_joined
     except:
         usrobj = None
-    task = Task(comment=comment,subject=task_subject,assignedTo=usrobj,dueDate=dueDate,priority="Normal",
+    task = Task(comment=comment,subject=task_subject,assignedTo='',dueDate=dueDate,priority="Normal",
                taskCreatedBy_userId=taskCreatedBy_userId,taskStatus="Open",performedOn_userId = perfomed_usr_id,
                 taskCreatedDate=taskCreatedDate, user_date_joined=date_joined,performedOn_name=performedOn_name,
                 taskType="MANUAL")

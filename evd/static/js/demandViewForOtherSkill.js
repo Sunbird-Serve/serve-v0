@@ -133,7 +133,7 @@ var refresh_data  =  function()
             				subject = subject.replace("<", "&lt;");
     						subject = subject.replace(">", "&gt;");
           				  if(jsonObjs[i]['subject'].length>65){
-          					  demand_list_data +='<p class="subject_styling" style="color:'+colors[j]+';">'+subject.substring(0,57)+'.<a href="javascript:void(0);" style="text-decoration:none;font-size:18px;color:'+colors[j]+';" onclick="toggleDataModelForSubject('+jsonObjs[i]['id']+');">...</a></p>';
+          					  demand_list_data +='<p class="subject_styling" style="color:'+colors[j]+';">'+subject.substring(0,57)+'.<a href="javascript:void(0);" style="text-decoration:none;font-size:16px;color:'+colors[j]+';" onclick="toggleDataModelForSubject('+jsonObjs[i]['id']+');">...</a></p>';
                              }
                           else{
                           	 demand_list_data += '<p class="subject_styling" style="color:'+colors[j]+';">'+subject+'</p>';
@@ -144,13 +144,22 @@ var refresh_data  =  function()
             				 comment = comment.replace("<", "&lt;");
      						 comment = comment.replace(">", "&gt;");
             				  if(jsonObjs[i]['comment'].length>15){
-                            	  demand_list_data += '<p style="padding-top: 15px;padding-bottom: 15px;height:60px;color:'+colors[j]+';">'+comment.substring(0,13)+'...<a href="javascript:void(0);" style="text-decoration:none;font-size:14px;color:#2EC7F0;" onclick="toggleDataModelForComment('+jsonObjs[i]['id']+');">Read more >></a></p>';
+                            	  demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';">'+comment.substring(0,13)+'...<a href="javascript:void(0);" style="text-decoration:none;font-size:14px;color:#2EC7F0;" onclick="toggleDataModelForComment('+jsonObjs[i]['id']+');">Read more >></a></p>';
                                }
-                               else{demand_list_data += '<p style="padding-top: 15px;padding-bottom: 15px;height:60px;color:'+colors[j]+';">'+comment+'</p>';}
+                               else{demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';">'+comment+'</p>';}
             			 }
             			 else{
-            				 demand_list_data += '<p style="padding-top: 15px;padding-bottom: 15px;height:60px;color:'+colors[j]+';">No comment available.</p>';
+            				 demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';">No comment available.</p>';
             			 }
+						 if (jsonObjs[i]['reminderUrl']!=null && jsonObjs[i]['reminderUrl']!='' && jsonObjs[i]['reminderUrl']!='undefined'){
+							var docUrl = jsonObjs[i]['reminderUrl'];
+							docUrl = docUrl.replace("<", "&lt;");
+    						docUrl = docUrl.replace(">", "&gt;");
+							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:12px;color:'+colors[j]+';"><a href="'+docUrl+'">&nbsp;&nbsp;Document Link</a></p>';
+						}
+						else{
+							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:12px;color:'+colors[j]+';">No document available.</p>';
+						}
             			 if(authenticatedId == "True"){
             				 demand_list_data += '<div style="text-align:center;margin-top: -10px;"><a class="btn btn-lg btn-primary scroll " onclick="updateOtherOpportunity('+jsonObjs[i]['id']+');" role="button" style=" cursor: pointer; text-decoration:none;font-size:14px;background-color: darkturquoise;">I Am Interested</a></div>';
 							 console.log("checking true");
@@ -160,7 +169,7 @@ var refresh_data  =  function()
             				 demand_list_data += '<div style="text-align:center;margin-top: -10px;"><a class="btn btn-lg btn-primary scroll already"  data-toggle="modal" data-target="#login-modal" id="login-trigger2" style="cursor:pointer;text-decoration:none;background-color: darkturquoise;" onclick="addDataValue();">I Am Interested</a></div>';
             			 }
             			 demand_list_data += '<div style="text-align:center; margin-top:-10px;">';
-            			 demand_list_data += '<input type="hidden" id="'+jsonObjs[i]['id']+'" value="'+jsonObjs[i]['comment']+'" data-sub="'+jsonObjs[i]['subject']+'"/></div>';
+            			 demand_list_data += '<input type="hidden" id="'+jsonObjs[i]['id']+'" value="'+jsonObjs[i]['comment']+'" data-sub="'+jsonObjs[i]['subject']+'" data-url="'+jsonObjs[i]['reminderUrl']+'"/></div>';
             			 demand_list_data += '</div></div></div>';		
             			 j++;
              			if(j>colors.length-1){

@@ -79,21 +79,21 @@
                 </section>
                 <section id="tab5" class="tab max-w-auto mx-auto px-4 sm:px-6 lg:px-4 py-6 hidesection">
                     <div class="w-full h-full md:px-48 pb-6">
-                        <div onclick="window.location.href='/v2/demand/gatewaysearch'" class="w-full p-2 text-center font-bold text-xl rounded-full bg-white text-green-600 hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in cursor-pointer">Lookup Needs (BPP)</div>
+                        <div onclick="window.location.href='/v2/demand/gatewaysearch'" class="w-full p-2 text-center font-bold text-xl rounded-full bg-white text-green-600 hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in cursor-pointer hide-on-other-skills">Lookup Needs (BPP)</div>
                     </div>
                     <div id="becknBPP" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 </section>
                 <section id="tab6" class="tab max-w-auto mx-auto px-4 sm:px-6 lg:px-4 py-6 hidesection">
                     <div class="w-full h-full md:px-48 pb-6">
-                        <div onclick="window.location.href='/v2/demand/search'" class="w-full p-2 text-center font-bold text-xl rounded-full bg-white text-green-600 hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in cursor-pointer">Lookup Volunteers (BAP)</div>
+                        <div onclick="window.location.href='/v2/demand/search'" class="w-full p-2 text-center font-bold text-xl rounded-full bg-white text-green-600 hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in cursor-pointer hide-on-other-skills">Lookup Volunteers (BAP)</div>
                     </div>
-                    <div id="becknBPP" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                    <div id="becknBAP" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 </section>
                 <section id="tab7" class="tab max-w-auto mx-auto px-4 sm:px-6 lg:px-4 py-6 hidesection">
                     <div class="w-full h-full md:px-48 pb-6">
-                        <div onclick="window.location.href='/v2/demand/dsepsearch'" class="w-full p-2 text-center font-bold text-xl rounded-full bg-white text-green-600 hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in cursor-pointer">DSEP Network</div>
+                        <div onclick="window.location.href='/v2/demand/dsepsearch'" class="w-full p-2 text-center font-bold text-xl rounded-full bg-white text-green-600 hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in cursor-pointer hide-on-other-skills">DSEP Network</div>
                     </div>
-                    <div id="becknBPP" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                    <div id="becknet" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 </section>
             </div>
         </div>
@@ -114,6 +114,13 @@
     console.log(otherskilldata);
     console.log(search_response)
     
+
+    function hideButtonsOnOtherSkills() {
+        var buttons = document.getElementsByClassName("hide-on-other-skills");
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].style.display = "none";
+        }
+    }
 
     function getTeachingData() {
         var div = document.getElementById('teaching');
@@ -266,20 +273,38 @@
     
 
     function showStuff(id, id2) {
+        
         for (var i = 1; i <= 5; i++) {
             document.getElementById("tab" + i).style.display = "none";
-            
+            document.getElementById("tab6").style.display = "none";
+            document.getElementById("tab7").style.display = "none";
             try {
                 document.getElementById("btn" + i).style.backgroundColor = "";
-              }
-              catch(err) {
+            }
+            catch(err) {
                 console.log(err.message);
-              }
-
+            }
         }
+    
+        if (id === '4' || id ==='1' || id === '2' || id==='3') {
+            //hideButtonsOnOtherSkills();
+            document.getElementById("tab5").style.display = "none";
+            document.getElementById("tab6").style.display = "none";
+            document.getElementById("tab7").style.display = "none";
+        } else {
+            document.getElementById("tab5").style.display = "block";
+            document.getElementById("tab6").style.display = "block";
+            document.getElementById("tab7").style.display = "block";
+            console.log("check network");
+        } 
+    
         id2.style.backgroundColor = "#34ccfe";
         document.getElementById("tab" + id).style.display = "block";
+        //document.getElementById("tab5").style.display = "block !important";
+        //document.getElementById("tab6").style.display = "block";
+        //document.getElementById("tab7").style.display = "block";
     }
+    
 
     function togglepanel() {
         var x = document.getElementById("leftpanel");
@@ -290,6 +315,7 @@
         }
     }
 </script>
+
 {% endblock %}
 
 </html>

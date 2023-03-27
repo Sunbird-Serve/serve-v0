@@ -692,11 +692,12 @@ function loadTableUsingData(data, selectedTab){
 					thead += '<th width="25%">Performed On</th>';					
 				}else{
 					thead += '<th width="25%">Category</th>';
+					thead += '<th width="25%">Project Details</th>';
 				}
 				thead += '<th width="8%">Priority</th><th width="8%">Status</th><th width="15%">Created By</th><th width="10%">Action</th></tr>';
 				thead += '</thead>';
 			}else{
-				thead += '<tr><th width="10%">Due Date</th><th width="17%">Task Name</th><th width="17%">Assigned To</th><th width="25%">Category</th><th width="8%">Priority</th><th width="8%">Status</th><th width="15%">Created By</th><th width="10%">Action</th></tr>';
+				thead += '<tr><th width="10%">Due Date</th><th width="17%">Task Name</th><th width="17%">Assigned To</th><th width="25%">Category</th><th width="25%">Project Details</th><th width="8%">Priority</th><th width="8%">Status</th><th width="15%">Created By</th><th width="10%">Action</th></tr>';
 				thead += '</thead>';
 			}
 			
@@ -731,6 +732,13 @@ function loadTableUsingData(data, selectedTab){
 								tbody += '<td><a href="/activities?user_id='+jsonObj['performedOn_userId']+'&set_flag=false"><u>'+jsonObj['performedOn_name']+'</u></a></td>';
 							}else{
 									tbody += '<td >'+category_formatting(jsonObj['category'])+'</td>';
+									if(jsonObj['reminderUrl']!=null){
+										tbody += '<td >'+'<a href="'+jsonObj['reminderUrl']+'">&nbsp;&nbsp;Document Link</a></td>';
+									}else{
+										tbody += '<td >No Document Uploaded</td>';
+									}
+			
+									
 							}
 						}
 						tbody += '<td>'+jsonObj['priority']+'</td>';

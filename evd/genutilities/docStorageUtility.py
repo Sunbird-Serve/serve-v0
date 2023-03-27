@@ -27,7 +27,8 @@ kSTORAGE_SUPPORTED_PERMISSION_PRIVATE = "private"
 def getDocStorageServiceCredentials():
     serviceName = os.getenv('STORAGE_ACCESS_KEY_ID')
     serviceKey = os.environ.get('STORAGE_SECRET_ACCESS_KEY')
-    bucketName = os.environ.get('STORAGE_BUCKET_NAME')
+    #bucketName = os.environ.get('STORAGE_BUCKET_NAME')
+    bucketName = 'serve.prod.evidyaloka.org'
     region = os.environ.get('STORAGE_BUCKET_REGION')
     if serviceName and serviceKey and bucketName and region:
         return {"serviceKey":serviceKey,"serviceName":serviceName,"bucketName":bucketName,"region":region}

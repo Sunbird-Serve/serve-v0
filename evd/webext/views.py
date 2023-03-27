@@ -11140,7 +11140,7 @@ def demandListForOtherSkills(request):
     other_skill_list = []
     for other in other_task_opportunity:
         #subject = ((other.subject)[:65] + '<span style="color:black;cursor:pointer">...</span>') if len(other.subject)>65 else other.subject
-        data = {'id':other.id,'category':other.category,'dueDate':str(other.dueDate),'subject':other.subject,'comment':other.comment}
+        data = {'id':other.id,'category':other.category,'dueDate':str(other.dueDate),'subject':other.subject,'comment':other.comment,'reminderUrl':other.reminderUrl}
         other_skill_list.append(data)
     rel_data = {}
     rel_data['data']   =  other_skill_list
@@ -11211,7 +11211,7 @@ def updateOfferingOrOthersStatus(request):
                 if task_id:
                     task = Task.objects.get(pk=task_id)
                     check_task_update = Task.objects.filter(id=task_id).update(task_other_status='approved',
-                                                                               assignedTo=task.taskFor)
+                                                                               assignedTo='')
                     if check_task_update == 1:
                         task = Task.objects.get(pk=task_id)
                         try:
