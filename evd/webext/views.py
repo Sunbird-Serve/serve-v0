@@ -11429,24 +11429,24 @@ class OtherSkill(View):
                 }
             subject = request.GET.get('subject', '')
 
-            if request.user.is_authenticated() and not request.user.is_superuser and not has_pref_role(request.user.userprofile, "Content Admin"):
-                contents = Task.objects.filter(taskType='OTHER', topic__course_id__language__name__in=known_languages).values('id', 'topic__id', 'topic__title', 'topic__course_id__board_name',
-                                                                                                                                'topic__course_id__subject', 'topic__course_id__grade', 'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'workstream__id')
-            else:
-                contents = Content_Demand.objects.filter(status=1).values('id', 'topic__id', 'topic__title', 'topic__course_id__board_name',
-                                                                          'topic__course_id__subject', 'topic__course_id__grade', 'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'workstream__id')
-            contents = self.groupby_multiple_keys(contents, ['topic__id', 'topic__course_id__board_name',
-                                                  'topic__course_id__subject', 'topic__course_id__grade', 'workstream__name'], 'subtopic__name')
+            #if request.user.is_authenticated() and not request.user.is_superuser and not has_pref_role(request.user.userprofile, "Content Admin"):
+            #    contents = Task.objects.filter(taskType='OTHER', topic__course_id__language__name__in=known_languages).values('id', 'topic__id', 'topic__title', 'topic__course_id__board_name',
+            #                                                                                                                    'topic__course_id__subject', 'topic__course_id__grade', 'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'workstream__id')
+            #else:
+            #    contents = Content_Demand.objects.filter(status=1).values('id', 'topic__id', 'topic__title', 'topic__course_id__board_name',
+            #                                                              'topic__course_id__subject', 'topic__course_id__grade', 'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'workstream__id')
+            #contents = self.groupby_multiple_keys(contents, ['topic__id', 'topic__course_id__board_name',
+            #                                      'topic__course_id__subject', 'topic__course_id__grade', 'workstream__name'], 'subtopic__name')
 
             # check previous booking
-            previous_booking = {'is_booked': False}
-            if self.request.user.is_authenticated():
-                booked_demadslot = Content_Demand.objects.filter(author=self.request.user, status=2).values('id', 'topic__id',
-                                                                                                            'topic__title', 'topic__course_id__board_name', 'topic__course_id__subject', 'topic__course_id__grade',
-                                                                                                            'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'updated_on')
-                if len(booked_demadslot) > 0:
-                    previous_booking['is_booked'] = True
-                    previous_booking['slots'] = list(booked_demadslot)
+            #previous_booking = {'is_booked': False}
+            #if self.request.user.is_authenticated():
+            #    booked_demadslot = Content_Demand.objects.filter(author=self.request.user, status=2).values('id', 'topic__id',
+            #                                                                                                'topic__title', 'topic__course_id__board_name', 'topic__course_id__subject', 'topic__course_id__grade',
+            #                                                                                                'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'updated_on')
+            #    if len(booked_demadslot) > 0:
+            #        previous_booking['is_booked'] = True
+            #        previous_booking['slots'] = list(booked_demadslot) 
 
             other_task_opportunity = Task.objects.filter(Q(taskType='OTHER') & (Q(taskStatus='Open') | Q(taskStatus='WIP')) & ~Q(category='')).exclude(category=None)
             
@@ -11458,10 +11458,10 @@ class OtherSkill(View):
             rel_data = {}
             rel_data['data']   =  other_skill_list
             print(other_skill_list)
-            return render(request, 'demand_otherskill_new.html', {'pref_subject': subject, 'user_details': user_details, 'skill_data': list(other_skill_list), 'previous_booking': simplejson.dumps(previous_booking, default=str)})
+            return render(request, 'demand_otherskill_new.html', {'pref_subject': subject, 'user_details': user_details, 'skill_data': list(other_skill_list)})
 
         except Exception as e:
-            logService.logException("ContentDemand GET Exception error", e.message)
+            logService.logException("OtherSkill GET Exception error", e.message)
             return genUtility.error_404(request, e.message)
 
     def groupby_multiple_keys(self, lst, groups, key):

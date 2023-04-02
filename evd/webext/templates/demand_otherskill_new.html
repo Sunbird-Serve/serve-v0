@@ -118,6 +118,7 @@ word-wrap: break-word;
                <input type="hidden" value= "{{other_category}}" id="otherCategoryId"/>
                <input type="hidden" value= "{{pref_subject}}" id="prefSubjectId"/>
                <input type="hidden" value= "{{user.is_superuser}}" id="user"/>
+               <input type="hidden" value= "{{user.is_authenticated}}" id="userAuth"/>
                <input type="hidden" value= "{{category_list}}" id="category_listId"/>
                <input type="hidden" value= "{{pref_category}}" id="pref_categoryId"/>
                <input type="hidden" value="{{ request.GET.category }}" id="category_skill">
@@ -286,7 +287,7 @@ word-wrap: break-word;
    }
    
 
-   localStorage.setItem("user", $('#user').val());
+   localStorage.setItem("user", $('#userAuth').val());
    
    </script>
      <script type="text/javascript" src="/static/js/underscore-min.js"></script>

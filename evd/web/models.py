@@ -1079,6 +1079,8 @@ class Task(models.Model):
     taskType=models.CharField(max_length=1024, null=True, blank=True)
     task_other_status = models.CharField(max_length=1024, null=True, blank=True)
     category = models.CharField(max_length=1024, null=True, blank=True)
+    submitUrl = models.CharField(max_length=1024, null=True, blank=True)
+    submitDetails = models.CharField(max_length=1024, null=True, blank=True)
 
 class Meta:
     unique_together = ('start_time', 'end_time')

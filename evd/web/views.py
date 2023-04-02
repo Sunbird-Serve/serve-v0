@@ -14732,8 +14732,8 @@ def getAllTaskDataForParams(request, selectedTab, filterParam, searchParam, due_
             query += " and taskType='OTHER' "
         if status is not None:
             if status == 'Open':
-                query += " and (taskStatus='open' or taskStatus='WIP') "
-            elif status == 'Resolved' or status == 'Closed':
+                query += " and (taskStatus='open' or taskStatus='WIP' or taskStatus='Submit') "
+            elif status == 'Resolved' or status == 'Closed' or status == 'Submit':
                 query += " and taskStatus='" + status + "' "
         else:
             if filterParam:
@@ -14858,6 +14858,20 @@ def updateTask(request):
         taskUpdatedDate = datetime.datetime.now()
         dueDate = datetime.datetime.strptime(dd, "%d-%m-%Y").date()
         category = request.POST.get('categoryId', '')
+        projDetails = request.POST.get('projDetails')
+        uploadedUrl=''
+
+        if task_type and task_type == 'OTHER':
+            uploaded_file = request.FILES['attachment']
+            fs = FileSystemStorage(location='/var/www/serve-beta/evd/tempfiles')
+            filename = fs.save(uploaded_file.name, uploaded_file)
+        
+            cloudFolderNameSubmit = "user_documents/task_submited_documents"
+            filePathToBeuploaded = '/var/www/serve-beta/evd/tempfiles' + "/" + filename
+            permissionType = docStorageService.kSTORAGE_SUPPORTED_PERMISSION_PUBLIC
+            uploadedUrl = docStorageService.uploadDocument(cloudFolderNameSubmit, filePathToBeuploaded, filename,permissionType)
+
+        print(projDetails)
         if not request.user.is_superuser:
             task_type = request.POST.get('task_type');
         dateJoined = None
@@ -14875,7 +14889,7 @@ def updateTask(request):
                                                   taskStatus=taskStatus, performedOn_userId='',
                                                   taskUpdatedDate=taskUpdatedDate, user_date_joined=dateJoined,
                                                   performedOn_name='', taskType=task_type,
-                                                  task_other_status=task_other_status, category=category)
+                                                  task_other_status=task_other_status, category=category, submitUrl=uploadedUrl, submitDetails=projDetails)
         else:
             Task.objects.filter(id=taskId).update(comment=comment, subject=subject, assignedTo=assignedTo,
                                                   dueDate=dueDate, priority=priority,

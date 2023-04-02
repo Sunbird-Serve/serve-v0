@@ -183,7 +183,7 @@ color: #23527c; !important;
                         </div>
                     {% endif %}
 
-                                <form action="/updateTask/" id="formId" method="post" onsubmit="return validateMyForm();">
+                                <form action="/updateTask/" id="formId" method="post" onsubmit="return validateMyForm();" enctype="multipart/form-data">
                                     {% csrf_token %}
                                             <input type="hidden"  value="{{task.id}}" name="taskId" id="tsk_id" />
                                             <input type="hidden"  value="{{message}}" name="message" />
@@ -258,6 +258,17 @@ color: #23527c; !important;
                             </div>
                             <div class="row rowCss">
                                 <div class="adjoined-bottom col-xs-12 col-sm-12 col-md-12">
+                                    {% if task.taskType == "OTHER" %}
+                                    {% if task.reminderUrl != null %}
+                                        <label>Project Details: <a href="{{task.reminderUrl}}">&nbsp;&nbsp;Document Link</a></label>
+                                    {% else %}
+                                        <label>Project Details: <a href="{{task.reminderUrl}}">&nbsp;&nbsp;No Document Available</a></label>
+                                    {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row rowCss">
+                                <div class="adjoined-bottom col-xs-12 col-sm-12 col-md-12">
                                     <label>Comments :</label>
                                       <input type="hidden" name="" id="editor2" />
                                      <textarea name="editor1">
@@ -270,6 +281,40 @@ color: #23527c; !important;
                                 </div>
                             </div>
                             <div class="row rowCss"><div class="col-md-2 col-sm-6 col-xs-12"></div></div>
+        
+                            {% if task.taskType == "OTHER" %}
+                            {% if task.assignedTo != ''  %}
+                            <div class="row rowCss">
+                                   <div class="col-md-2 col-sm-6 col-xs-12">
+                                    <div class="input-group">
+                                           <div class="input-group-addon"><i class="fa fa-bars"></i></div>
+                                              <label class="input-group-addon" >Volunteer's Section</label>
+                                       </div>
+                                </div>
+                            </div>
+                            {% if task.submitUrl == null %}
+                            <div class="row rowCss">
+                                <div class="adjoined-bottom col-xs-12 col-sm-12 col-md-12">
+                                    <label>Submit file (Project Submission File if any):</label>
+                                    <input type="file" id="attachment" name="attachment">
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="row rowCss">
+                                <div class="adjoined-bottom col-xs-12 col-sm-12 col-md-12">
+                                    <label>Submited file : <a href="{{task.submitUrl}}">&nbsp;&nbsp;Document Link</a></label>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="row rowCss">
+                                <div class="adjoined-bottom col-xs-12 col-sm-12 col-md-12">
+                                    <label>Project Details (Provide details of the submitted work):</label>
+                                      <input type="text" value="{{task.submitDetails}}" name="projDetails" id="projDetails" />
+                                </div>
+                            </div>
+                            <div class="row rowCss"><div class="col-md-2 col-sm-6 col-xs-12"></div></div>
+                            {% endif %}
+                            {% endif %}
                             <div class="row rowCss">
                                    <div class="col-md-2 col-sm-6 col-xs-12">
                                     <div class="input-group">
@@ -285,6 +330,7 @@ color: #23527c; !important;
                                     <select id="status_id" name="statusId" class="form-control" value="{{task.taskStatus}}" required="required" >
                                         <option value="Open" >Open</option>
                                         <option value="WIP" >WIP</option>
+                                        <option value="Submit" >Submit</option>
                                         <option value="Closed" >Closed</option>
                                         <option value="Resolved" >Resolved</option>
                                          
@@ -364,6 +410,7 @@ $(document).ready(function(){
             $("#task_type").val(task_type_value);
         }
         var vol_co_ordinator_role = $("#vol_co_ordinator_role_id").val();
+        $("#editor1").attr('readonly','readonly');
       if (vol_co_ordinator_role == 'True'){
           $("#prfm_text").attr("disabled","disabled");
           $("#category_id").attr("disabled","disabled");
