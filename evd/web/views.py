@@ -17517,7 +17517,8 @@ def approve_offering(request):
         
         dict_cur.close()
         db.close()
-    otherTasks = Task.objects.filter(Q(taskType='OTHER') & Q(task_other_status='not_approved'))
+    otherTasks = Task.objects.filter(Q(taskType='OTHER') & Q(Q(task_other_status='not_approved') | Q(task_other_status='pre_approved') | Q(task_other_status='nominated')))
+    
     print 'otherTasks.taskfor', otherTasks
     message = request.GET.get('message', '')
     return render_response(request, "approve_offering.html",
@@ -17537,7 +17538,31 @@ def updateOfferingOrOthersStatus(request):
         if user:
             if demand_page and demand_page is not None:
                 if task_id and task_id is not None:
-                    task_demand = Task.objects.filter(id=task_id).update(task_other_status='not_approved',
+                    task = Task.objects.get(pk=task_id)
+                    print(task.taskFor)
+                    if task.taskFor:
+                        try:
+                            
+                            # Get the original task object
+                            original_task = Task.objects.get(id=task_id)
+
+                            # Convert the original task object to a dictionary
+                            original_task_dict = model_to_dict(original_task)
+
+                            # Update the taskFor value in the dictionary
+                            original_task_dict['taskFor'] = user.username
+                            original_task_dict['task_other_status'] = 'nominated'
+                            # Remove the ID field from the dictionary
+                            original_task_dict.pop('id', None)
+                             # Create a new task object with the updated dictionary
+                            new_task = Task.objects.create(**original_task_dict)
+
+                        except Exception as e:
+                            print("TaskCreation POST Exception  e", e)
+                            traceback.print_exc()
+
+                    
+                    task_demand = Task.objects.filter(id=task_id).update(task_other_status='pre_approved',
                                                                          taskFor=user.username, assignedTo='')
                     if task_demand == 1:
                         message = 'Your request successfully submitted, someone will be reaching to you shortly via email.'
@@ -17584,6 +17609,8 @@ def updateOfferingOrOthersStatus(request):
                 task_id = request.GET.get('task_id')
                 if task_id:
                     task = Task.objects.get(pk=task_id)
+
+                    
                     check_task_update = Task.objects.filter(id=task_id).update(task_other_status='approved',
                                                                                assignedTo=task.taskFor)
                     if check_task_update == 1:
@@ -17612,8 +17639,13 @@ def updateOfferingOrOthersStatus(request):
                     status = 'failure'
             elif flag == 'reject':
                 task_id = request.GET.get('task_id')
+                check_task_update = 0;
                 if task_id:
-                    check_task_update = Task.objects.filter(id=task_id).update(task_other_status='pending')
+                    task = Task.objects.get(pk=task_id)
+                    if task.task_other_status == 'nominated':
+                        Task.objects.filter(id=task_id).delete()
+                    else:
+                        check_task_update = Task.objects.filter(id=task_id).update(task_other_status='pending')
                     if check_task_update == 1:
                         task = Task.objects.get(pk=task_id)
                         try:

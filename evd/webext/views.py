@@ -11129,8 +11129,16 @@ def demandListForOtherSkills(request):
     
     sel_cats = request.POST.get('sel_cats','')
     
-    other_task_opportunity = Task.objects.filter(Q(taskType='OTHER') & Q(task_other_status='pending') & (Q(taskStatus='Open') | Q(taskStatus='WIP')) & ~Q(category='')).exclude(category=None)
+    #other_task_opportunity = Task.objects.filter(Q(taskType='OTHER') & Q(task_other_status='pending') & (Q(taskStatus='Open') | Q(taskStatus='WIP')) & ~Q(category='')).exclude(category=None)
     
+    other_task_opportunity = Task.objects.filter(
+    Q(taskType='OTHER') &
+    Q(Q(task_other_status='pending') | Q(task_other_status='pre_approved')) &
+    (Q(taskStatus='Open') | Q(taskStatus='WIP')) &
+    ~Q(category='')).exclude(category=None)
+
+
+
     if category_skill!='None':
         other_task_opportunity = other_task_opportunity.filter(category=category_skill)
 
@@ -11168,7 +11176,7 @@ def updateOfferingOrOthersStatus(request):
         if user:
             if demand_page and demand_page is not None:
                 if task_id and task_id is not None:
-                    task_demand = Task.objects.filter(id=task_id).update(task_other_status='not_approved',
+                    task_demand = Task.objects.filter(id=task_id).update(task_other_status='pre_approved',
                                                                          taskFor=user.username, assignedTo='')
                     if task_demand == 1:
                         message = 'Your request successfully submitted, someone will be reaching to you shortly via email.'
@@ -11215,7 +11223,7 @@ def updateOfferingOrOthersStatus(request):
                 task_id = request.GET.get('task_id')
                 if task_id:
                     task = Task.objects.get(pk=task_id)
-                    check_task_update = Task.objects.filter(id=task_id).update(task_other_status='approved',
+                    check_task_update = Task.objects.filter(id=task_id).update(task_other_status='pre_approved',
                                                                                assignedTo='')
                     if check_task_update == 1:
                         task = Task.objects.get(pk=task_id)
