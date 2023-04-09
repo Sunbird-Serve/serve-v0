@@ -2183,7 +2183,7 @@ def upload_task(request):
                                 performed_on_userId = ''
                         else:
                             performed_on_userId =''
-                        if subject and dueDate and (priority == 'Normal' or priority == 'High' or priority == 'Urgent' or priority == 'Immediate') and (task_type == 'MANUAL'or task_type == 'SYSTEM' or (task_type == 'OTHER' and (category == 'IT' or category == 'Marketing' or category == 'Admin' or category == 'Reporting'))) and (taskStatus == 'WIP' or taskStatus == 'Open' or taskStatus == 'Resolved' or taskStatus == 'Closed'):
+                        if subject and dueDate and (priority == 'Normal' or priority == 'High' or priority == 'Urgent' or priority == 'Immediate') and (task_type == 'MANUAL'or task_type == 'SYSTEM' or (task_type == 'OTHER' and (category == 'IT' or category == 'Marketing' or category == 'Admin' or category == 'Reporting' or category == 'Training'))) and (taskStatus == 'WIP' or taskStatus == 'Open' or taskStatus == 'Resolved' or taskStatus == 'Closed'):
                             if task_type == 'OTHER':
                                 task = Task(comment = comment,subject = subject,assignedTo = '',dueDate = dueDate,priority = priority,taskCreatedBy_userId = request.user,taskStatus = taskStatus,performedOn_userId = '', taskCreatedDate = curr_time, user_date_joined = user_date_joined,performedOn_name = '',taskType = task_type,task_other_status = 'Pending',category = category)
                                 task.save()
@@ -11125,11 +11125,15 @@ def demandListForOtherSkills(request):
     sel_days = json.loads(request.POST.get('sel_days',''))
     pref_category = json.loads(request.POST.get('pref_category',''))
     category_skill = request.POST.get('category_skill')
-    print("Hello")
-    print(request.POST)
+    category = request.GET.get('category')
+    
     sel_cats = request.POST.get('sel_cats','')
-
+    
     other_task_opportunity = Task.objects.filter(Q(taskType='OTHER') & Q(task_other_status='pending') & (Q(taskStatus='Open') | Q(taskStatus='WIP')) & ~Q(category='')).exclude(category=None)
+    
+    if category_skill!='None':
+        other_task_opportunity = other_task_opportunity.filter(category=category_skill)
+
     if pref_category and len(pref_category)>0:
         other_task_opportunity = other_task_opportunity.filter(category__in=pref_category)
     elif sel_cats and sel_cats!='All':
@@ -11144,6 +11148,7 @@ def demandListForOtherSkills(request):
         other_skill_list.append(data)
     rel_data = {}
     rel_data['data']   =  other_skill_list
+
     #return render(request, 'demand_content.html', {'demand': list(other_skill_list)})
     return HttpResponse(simplejson.dumps(rel_data), mimetype='application/json')
 
@@ -11429,6 +11434,10 @@ class OtherSkill(View):
                 }
             subject = request.GET.get('subject', '')
 
+            category = self.request.GET.get('category', None)
+            print("inside otherskill")
+            print(category)
+
             #if request.user.is_authenticated() and not request.user.is_superuser and not has_pref_role(request.user.userprofile, "Content Admin"):
             #    contents = Task.objects.filter(taskType='OTHER', topic__course_id__language__name__in=known_languages).values('id', 'topic__id', 'topic__title', 'topic__course_id__board_name',
             #                                                                                                                    'topic__course_id__subject', 'topic__course_id__grade', 'topic__course_id__language__name', 'subtopic__name', 'workstream__name', 'workstream__id')
@@ -11449,8 +11458,11 @@ class OtherSkill(View):
             #        previous_booking['slots'] = list(booked_demadslot) 
 
             other_task_opportunity = Task.objects.filter(Q(taskType='OTHER') & (Q(taskStatus='Open') | Q(taskStatus='WIP')) & ~Q(category='')).exclude(category=None)
-            
+            if category!=None:
+                other_task_opportunity = other_task_opportunity.filter(category=category)
             other_skill_list = []
+            print("check all")
+            print(other_task_opportunity)
             for other in other_task_opportunity:
                 #subject = ((other.subject)[:65] + '<span style="color:black;cursor:pointer">...</span>') if len(other.subject)>65 else other.subject
                 data = {'id':other.id,'category':other.category,'dueDate':str(other.dueDate),'subject':other.subject,'comment':other.comment}
@@ -11458,7 +11470,7 @@ class OtherSkill(View):
             rel_data = {}
             rel_data['data']   =  other_skill_list
             print(other_skill_list)
-            return render(request, 'demand_otherskill_new.html', {'pref_subject': subject, 'user_details': user_details, 'skill_data': list(other_skill_list)})
+            return render(request, 'demand_otherskill_new.html', {'pref_subject': subject,'category':category, 'user_details': user_details, 'skill_data': list(other_skill_list)})
 
         except Exception as e:
             logService.logException("OtherSkill GET Exception error", e.message)

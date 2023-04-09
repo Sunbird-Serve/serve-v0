@@ -80,7 +80,9 @@ var refresh_data  =  function()
 			/*window.sr = ScrollReveal();
 			sr.reveal('.thumbnail');*/
             var fil_data = get_filter_data();
-			var authenticatedId=localStorage.getItem("user");
+			var category=localStorage.getItem("category");
+			
+			
             loading();
             var csrftoken = getCookie('csrftoken');
             if( (fil_data[0]).length < 2 ){
@@ -92,10 +94,13 @@ var refresh_data  =  function()
             $.post('/v2/demandListForOtherSkills',{'csrfmiddlewaretoken':csrftoken,
 													'sel_days':JSON.stringify(fil_data[0]),
 													'pref_category':JSON.stringify(fil_data[1]),
-													'sel_cats':window.sel_category, 'category_skill':'REPORTING',},function(resp){
+													'sel_cats':window.sel_category, 'category_skill':category,},function(resp){
             resp9=resp;
             var demand_list_data = '';
-			console.log("printed data");
+			//const authenticatedId= $("#authenticatedId").val();
+			var authenticatedId=localStorage.getItem("user");
+			
+			
             /*var colors = ['rgb(66, 173, 111)', '#df4a43', '#1799dd','#ea964c'];*/
             var colors = ['rgba(9, 87, 165, 0.8)', 'rgba(30, 148, 82, 0.9)',  'rgba(218,93,44,0.9)'];
             var j = 0;
@@ -124,6 +129,8 @@ var refresh_data  =  function()
 							demand_list_data += '<div class="thumbnail" ><div class = "heading_div" style="background-color:'+colors[j]+';"><h6 class="heading"><b>IT</h6></b></div></br>';
 						}else if (jsonObjs[i]['category']== "REPORTING"){
 							demand_list_data += '<div class="thumbnail" ><div class = "heading_div" style="background-color:'+colors[j]+';"><h6 class="heading"><b>Reporting</b></h6></div></br>';
+						}else if (jsonObjs[i]['category']== "TRAINING"){
+							demand_list_data += '<div class="thumbnail" ><div class = "heading_div" style="background-color:'+colors[j]+';"><h6 class="heading"><b>Training</b></h6></div></br>';
 						}else{
 							demand_list_data += '<div class="thumbnail" ><div class = "heading_div" style="background-color:'+colors[j]+';"><h6 class="heading">'+jsonObjs[i]['category']+'</h6></div></br>';
 						}

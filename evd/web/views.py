@@ -14779,6 +14779,8 @@ def saveTask(request):
         assignedTo = request.POST.get('assign_name_id', '')
         performedOn_name = request.POST.get('prfm_name', '')
         category = request.POST.get('categoryId', '')
+        state=request.POST.get('state', '')
+        city=request.POST.get('city','')
         #attachment = request.POST.get('attachment', '')
         taskCreatedBy_userId = request.user.username
         taskCreatedDate = datetime.datetime.now()
@@ -14786,19 +14788,30 @@ def saveTask(request):
         date_joined = None
         todayDate = datetime.datetime.today()
         todayDay = calendar.day_name[todayDate.weekday()]
-        attachment = request.POST.get('attachment')
-        
-        
-        #upload_file = request.FILES['attachment']
 
-        uploaded_file = request.FILES['attachment']
-        fs = FileSystemStorage(location='/var/www/serve-beta/evd/tempfiles')
-        filename = fs.save(uploaded_file.name, uploaded_file)
+        if 'attachment' in request.POST:
+            attachment = request.POST['attachment']
+            # process the attachment file here
+        else:
+            # handle the case where the attachment key is not found
+            attachment = None # or any other default value or error handling code
+
+        #attachment = request.POST.get('attachment')
+        print("State Name")
+        print(state)
+        print(type(city))
+        #upload_file = request.FILES['attachment']
+        if(attachment != ''):
+            uploaded_file = request.FILES['attachment']
+            fs = FileSystemStorage(location='/var/www/serve-beta/evd/tempfiles')
+            filename = fs.save(uploaded_file.name, uploaded_file)
         
-        cloudFolderName = "user_documents/task_documents"
-        filePathToBeuploaded = '/var/www/serve-beta/evd/tempfiles' + "/" + filename
-        permissionType = docStorageService.kSTORAGE_SUPPORTED_PERMISSION_PUBLIC
-        uploadedUrl = docStorageService.uploadDocument(cloudFolderName, filePathToBeuploaded, filename,permissionType)
+            cloudFolderName = "user_documents/task_documents"
+            filePathToBeuploaded = '/var/www/serve-beta/evd/tempfiles' + "/" + filename
+            permissionType = docStorageService.kSTORAGE_SUPPORTED_PERMISSION_PUBLIC
+            uploadedUrl = docStorageService.uploadDocument(cloudFolderName, filePathToBeuploaded, filename,permissionType)
+        else:
+            uploadedUrl=''
         
         if userId:
             user = User.objects.get(id=userId)
@@ -14810,7 +14823,7 @@ def saveTask(request):
             task = Task(comment=comment, subject=subject, assignedTo='', dueDate=dueDate, priority=priority,
                         taskCreatedBy_userId=taskCreatedBy_userId, taskStatus=taskStatus, performedOn_userId='',
                         taskCreatedDate=taskCreatedDate, user_date_joined=date_joined, performedOn_name='',
-                        taskType=task_type, task_other_status=task_other_status, category=category, reminderUrl=uploadedUrl)
+                        taskType=task_type, task_other_status=task_other_status, category=category, reminderUrl=uploadedUrl, state=state, city=city)
         else:
             task = Task(comment=comment, subject=subject, assignedTo=assignedTo, dueDate=dueDate, priority=priority,
                         taskCreatedBy_userId=taskCreatedBy_userId, taskStatus=taskStatus, performedOn_userId=userId,
@@ -14853,6 +14866,8 @@ def updateTask(request):
         assignedTo = request.POST.get('assign_name_id', '')
         comment = request.POST.get('editor1', '')
         tabName = request.POST.get('tabName')
+        state = request.POST.get('state')
+        city = request.POST.get('city')
         task_type = request.POST.get('type');
         taskUpdatedBy_userId = request.user.username
         taskUpdatedDate = datetime.datetime.now()
@@ -14861,15 +14876,27 @@ def updateTask(request):
         projDetails = request.POST.get('projDetails')
         uploadedUrl=''
 
+        if 'attachment' in request.POST:
+            attachment = request.POST['attachment']
+            # process the attachment file here
+        else:
+            # handle the case where the attachment key is not found
+            attachment = None # or any other default value or error handling code
+
+        print("Edit attachemnt")
+        print(attachment)  
         if task_type and task_type == 'OTHER':
-            uploaded_file = request.FILES['attachment']
-            fs = FileSystemStorage(location='/var/www/serve-beta/evd/tempfiles')
-            filename = fs.save(uploaded_file.name, uploaded_file)
+            if(attachment != '' and attachment!= None):
+                uploaded_file = request.FILES['attachment']
+                fs = FileSystemStorage(location='/var/www/serve-beta/evd/tempfiles')
+                filename = fs.save(uploaded_file.name, uploaded_file)
         
-            cloudFolderNameSubmit = "user_documents/task_submited_documents"
-            filePathToBeuploaded = '/var/www/serve-beta/evd/tempfiles' + "/" + filename
-            permissionType = docStorageService.kSTORAGE_SUPPORTED_PERMISSION_PUBLIC
-            uploadedUrl = docStorageService.uploadDocument(cloudFolderNameSubmit, filePathToBeuploaded, filename,permissionType)
+                cloudFolderNameSubmit = "user_documents/task_submited_documents"
+                filePathToBeuploaded = '/var/www/serve-beta/evd/tempfiles' + "/" + filename
+                permissionType = docStorageService.kSTORAGE_SUPPORTED_PERMISSION_PUBLIC
+                uploadedUrl = docStorageService.uploadDocument(cloudFolderNameSubmit, filePathToBeuploaded, filename,permissionType)
+            else:
+                uploadedUrl=''
 
         print(projDetails)
         if not request.user.is_superuser:
@@ -14889,7 +14916,7 @@ def updateTask(request):
                                                   taskStatus=taskStatus, performedOn_userId='',
                                                   taskUpdatedDate=taskUpdatedDate, user_date_joined=dateJoined,
                                                   performedOn_name='', taskType=task_type,
-                                                  task_other_status=task_other_status, category=category, submitUrl=uploadedUrl, submitDetails=projDetails)
+                                                  task_other_status=task_other_status, category=category, submitUrl=uploadedUrl, submitDetails=projDetails, state=state, city=city)
         else:
             Task.objects.filter(id=taskId).update(comment=comment, subject=subject, assignedTo=assignedTo,
                                                   dueDate=dueDate, priority=priority,

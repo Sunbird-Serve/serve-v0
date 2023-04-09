@@ -99,7 +99,7 @@ word-wrap: break-word;
        </div>
        <div class='row'>
         <div class='col-xs-12 col-sm-6 col-md-6 col-lg-6 pull-right'>
-                <a class='btn btn-danger' style='margin-bottom:25px;float:right;' href='/v2/demand/'> Show All Opportunities </a>
+                <a class='btn btn-danger' style='margin-bottom:25px;float:right;' href='/v2/demand/otherskill'> Show All Opportunities </a>
             </div>
           <div class='col-sm-offset-10 col-sm-2'>
               <div class='btn btn-warning myevd' style='margin-bottom:5px;float:center;'><a href='/myevidyaloka/'><i class="fa fa-home fa-lg" aria-hidden="true"></i> &nbsp Go Back to My eVidyaloka</a></div>
@@ -122,6 +122,7 @@ word-wrap: break-word;
                <input type="hidden" value= "{{category_list}}" id="category_listId"/>
                <input type="hidden" value= "{{pref_category}}" id="pref_categoryId"/>
                <input type="hidden" value="{{ request.GET.category }}" id="category_skill">
+               <input type="hidden" value="{{ category }}" id="category">
                <!--<h4> Select Due Date</h4>
                <hr style='margin:0px !important'>
                 <div class="col-md-12 input-group fil_opts">
@@ -288,6 +289,7 @@ word-wrap: break-word;
    
 
    localStorage.setItem("user", $('#userAuth').val());
+   localStorage.setItem("category", $('#category').val());
    
    </script>
      <script type="text/javascript" src="/static/js/underscore-min.js"></script>

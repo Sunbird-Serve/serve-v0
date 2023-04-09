@@ -113,8 +113,36 @@ color: #23527c; !important;
                                          <option value="ADMIN" >Admin</option>
                                          <option value="IT" >IT</option>
                                          <option value="REPORTING" >Reporting</option>
+                                         <option value="TRAINING" >Training</option>
                                     </select>
                                 </div> 
+                            </div>
+                            
+                            <div class="row rowCss" >
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    <label><span style="color: red;">*</span>Skills</label>
+                                    <select id='skillsId' name="skillsName" class="form-control">
+                                        <option value="{{task.subject}}">{{task.skills}}</option>
+                                        <option value="Task 1">Task 1</option>
+                                        <option value="Task 2">Task 2</option>
+                                        <option value="Task 3">Task 3</option>
+                                        <!-- Add more options as needed -->
+                                      </select>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    <label><span style="color: red;">*</span>State</label>
+                                    <select class="states form-control" id='stateId' name="state" >
+                                        <option value="">Select a State</option>
+                                        <!-- Add more options as needed -->
+                                      </select>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    <label><span style="color: red;">*</span>City</label>
+                                    <select id='cityId' name="city" class="cities form-control">
+                                        <option value="">Select a City</option>
+                                        <!-- Add more options as needed -->
+                                      </select>
+                                </div>
                             </div>
                             <div class="row rowCss">
                                 <div class="adjoined-bottom col-xs-12 col-sm-12 col-md-12">
@@ -310,4 +338,56 @@ $(document).ready(function(){
 });
 </script>
 
+<script>
+
+    var current_selected_country_id = 101;
+    var current_selected_state_id, current_selected_city_id;
+    
+    $(document).ready(function() {
+    
+        $(".inner.clearfix").css("width","85%");
+    
+        $.get("/v2/get_country_state_city/?country=" + 101, function(response) {
+                    console.log(current_selected_country_id);
+                    for ( var i = 0; i < response['data'].length; ++i ) {
+                        var option = $('<option />');
+                        option.attr('value', response['data'][i]['state_name']).text(response['data'][i]['state_name']);
+                        option.attr('stateId', response['data'][i]['custom_state_id']);
+                        $('.states').append(option);
+                    }
+                    $(".states").prop("disabled",false);
+                    $(".states").prop("selectedIndex", 0);
+    
+                    if($('.states').children().length == 1){
+                        $('.states').append('<option val="others">Others</option>');
+                        $('.cities').append('<option val="others">Others</option>');
+                    }
+                });
+    
+    
+        $(".states").on("change", function(ev) {
+            var stateId = $("option:selected", this).attr('stateid');
+            $(".cities option:gt(0)").remove();
+            current_selected_state_id = -1;
+            if ( stateId != '' ) {
+                current_selected_state_id = stateId;
+                $.get("/v2/get_country_state_city/?country=" + current_selected_country_id + "&state=" + stateId, function(response) {
+                    for ( var i = 0; i < response['data'].length; ++i ) {
+                        var option = $('<option />');
+                        option.attr('value', response['data'][i]['city_name']).text(response['data'][i]['city_name']);
+                        option.attr('cityId', response['data'][i]['custom_city_id']);
+                        $('.cities').append(option);
+                    }
+                    $(".cities").prop("disabled",false);
+                    $(".cities").prop("selectedIndex", 0);
+    
+                    if($('.cities').children().length <= 1) {
+                        $('.cities').append('<option val="others">Others</option>');
+                    }
+                });
+            }
+        });
+    
+    });
+    </script>
 {% endblock %} {% block scripts %} {% endblock %}

@@ -732,10 +732,10 @@ function loadTableUsingData(data, selectedTab){
 								tbody += '<td><a href="/activities?user_id='+jsonObj['performedOn_userId']+'&set_flag=false"><u>'+jsonObj['performedOn_name']+'</u></a></td>';
 							}else{
 									tbody += '<td >'+category_formatting(jsonObj['category'])+'</td>';
-									if(jsonObj['reminderUrl']!=null){
+									if(jsonObj['reminderUrl']!=null && jsonObj['reminderUrl']!=''  ){
 										tbody += '<td >'+'<a href="'+jsonObj['reminderUrl']+'">&nbsp;&nbsp;Document Link</a></td>';
 									}else{
-										tbody += '<td >No Document Uploaded</td>';
+										tbody += '<td >Document Not Uploaded</td>';
 									}
 			
 									
@@ -994,6 +994,8 @@ function category_formatting(category){
 		category = 'Reporting'
 	}else if(category == 'ADMIN'){
 		category = 'Admin';
+	}else if(category == 'TRAINING'){
+		category = 'TRAINING';
 	}
 	return category
 }

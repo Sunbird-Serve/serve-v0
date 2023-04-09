@@ -195,7 +195,9 @@
                     icon = '<i class="fa-solid fa-puzzle-piece fa-4x"></i>';
                 } else if (category.includes('IT')) {
                     icon = '<i class="fa-solid fa-microchip fa-4x"></i>';
-                } 
+                } else if (category.includes('TRAINING')) {
+                    icon = '<i class="fa-solid fa-puzzle-piece fa-4x"></i>';
+                }
                 let link = "'/v2/demand/otherskill?category=" + category + "'";
 
                 div.innerHTML += '<div onclick="window.location.href=' + link + '" class="w-full bg-white hover:bg-orange-400 hover:scale-105 transition duration-150 ease-out hover:ease-in rounded-lg p-8 flex flex-col justify-center items-center cursor-pointer">\
