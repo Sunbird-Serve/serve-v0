@@ -120,7 +120,7 @@ var refresh_data  =  function()
             					}
             				}
             			}
-            			demand_list_data += '">';
+            			demand_list_data += '" style="width:250px; height: auto;">';
             			if(jsonObjs[i]['category']== "MARKETING"){
             				demand_list_data += '<div class="thumbnail" ><div class = "heading_div" style="background-color:'+colors[j]+';"><h6 class="heading"><b>Marketing</b></h6></div></br>';
 						}else if(jsonObjs[i]['category']== "ADMIN"){
@@ -134,7 +134,7 @@ var refresh_data  =  function()
 						}else{
 							demand_list_data += '<div class="thumbnail" ><div class = "heading_div" style="background-color:'+colors[j]+';"><h6 class="heading">'+jsonObjs[i]['category']+'</h6></div></br>';
 						}
-            			demand_list_data += '<div class="caption">';
+            			demand_list_data += '<div class="caption" style="width: 200px; height: 350px;">';
             			if (jsonObjs[i]['subject']!=null && jsonObjs[i]['subject']!='' && jsonObjs[i]['subject']!='undefined'){
             				var subject = jsonObjs[i]['subject'];
             				subject = subject.replace("<", "&lt;");
@@ -146,7 +146,7 @@ var refresh_data  =  function()
                           	 demand_list_data += '<p class="subject_styling" style="color:'+colors[j]+';">'+subject+'</p>';
                            	 }
             			}
-            			 if (jsonObjs[i]['comment']!=null && jsonObjs[i]['comment']!='' && jsonObjs[i]['comment']!='undefined'){
+            			/* if (jsonObjs[i]['comment']!=null && jsonObjs[i]['comment']!='' && jsonObjs[i]['comment']!='undefined'){
             				 var comment = jsonObjs[i]['comment'];
             				 comment = comment.replace("<", "&lt;");
      						 comment = comment.replace(">", "&gt;");
@@ -157,15 +157,31 @@ var refresh_data  =  function()
             			 }
             			 else{
             				 demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';">No comment available.</p>';
-            			 }
+            			 } */
+						 if (jsonObjs[i]['skills']!=null && jsonObjs[i]['skills']!='' && jsonObjs[i]['skills']!='undefined'){
+							var skills = jsonObjs[i]['skills'];
+							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';"><b>Skills:</b> '+skills+'</p>';
+						}else{
+							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';"><b>Skills:</b> NA</p>';
+						}
+						 if (jsonObjs[i]['priority']!=null && jsonObjs[i]['priority']!='' && jsonObjs[i]['priority']!='undefined'){
+							var priority = jsonObjs[i]['priority'];
+							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';"><b>Priority:</b> '+priority+'</p>';
+						}
+						if (jsonObjs[i]['dueDate']!=null && jsonObjs[i]['dueDate']!='' && jsonObjs[i]['dueDate']!='undefined'){
+							const datetimeStr = jsonObjs[i]['dueDate'];
+							const dueDate = new Date(datetimeStr).toISOString().substr(0, 10);
+							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';"><b>Due date:</b> '+dueDate+'</p>';
+						}
+					
 						 if (jsonObjs[i]['reminderUrl']!=null && jsonObjs[i]['reminderUrl']!='' && jsonObjs[i]['reminderUrl']!='undefined'){
 							var docUrl = jsonObjs[i]['reminderUrl'];
 							docUrl = docUrl.replace("<", "&lt;");
     						docUrl = docUrl.replace(">", "&gt;");
-							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:12px;color:'+colors[j]+';"><a href="'+docUrl+'">&nbsp;&nbsp;Document Link</a></p>';
+							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';"><a href="'+docUrl+'">&nbsp;&nbsp;Document Link</a></p>';
 						}
 						else{
-							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:12px;color:'+colors[j]+';">No document available.</p>';
+							demand_list_data += '<p style="padding-top: 5px;padding-bottom: 5px;height:20px;color:'+colors[j]+';">No document available.</p>';
 						}
             			 if(authenticatedId == "True"){
             				 demand_list_data += '<div style="text-align:center;margin-top: -10px;"><a class="btn btn-lg btn-primary scroll " onclick="updateOtherOpportunity('+jsonObjs[i]['id']+');" role="button" style=" cursor: pointer; text-decoration:none;font-size:14px;background-color: darkturquoise;">I Am Interested</a></div>';

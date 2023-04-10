@@ -11150,15 +11150,22 @@ def demandListForOtherSkills(request):
         select_date = datetime.datetime.strptime(sel_days, "%m/%d/%Y").date()
         other_task_opportunity = other_task_opportunity.filter(dueDate=select_date)
     other_skill_list = []
-    for other in other_task_opportunity:
-        #subject = ((other.subject)[:65] + '<span style="color:black;cursor:pointer">...</span>') if len(other.subject)>65 else other.subject
-        data = {'id':other.id,'category':other.category,'dueDate':str(other.dueDate),'subject':other.subject,'comment':other.comment,'reminderUrl':other.reminderUrl}
-        other_skill_list.append(data)
-    rel_data = {}
-    rel_data['data']   =  other_skill_list
+    print("other skills")
+    try:
+        for other in other_task_opportunity:
+            #subject = ((other.subject)[:65] + '<span style="color:black;cursor:pointer">...</span>') if len(other.subject)>65 else other.subject
+            data = {'id':other.id,'category':other.category,'dueDate':str(other.dueDate),'subject':other.subject,'comment':other.comment,'reminderUrl':other.reminderUrl,'priority':other.priority, 'skills':other.skills}
+            other_skill_list.append(data)
+        print(other_skill_list)
+        rel_data = {}
+        rel_data['data']   =  other_skill_list
 
-    #return render(request, 'demand_content.html', {'demand': list(other_skill_list)})
-    return HttpResponse(simplejson.dumps(rel_data), mimetype='application/json')
+        #return render(request, 'demand_content.html', {'demand': list(other_skill_list)})
+        return HttpResponse(simplejson.dumps(rel_data), mimetype='application/json')
+
+    except Exception as e:
+        logService.logException("SkillList GET Exception error", e.message)
+        return genUtility.error_404(request, e.message)
 
 
 

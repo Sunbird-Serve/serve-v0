@@ -14779,6 +14779,7 @@ def saveTask(request):
         assignedTo = request.POST.get('assign_name_id', '')
         performedOn_name = request.POST.get('prfm_name', '')
         category = request.POST.get('categoryId', '')
+        skillName = request.POST.get('skillsName', '')
         state=request.POST.get('state', '')
         city=request.POST.get('city','')
         #attachment = request.POST.get('attachment', '')
@@ -14797,9 +14798,7 @@ def saveTask(request):
             attachment = None # or any other default value or error handling code
 
         #attachment = request.POST.get('attachment')
-        print("State Name")
-        print(state)
-        print(type(city))
+    
         #upload_file = request.FILES['attachment']
         if(attachment != ''):
             uploaded_file = request.FILES['attachment']
@@ -14823,7 +14822,7 @@ def saveTask(request):
             task = Task(comment=comment, subject=subject, assignedTo='', dueDate=dueDate, priority=priority,
                         taskCreatedBy_userId=taskCreatedBy_userId, taskStatus=taskStatus, performedOn_userId='',
                         taskCreatedDate=taskCreatedDate, user_date_joined=date_joined, performedOn_name='',
-                        taskType=task_type, task_other_status=task_other_status, category=category, reminderUrl=uploadedUrl, state=state, city=city)
+                        taskType=task_type, task_other_status=task_other_status, category=category, reminderUrl=uploadedUrl, state=state, city=city, skills=skillName)
         else:
             task = Task(comment=comment, subject=subject, assignedTo=assignedTo, dueDate=dueDate, priority=priority,
                         taskCreatedBy_userId=taskCreatedBy_userId, taskStatus=taskStatus, performedOn_userId=userId,
@@ -14868,6 +14867,7 @@ def updateTask(request):
         tabName = request.POST.get('tabName')
         state = request.POST.get('state')
         city = request.POST.get('city')
+        skillName = request.POST.get('skillName')
         task_type = request.POST.get('type');
         taskUpdatedBy_userId = request.user.username
         taskUpdatedDate = datetime.datetime.now()
@@ -14916,7 +14916,7 @@ def updateTask(request):
                                                   taskStatus=taskStatus, performedOn_userId='',
                                                   taskUpdatedDate=taskUpdatedDate, user_date_joined=dateJoined,
                                                   performedOn_name='', taskType=task_type,
-                                                  task_other_status=task_other_status, category=category, submitUrl=uploadedUrl, submitDetails=projDetails, state=state, city=city)
+                                                  task_other_status=task_other_status, category=category, submitUrl=uploadedUrl, submitDetails=projDetails, state=state, city=city, skills=skillName)
         else:
             Task.objects.filter(id=taskId).update(comment=comment, subject=subject, assignedTo=assignedTo,
                                                   dueDate=dueDate, priority=priority,

@@ -1083,6 +1083,7 @@ class Task(models.Model):
     submitDetails = models.CharField(max_length=1024, null=True, blank=True)
     state = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
+    skills = models.CharField(max_length=1024, null=True, blank=True)
 
 class Meta:
     unique_together = ('start_time', 'end_time')
