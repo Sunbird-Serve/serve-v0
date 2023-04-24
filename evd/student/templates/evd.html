@@ -1,0 +1,266 @@
+{% extends 'student_base.html' %}
+
+{% block body_container %}
+
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@3.10.5/dist/fullcalendar.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@3.10.5/dist/fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='https://cdn.jsdelivr.net/npm/moment@2/min/moment.min.js'></script>
+<!-- <script src='https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js'></script> -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@3.10.5/dist/fullcalendar.min.js'></script>
+
+
+<style>
+#calendar {
+  max-width: 800px;
+  border: 2px solid #bdbdbd;
+  margin-top: 20px;
+}
+.head-running{
+  /* padding: 10px 5px; */
+  color: #f15a22;
+  font-weight: bold;
+  font-size: 14px;
+
+}
+.running{
+  border-bottom: 1px solid #F3D6CB;
+  border-radius: 4px;
+
+}
+
+.calender-border{
+max-width:800px;
+border: 1px solid #bdbdbd;
+border-radius: 4px;
+padding-top:10px;
+margin-left: 90px;
+margin-top: 150px;
+}
+
+.note-box{
+width:800px;
+height: 400px;
+border: 1px solid #bdbdbd;
+border-radius: 4px;
+margin-left: 90px;
+margin-top: 10px;
+}
+</style>
+
+
+<div class="calender-border">
+<div style="padding-left:8px;">
+<h4><b>eVidyaloka {{student.center}}</b></h4>
+<h5>Student Name : {{student.name}}</h5>
+<h5>Medium : {{student.school_medium_lng}}</h5>
+</div>
+<div id="calendar"></div>
+</div>
+<span id="pleawait">Please Wait....</span>
+<div class="note-box">
+  <div class="running">
+    <h3 class="head-running">Running Courses</h3>
+  </div>       
+  <div class="assigned-offering">
+      <ul id="#runnning-courses" class="cycle">
+        <li>
+          <span>               
+            {{course.grade}}th {{course.subject}}, {{offerings.start_date}} to {{offerings.end_date}}
+          </span>
+          <br>        
+          <div>
+            <a href="/student/student_ask_doubt/" class="tag">Ask Doubts</a>
+            <!-- <a href="" data-toggle="modal" data-target="#myModal"class="tag">Duobt Model</a> -->
+            <a href="/student/list_studentdoubts/" class="tag">View Doubts</a>
+            <!-- <a href="/student/assignment_upload/" class="tag">Upload Assignments</a> -->
+          </div>
+        </li>
+      </ul>
+  </div>
+</div>
+</div>
+<!-- Event Modal -->
+<div class="modal fade" id="exampleModalToggle" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3>Hello {{student}}</h3>
+      </div>
+      <div class="modal-footer" id="linkhref">
+        <!-- <a class="btn btn-primary" id="alinkhref" href="#">Open second modal</a> -->
+        
+      </div>
+
+      </div>
+  </div>
+</div>
+<!-- Event Modal End -->
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <form
+          method="post"
+          action="/student/student_ask_doubt/"
+          enctype="multipart/form-data"
+        >
+          <h2>Ask Doubt</h2>
+          <div>
+            <span style="color: #ffa500"><strong>Student Name:</strong></span>
+          </div>
+          <div>
+            <span style="color: #ffa500"
+              ><strong>Planned Topics:</strong>
+            </span>
+            <select
+              id="topics"
+              class="form-control"
+              name="topics"
+              required
+            >
+              <option value="">---Select the Topic---</option>
+            </select>
+          </div>
+          <div>
+            <span style="color: orange"><strong>SubTopic :</strong> </span>
+            <select
+              id="subtopics"
+              class="form-control"
+              name="subtopics"
+            >
+              <option value="">---Select the Subtopic---</option>
+            </select>
+          </div>
+          <div class="h-12 w-96">
+            <label for="imgInp">Select Image(Only png, jpg):</label>
+            <input accept=".png, .jpg" type="file" id="imgInp" />
+          </div>
+          <div class="">
+            <label for="text">Doubt Text:</label>
+            <textarea
+              id="text"
+              class="form-control"
+              name="text"
+              placeholder="Doubt Text"
+              rows="2"
+              required
+            ></textarea>
+          </div>
+
+          <div
+            class="col-lg-12 col-md-12 col-sm-12"
+            style="padding-top: 16px; padding-bottom: 16px"
+          >
+            <button
+              type="submit"
+              class="btn btn-success"
+              onclick="postDoubt()"
+            >
+              Post Doubt
+            </button>
+          </div>
+        </form>
+        <div class="w-1/4 flex items-center justify-center my-4">
+          <img
+            class="w-96 h-96 bg-no-repeat bg-center"
+            id="blah"
+            src="#"
+            alt=""
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+$(document).ready(function () {
+ShowFullCalendar(1);
+});
+function ShowFullCalendar(id) {
+$('#calendar').fullCalendar({
+  defaultView: 'agendaFourDay',
+  minTime: "08:00:00",
+  maxTime: "20:00:00",
+  header: {
+    left: 'prev,next today',
+    center: 'title',
+    right: 'agendaDay,agendaFourDay'
+  },
+  views: {
+    agendaFourDay: {
+      type: 'agenda',
+      duration: { days: 7 },
+      buttonText: 'week'
+    }
+  },
+  events: function (start, end, timezone, callback) {
+      $.ajax({
+        url: "/student/student_calendar/",
+        data: {
+          start: $.fullCalendar.moment(start).format("YYYY-MM-DD"),
+          end: $.fullCalendar.moment(end).format("YYYY-MM-DD"),
+          id: 1,
+        },
+        success: function (doc) {
+          $("#pleawait").hide();
+          var events = [];
+          callback(doc);
+        },error(err) {
+          alert("Network error");
+        },
+      });
+    },
+    editable: true,
+    selectable: false,
+    selectHelper: false,
+    eventLimit: true,
+    timeFormat: "H(:mm)A",
+    eventClick: function (event) {
+      console.log(event.id)
+      if(event.link){
+        $("#linkhref").html('<a class="btn btn-primary" id="alinkhref" target="_blank" href="'+event.link+'">Join Now</a> ');
+        $("#linkhref").html('<a class="btn btn-primary" id="alinkhref" target="_blank" href="'+"/student/update_liveclass_attendance/"+'">Join Now</a> ');
+        $("#exampleModalToggle").modal("show");
+        // window.open(event.url,'gcalevent', 'width=500,height=600');
+        // return false;
+      var id = event.id;
+      $.ajax({
+        type: "POST",
+        headers: {
+
+          'csrfmiddlewaretoken': '{{ csrf_token }}',
+        },
+        url: '/student/getSessionId/',
+        data: {'id':id},
+      })
+      }
+    },
+});
+}
+</script>
+
+
+{% endblock body_container %}
+
+
+
+
+
+
+
+
+

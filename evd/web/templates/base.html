@@ -118,6 +118,16 @@
       <div id="fb-root"></div>
 
     <style>
+        .app-otp-modal.modal{
+            background: transparent;
+        }
+        .app-otp-modal.modal form{
+            border:0;
+        }
+        .button-center{
+            display: flex;
+            justify-content: center;
+        }
         .cust_btn:hover{
            opacity:0.8;
            cursor:pointer;
@@ -2924,7 +2934,7 @@ font-size:18px;
                 }
                 });
             }
-            
+            $("#otpverifymodal").modal("show")
             </script>
     {% endblock %}
 {% endblock %}
