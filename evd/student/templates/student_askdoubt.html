@@ -1,0 +1,135 @@
+{% extends 'student_base.html' %}
+
+{% block body_container %}
+<div style="padding-left: 35%; padding-bottom: 10%; padding-top: 7%;">
+    <form method="post" action="/student/student_ask_doubt/"  enctype="multipart/form-data" >
+        {% csrf_token %}
+        <h4 style="padding-left: 15%; padding-bottom: 2%; "><strong>Ask Doubt </strong> </h4>
+            <div style="padding: 1%;">
+              <span style="color:#ffa500"><strong>Student Name:</strong></span>
+                <b style="padding-left: 2%;">{{student.id}} -- {{student.name}}</b>
+            </div>
+        <div style="padding: 1%;">
+          <span style="color:#ffa500"><strong>Planned Topics:</strong> </span>
+            <select id="topics" class="form-control" style="width:40%" name="topics" required>
+              <option value="" >---Select the Topic---</option>
+              {% for topic in topics %}
+                  <option id="{{ topic.id }}" value="{{ topic.id }}" style="background-color:rgb(132, 252, 121);">{{topic.id}}-{{ topic }}</option>
+              {% endfor %}
+            </select> 
+        </div>
+        <div style="padding: 1%;">
+          <span style="color:orange"><strong>SubTopic :</strong> </span>
+            <select id="subtopics" class="form-control" name="subtopics" style="width:40%" >
+                <option  value="">---Select the Subtopic---</option>
+            </select>
+        </div>
+            <!-- <div style="width: 40%; padding: 1%;">
+                <label style="color:#ffa500" >Select Image(Only png, jpg):</label>
+                <input type='file' id="file" class="form-control"  name='file' required=""/>
+            </div> -->
+            <div class="h-12 w-96">
+              <label for="imgInp" class="text-gray-700 font-bold">Select Image(Only png, jpg):</label>
+              <input accept=".png, .jpg" type='file' name="file" id="imgInp" />
+            </div>
+            <div style="width: 40%; padding: 1%;">
+                <label for="text"  style="color:#ffa500">Doubt Text:</label>
+                <textarea id="text" class="form-control" name='text' placeholder="Doubt Text" rows="2" required></textarea>
+            </div>
+
+
+        <div class="col-lg-12 col-md-12 col-sm-12" style="padding-top:16px; padding-bottom:16px;">
+            <button type="submit" class="btn btn-success" onclick="postDoubt()">Post Doubt</button>
+        </div>
+    </form>
+    <!-- <div class="w-1/4 flex items-center justify-center my-4">
+      <img class="w-96 h-96 bg-no-repeat bg-center" id="blah" src="#" alt="" />
+    </div> -->
+  </div>
+
+  
+{% block javascript %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+<script>
+
+
+    $(document).ready(function() {
+      $('#topics').change(function() {
+        var topicId = $(this).val();
+        if (topicId) {
+          $.ajax({
+            url: '/student/load-subtopics/',
+            data: {
+              'topic_id': topicId
+            },
+            dataType: 'json',
+            success: function(response) {
+              var stateSelect = $('#subtopics');
+              stateSelect.empty();
+              stateSelect.append('<option value="">---Select the Subtopic---</option>');
+              $.each(response.subtopics, function(index, subtopic) {
+                stateSelect.append('<option style="background-color:rgb(132, 252, 121);" value="' + subtopic.id + '">' + subtopic.id + '-' + subtopic.name + '</option>');
+              });
+            }
+          });
+        } else {
+          var stateSelect = $('#subtopics');
+          stateSelect.empty();
+          stateSelect.append('<option value="">Select a Topic first</option>');
+        }
+      });
+    });
+
+    imgInp.onchange = evt => {
+      const [file] = imgInp.files
+      if (file) {
+          blah.src = URL.createObjectURL(file)
+      }
+    }
+
+    function postDoubt() {
+
+      $('#doubt_post_loader').show()
+
+      let imageFile = $("#imgInp").prop('files')[0];
+
+      if (imageFile) {
+          type = 'image'
+      } else {
+          type = null
+      }
+
+      var data = new FormData(); //Create formdata objects to facilitate file transfer to the back end
+      data.append("file", imageFile) //To add (encapsulate) a file object to a formdata object
+      data.append("offeringid", '{{offeringId}}')
+      data.append("topics", $('select#topics').val())
+      data.append("subtopics", $('select#subtopics').val())
+      data.append("studentid", student.id)
+      data.append("attachmentType", type)
+      data.append("text", $('#text').val())
+
+      console.log(data)
+
+      $.ajax({
+        url: '/student/student_ask_doubt/',
+        type: 'POST',
+        data: data,
+        cache: false, //Upload files without caching
+        processData: false, //Do not serialize data
+        contentType: false, //No special connection type defined
+        success: function(response) {
+            console.log(response)
+            // $('#doubt_post_loader').hide()
+            // window.location.reload()
+        },
+        error: function(xhr, errmsg, err) {
+            // $('#doubt_post_loader').hide()
+            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+        }
+      })
+    }
+  </script>
+{% endblock javascript %}
+
+{% endblock body_container %}
