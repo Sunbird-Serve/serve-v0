@@ -1,0 +1,73 @@
+{% extends 'student_base.html' %}
+
+{% block body_container %}
+<style>
+th{
+	border: 1px solid #ffffff;
+	font-weight: bold;
+	font-size: small;
+}
+td{
+	border: 1px solid #c7b9b9;
+}
+table th,
+table td {
+    text-align: center;
+}
+
+/* body {
+    background-color: #eee;
+  } */
+table tr:nth-child(even) {
+	background-color: #bef2f5;
+}
+</style>
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
+
+
+<div class="container">
+<h3 class="text-center" style="padding-top: 100px;"><span><b>{{student.center}} &#x2192; {{course.subject}} Doubts</b></span></h3><br>
+<div>
+<span>Go back to
+<a style="vertical-align:middle;font-family: Arial, Helvetica, sans-serif;font-size: 13.5px;" href="/student/student_dashboard/">Student Dashboard</a>	
+</span>	
+</div>	
+<table class="table table-striped" style="padding-bottom: 100px; ">
+	<thead style="background-color: #27A3E2;">
+	<tr>
+		<th>Topic</th>
+		<th>Subtopic</th>
+		<th>Status</th>
+		<th>Ask Doubt Text</th>
+        <th>Ask Doubt Doc</th>
+        <th>Assigned To</th>
+		<th>Doubt Asked On</th>
+
+	</tr>
+	</thead>
+	<tbody>
+	<!-- jinja2 Technique -->
+
+	{% for doubt in doubtList %}
+	<tr>
+        <td>{{doubt.topic.title}}</td>
+		<td>{{doubt.subtopic.name}}</td>
+		<td>{%  if doubt.status == '1' %} Open {% elif doubt.status == '2' %} Resloved {% else %} Responded {% endif %}</td>
+		<td>{{doubt.text}}</td>
+        <!-- <td> {% if doubt.resource_url == NULL %} {{doubt.resource_url}} {% else %} <a class="btn btn-success" title="View" style="text-align: center; line-height: initial;"
+            href="{{doubt.resource_url}}"> Image
+            </a>{% endif %}
+        </td> -->
+		<td><a href="{{doubt.resource_url}}"><img src="{{doubt.resource_url}}" width="60px" height="60px" alt="">View</a></td>
+		<td> {% if doubt.assigned_to == None %} Not Assigned{% else %} {{doubt.assigned_to}} {% endif %} </td>
+		<td>{{doubt.created_on|date:"Y-m-d"}}</td>
+
+
+	</tr>
+	{% endfor %}
+
+	</tbody>
+</table>
+</div>
+
+{% endblock body_container %}

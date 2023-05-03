@@ -1,9 +1,27 @@
 from django.conf.urls import patterns
 from django.conf.urls import url
 from .views import *
+from .students import *
 
 urlpatterns = [
    
+    url(r'^send_otp/',send_otp, name='send_otp'),
+    url(r'^student_verify_otp/',student_verify_otp, name='student_verify_otp'),
+
+
+    url(r'^student_login/', student_login, name='student_login'),
+    url(r'^select_student/', select_student, name='select_student'),
+    url(r'^student_calendar/',student_calendar, name='student_calendar'),
+    url(r'^student_dashboard/',studentdashboard, name='student_dashboard'),
+    url(r'^student_logout/',student_logout, name='student_logout'),
+    url(r'^student_ask_doubt/',student_ask_doubt, name='student_ask_doubt'),
+    url(r'^load-subtopics/',load_subtopics, name='ajax_load_subtopics'),
+    url(r'getSessionId/',getSessionId, name='getSessionId'),
+    url(r'list_studentdoubts/',list_studentdoubts, name='list_studentdoubts'),
+    url(r'^update_liveclass_attendance/',update_liveclass_attendance, name='update_liveclass_attendance'),
+    # url(r'^assignment_upload/',assignment_upload, name='assignment_upload'),
+
+
     url(r'^api/v1/signin?$',signin_mobile,name='signin_mobile'),
     url(r'^api/v1/verifyOtp?$',verify_otp,name='verifyOtp'),
     url(r'^api/v1/guardian/sendotp?$', send_otp_guardian,name='send_otp_guardian'),
