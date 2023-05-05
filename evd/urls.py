@@ -106,6 +106,7 @@ urlpatterns = patterns('web.views',
     url(r'^operating_principles/?$', 'operating_principles', name='home'),
     url(r'^contact_us/?$', 'contact_us', name='home'),
     url(r'^about/?$', 'about_us', name='home'),
+    url(r'^evean/?$', 'eveans_home', name='home'),
     url(r'^newsletter/?$', 'newsletter', name='newsletter'), #added
     url(r'^how/?$','learn_more', name='home'), #added
     url(r'^under_construction/?$','under_construction', name='home'), #added

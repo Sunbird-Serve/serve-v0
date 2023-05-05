@@ -1,0 +1,1268 @@
+{% extends 'new_base_temp.html' %} {% block content %}
+<!-- aboutus intro. Section
+    ================================================== -->
+
+<style>
+    .mobileView {}
+    .trust {}
+    
+    .about_p {
+        font-size: 1.2em;
+        font-weight: 1000;
+        margin-top: -10px;
+    }
+    
+    .about_h {
+        font-size: 2.0em;
+        font-weight: 1000;
+        margin-top: -10px;
+    }
+    .mobile_p2 {
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: -2%;
+    }
+    
+    @media only screen and (max-width: 768px) {
+        .mobileView {
+            font-size: 12px;
+            font-weight: 1000;
+            margin-top: 30px;
+        }
+    }
+
+    @media only screen and (max-width: 768px) {
+        .trust {
+            margin-left: 0px;
+        }
+    }
+
+    @media only screen and (min-width: 1200px) {
+        #trustees {
+            margin-left: 300px;
+        }
+    }
+</style>
+
+<header class="site-header bg-dark sticky-top text-white-0_5" style="max-height:59px;position:sticky !important;top:0;background:#1e2022!important;z-index: 1500;">
+
+
+    <div class="container hide_for_mob">
+        <nav class="navbar navbar-inverse" style="margin-bottom: 0px;min-height: 30px;padding: 0.2em 0 0 0;">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li style="display:inline-flex;"><i class="fa fa-skype" style="padding-top:9%;color: #44a7c7;font-size: 14px;"></i>
+                        <a class="" href="mailto:evidyaloka.helpdesk"> : evidyaloka.helpdesk</a>
+                    </li>
+                    <li style="display:inline-flex;"><i class="fa fa-headphones mr-2" style="padding-top:12%;color:#dd4b39"></i>
+                        <a href="tel:91-8548863831">: 91-8548863831</a>
+                    </li>
+                    <li style="display:inline-flex;"><i class="fa fa-whatsapp mr-2" style="padding-top:12%;color:#04a941"></i>
+                        <a href="tel:+91 6361653155">: +91 6361653155</a>
+                    </li>
+
+
+                    {% if user.is_authenticated %}
+                    <!-- <li class="list-inline-item mr-3">
+           <div class="d-flex align-items-center">
+            <i class="far fa-hand-pointer mr-2" style="color: #a29626"></i>:
+            <a href="javascript:void(0);" onclick="makeRequest('Raise a request')">&nbsp;Raise a request</a>
+           </div>
+          </li> -->
+
+                    <li style="display:inline-flex;"><i class="fa fa-hand-pointer-o mr-2" style="padding-top:11%;color:#a29626"></i>
+                        <a href="javascript:void(0);" onclick="makeRequest('Raise a request')">: Raise a request</a>
+                    </li>
+
+                    <!--  <li class="list-inline-item mr-3">
+           <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-circle mr-2" style="color: #029688"></i>:
+            <a href="javascript:void(0);" onclick="makeRequest('Report an issue')">
+               &nbsp;Report an issue</a>
+           </div>
+          </li> -->
+
+                    <li style="display:inline-flex;"><i class="fa fa-exclamation-circle mr-2" style="padding-top:11%;color:#029688"></i>
+                        <a href="javascript:void(0);" onclick="makeRequest('Report an issue')">: Report an issue</a>
+                    </li>
+
+                    <!--   <li class="list-inline-item mr-3" style="font-size: 13px !important;">
+           <div class="d-flex align-items-center">
+            <i class="fa fa-comment mr-2" style="color: #206194"></i>:
+            <a href="javascript:void(0);" onclick="makeRequest('Share a feedback')">
+               &nbsp;Share a feedback</a>
+           </div>
+          </li> -->
+
+                    <li style="display:inline-flex;"><i class="fa fa-comment mr-2" style="padding-top:11%;color:#206194"></i>
+                        <a href="javascript:void(0);" onclick="makeRequest('Share a feedback')">: Share a feedback</a>
+                    </li>
+
+                    {% endif %}
+
+
+                    <!-- <li>
+<div class="navbar" style="cursor:pointer;margin-bottom:0px;border-left: 1px rgba(255, 255, 255, 0.1) solid;border-right: 1px rgba(255, 255, 255, 0.1) solid;padding:0px 12px 0px 12px;">
+  <div class="dropdown" style="color:#9d9d9d;font-size: 1.4rem;font-family: monospace;padding: 1.4rem 0rem 1.6rem 0rem;">
+    Volunteer Helpline <i class="fa fa-caret-down" style="font-size:17px"></i>
+    <div class="dropdown-content" style="border-top: 4px solid #02cc26">
+      <a class="dropdown-item" href="javascript:void(0);" onclick="makeRequest('Raise a request')">
+      <i class="ti-headphone mr-2"></i>
+          <span>&nbsp;(91-8548863831)</span>
+      </a>
+      <a class="dropdown-item" href="javascript:void(0);" onclick="makeRequest('Raise a request')">
+                   <i class=""><img src="/static/images/wats.png" width="20px" height="20px"/></i>
+                   <span> &nbsp;+91 6361653155</span>
+                  </a>
+                  <a class="dropdown-item" href="javascript:void(0);" onclick="makeRequest('Raise a request')">
+                   <i class="ti-email mr-2"></i>
+                   <span>&nbsp;volunteer@evidyaloka.org</span>
+                  </a>
+                  {% if user.is_authenticated %}
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="makeRequest('Raise a request')">
+                     <span>Raise a request</span>
+                    </a>
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="makeRequest('Report an issue')">
+                     <span>Report an issue</span>
+                    </a>
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="makeRequest('Share a feedback')">
+                     <span>Share a feedback</span>
+                    </a>
+                  {% endif %}  
+    </div>
+  </div> 
+</div>
+</li> -->
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+
+                    {% if user.is_authenticated %}
+                    <!--  <li class="list-inline-item mr-0 p-md-3 p-2 border-right border-left border-white-0_1">
+              <a href="/accounts/logout/">Login</a>
+            </li> -->
+                    {% else %}
+                    <li class="" style="border-left: 1px rgba(255, 255, 255, 0.1) solid;border-right: 1px rgba(255, 255, 255, 0.1) solid;padding-left: 12px;padding-right: 12px;">
+                        <a href="" data-toggle="modal" data-target="#login-modal" id="login-trigger">Login</a>
+                    </li>
+                    {% endif %} {% if not user.is_authenticated %}
+                    <li class="list-inline-item mr-0 p-md-3 p-2 border-white-0_1">
+                        <!--             <a href="">&nbsp;</a> -->
+                        <a data-toggle="modal" href="/volunteer/" id="signup-trigger" class="already" onclick="change_to_signup()" style="margin-left:5px;cursor:pointer">
+                      Register </a>
+                    </li>
+                    {% endif %}
+
+
+
+                    <!-- <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+      <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li> -->
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    {% if user.is_authenticated %}
+    <ul class="log-in list-inline mb-0" style="margin-bottom: 0px;">
+        <li class="list-inline-item mr-0 p-md-3 p-2 border-white-0_1">
+            <a href="">&nbsp;</a>
+        </li>
+        <!--          {% if user.is_authenticated %} -->
+        {%include "new_login_badge_temp.html"%}
+        <!--          {% endif %} -->
+    </ul>
+    {% endif %}
+
+</header>
+<!-- END site header-->
+
+<div class="row top_cls" style="background:white;padding: 0.7em 0 0 0;z-index: 1020;height:91px;margin:0px;position:sticky !important;top:7.7% !important;">
+
+    <nav class="row ec-nav sticky-top bg-white" style="margin-left:0px;width:100%;">
+        <div class="container">
+            <div class="navbar p-0 navbar-expand-lg" style="padding:0px;margin-bottom: 0px;">
+
+
+                <!--      <div class="col-md-2 col-sm-3" style="display:inline-flex;"> -->
+                <div class="col-md-5 col-sm-3" style="display:flex;">
+                    <!--        <ul class="nav navbar-nav ec-nav__navbar " style="display:inline-flex;"> -->
+                    <!--        <li class="nav-item nav-item__has-megamenu megamenu-col-2"> -->
+                    <a style="padding-top:0.7rem" class="" href='/' style="padding-right:0px !important;">
+                        <img class="img_css" alt="" src="/static/images/evidyalogo.jpg" width="55px" height="50px" style="border-radius:100%;">
+                    </a>
+                    <!--          </li> -->
+                    <!--           <li class="nav-item nav-item__has-megamenu megamenu-col-2"> -->
+                    <!--<a style="padding-top:0.4rem" class="" href='/' style="padding-left:0px !important;">
+                        <img class="img_css1" alt="" src="/static/images/evidyaban_1000x250.png" width="275px">
+                    </a>-->
+                    <!--           </li> -->
+                    <!--        </ul> -->
+
+                    <span aria-expanded="false" class="navbar-toggler ml-auto collapsed mt-2" data-target="#ec-nav__collapsible" data-toggle="collapse">
+             <div class="hamburger hamburger--spin js-hamburger">
+                 <div class="hamburger-box">
+                  <div class="hamburger-inner"></div>
+                 </div>
+               </div>
+           </span>
+                </div>
+
+
+
+
+
+
+
+                <div class="collapse navbar-collapse when-collapsed" id="ec-nav__collapsible">
+
+                    <ul class="nav navbar-nav ec-nav__navbar ">
+
+                        <!--  <li class="nav-item nav-item__has-megamenu megamenu-col-2">
+              <a  style="padding-top:1rem" class="nav-link" href='/about/'>
+                <img alt="" src="/static/images/evidyalogo.jpg" width="55px" height="50px" style="border-radius:100%;">
+              </a>
+         </li>
+         
+          <li class="nav-item nav-item__has-megamenu megamenu-col-2">
+              <a  style="padding-top:1rem" class="nav-link" href='/about/'>
+              <img alt="" src="/static/images/evidyaban_1000x250.png" width="275px" style="float:left;">
+              </a>
+          </li> -->
+
+                        <!-- <div class="navbar-brand">
+          <a class="logo-default" href="/?home=true">
+             <img alt="" src="/static/images/evidyalogo.jpg" width="55px" height="50px" style="border-radius:100%;display:inline;position:absolute">
+             <img alt="" src="/static/images/evidyaban_1000x250.png" width="275px" style="margin-left:50px;float:left;display:inline;position:absolute">
+          </a>
+        </div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        <li class="nav-item nav-item__has-megamenu megamenu-col-12">
+                            <pre style="background:white;border:none;">&nbsp;                             &nbsp;</pre>
+                        </li>
+
+                        <!--<li class="nav-item nav-item__has-megamenu megamenu-col-2">
+                            <a class="nav-link" href='/about/'>About</a>
+                        </li>-->
+
+                        <li class="nav-item nav-item__has-dropdown dropdown">
+                            <a
+                              class="dropdown-toggle nav-link"
+                              style="color: black"
+                              data-toggle="dropdown"
+                              >About ▼</a
+                            >
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="/about/"
+                                >eVidyaloka Overview</a
+                              >
+                              <a class="dropdown-item" href="/evean/"
+                                >eVean Overview</a
+                              >
+                             
+                            </div>
+                          </li> 
+
+                        <li class="nav-item nav-item__has-megamenu megamenu-col-2">
+                        </li>
+
+                        <li class="nav-item nav-item__has-megamenu megamenu-col-2">
+                            <a class="nav-link" href='/volunteer/'>Volunteer</a>
+                        </li>
+
+                        <li class="nav-item nav-item__has-megamenu megamenu-col-2">
+                            <a class="nav-link" href='/sponsor/'>Donate</a>
+                        </li>
+
+                        <!--  {% if user.is_authenticated %}
+             <li class="nav-item nav-item__has-dropdown" >
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Volunteer Helpline</a>
+                <div class="dropdown-menu">
+                <ul class="list-unstyled">
+                <div style="padding:25px;line-height: 25px;">
+                  <label style=" font-size: 14px">Phone :</label>
+                  <p>(91-8548863831)</p>
+                  <img src="/static/images/wats.png" width="20px" height="20px"/>
+                  <p style="margin-top: -25px; margin-left: 25px;">+91 6361653155 </p>
+                  <label style=" font-size: 14px">Skype HelpDesk (Chat Only) :</label>
+                  <p>evidyaloka.helpdesk</p>
+                  
+                      <p><a href="javascript:void(0);" onclick="makeRequest('Raise a request')" >Raise a request</a></p>
+                      <p><a href="javascript:void(0);" onclick="makeRequest('Report an issue')" >Report an issue</a></p>
+                      <p><a href="javascript:void(0);" onclick="makeRequest('Share a feedback')">Share a feedback</a></p>
+                       
+                </div>
+                </ul>
+                </div>
+            </li>
+            {% endif %}    -->
+
+
+
+
+
+                        <!--  <li class="nav-item nav-item__has-dropdown">
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"> Partner </a>
+                <div class="dropdown-menu">
+                  <ul class="list-unstyled">
+                    <li>
+                      <a class="nav-link__list" href="/funding_parter/"> Funding Partner </a>
+                    </li>
+                    <li>
+                      <a class="nav-link__list" href="/request_for_proposal/"> Start in a School </a>
+                    </li>
+                    <li>
+                      <a class="nav-link__list" href="/volunteer_partner/"> Volunteer Partner </a>
+                    </li>
+                  </ul>
+                </div>
+              </li> -->
+
+
+                        <li>
+                            <a class="text_color" href="{% if user.is_authenticated %} / {% else %} /partner/become_partner/ {% endif %}">Partner</a>
+                            <!--<div class="navbar" style="padding:0px;margin-bottom:0px;">-->
+                            <!--<div class="dropdown" style="    padding: 2.4rem 0rem 3.7rem 2rem;cursor:pointer;font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;color:black;">-->
+                            <!--Partner &lt;!&ndash; <i class="fa fa-caret-down" style="font-size:17px"></i> &ndash;&gt;-->
+                            <!--<div class="dropdown-content" style="border-top: 4px #02cc26 solid;margin-top:54%;min-width:220px;">-->
+                            <!--<a class="nav-link__list" href="/funding_parter/"> Funding Partner </a>-->
+                            <!--<a class="nav-link__list" href="/request_for_proposal/"> Start in a School </a>-->
+                            <!--<a class="nav-link__list" href="/volunteer_partner/"> Volunteer Partner </a>-->
+                            <!--</div>-->
+                            <!--</div> -->
+                            <!--</div>-->
+                        </li>
+
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- END container-->
+    </nav>
+    <!-- END ec-nav -->
+    <img src='/static/images/top-colored-bar.jpg' style='margin-top:-1%;width:100%;' />
+</div>
+<section id="featured1" class="dark" style="background-image: url('/static/images/home_3.jpg');background-size: cover;">
+
+    <div class="container">
+        <div class="row" style="margin-top:-40px">
+            <div class="col-sm-12 overlay-text">
+                <div class="vertical-align">
+                    <h2 class="about_h mobileView" style="text-align: center; margin-bottom: 30px;color: orange;"><b>eVidyaloka education for all network <br>(eVean) Foundation</b></h2>
+                    <p class="about_p mobileView"><b>
+                        eVidyaloka education for all network (eVean) Foundation is a not for profit organisation, a Section 8 company under Companies Act, 2013. A social enterprise evolved from the model of eVidyaloka towards transforming the educational landscape of rural India. With a national shortage of 1.2 million teachers, the remote online learning-teaching model is extended as a platform, empowering the stakeholders directly, through a viable social business model, as a digital public good and  there by creaing a sustainable impact at scale, reaching the 230 million children of public education system.
+                    </b></p>
+                    <p class="mobileView mobile_p2"></b>
+                        History : Incorporated in the year 2019, eVean Foundation is formed by founding board members - Vishwanathan T, Ramkumar V and Venkat Sriraman.
+                    </b></p>
+                </div>
+            </div>
+        </div>
+        <!--<span><p><a class="btn btn-lg btn-primary scroll history_btn" href="/under_construction/" role="button" style="background:rgba(129, 28, 210, 0.53);margin-top:-50px">Our History</a></p></span>-->
+    </div>
+
+    <div class="black"></div>
+
+</section>
+
+
+<!-- our team -->
+
+<!-- Portfolio
+    ================================================== -->
+<section class="section-content section-isotope" id="projects" style="margin-top:-30px">
+
+    <div class="text-center" style=" font: 5em sans-serif; color: #029688;">
+        
+    </div>
+    <div class="container">
+        <h2 style="text-align: center;">Our Team</h2>
+        <!-- Modal -->
+        <div id="detail" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content" style="background: -moz-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -webkit-gradient(linear, 294deg, color-stop(34%, #f5cbcb), color-stop(98%, #ebeca6));background: -webkit-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -o-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -ms-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5cbcb', endColorstr='#ebeca6', GradientType='1');background: linear-gradient(156deg, #f5cbcb 34%, #ebeca6 98%);">
+                    <div class="modal-header" style="margin-top: 50px">
+                        <button type="button" class="close" data-dismiss="modal" style="font-size:30px">&times;</button>
+                        <h4 class="modal-title text-center">eVean Foundation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img id="detail_img" src="/static/images/teaching.jpg" style="max-width:140px">
+                            </div>
+                            <div class="col-md-offset-1 col-md-9" style="text-align:left">
+                                <h4 id="name"></h4>
+                                <h4 id="designation"></h4>
+                                <p id="detailed" style="font-weight:500"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="detail_vish" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content" style="background: -moz-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -webkit-gradient(linear, 294deg, color-stop(34%, #f5cbcb), color-stop(98%, #ebeca6));background: -webkit-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -o-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -ms-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5cbcb', endColorstr='#ebeca6', GradientType='1');background: linear-gradient(156deg, #f5cbcb 34%, #ebeca6 98%);">
+                    <div class="modal-header" style="margin-top: 50px">
+                        <button type="button" class="close" data-dismiss="modal" style="font-size:30px">&times;</button>
+                        <h4 class="modal-title text-center">eVean Foundation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img id="detail_img" src="/static/images/vishy2.jpg" style="max-width:140px">
+                            </div>
+                            <div class="col-md-offset-1 col-md-9" style="text-align:left">
+                                <h4>Vishy Thiagarajan</h4>
+                                <h4>Director</h4>
+                                <p style="font-weight:500">An engineer from BITS, Pilani, Vishy has more than fifteen years of experience in Mobile, Internet and Telecommunications technologies. He is currently the VP, Device Software at Veveo India (P) Ltd, and prior to that, he was with Motorola, and Winphoria Networks. Vishy strongly believes that educating a child is the best way to create responsible individuals who would further create a better world, and the opportunity to use technology to provide quality education at eVidyaloka is a step towards that dream.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="detail_ven" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content" style="background: -moz-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -webkit-gradient(linear, 294deg, color-stop(34%, #f5cbcb), color-stop(98%, #ebeca6));background: -webkit-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -o-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -ms-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5cbcb', endColorstr='#ebeca6', GradientType='1');background: linear-gradient(156deg, #f5cbcb 34%, #ebeca6 98%);">
+                    <div class="modal-header" style="margin-top: 50px">
+                        <button type="button" class="close" data-dismiss="modal" style="font-size:30px">&times;</button>
+                        <h4 class="modal-title text-center">eVean Foundation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img id="detail_img" src="/static/images/venkats.png" style="max-width:140px">
+                            </div>
+                            <div class="col-md-offset-1 col-md-9" style="text-align:left">
+                                <h4>Venkat Sriraman</h4>
+                                <h4>Director</h4>
+                                <p style="font-weight:500">An engineering graduate from BITS Pilani (Class of '95), Venkat has held various engineering positions in the field of Software Product and IT Application Development in companies like Aditi, Citigroup, Honeywell, Microsoft and Dell. Venkat is a passionate technologist who is excited about applying technology to solve chronic social challenges of India, and eVidyaloka is a dream to be realized in that direction, in the form of a social enterprise. For him, the move from a corporate job to the development sector is a conscious profession change and Venkat believes in applying the professional competencies gained towards the execution of a larger social initiative.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="detail_ram" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content" style="background: -moz-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -webkit-gradient(linear, 294deg, color-stop(34%, #f5cbcb), color-stop(98%, #ebeca6));background: -webkit-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -o-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -ms-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5cbcb', endColorstr='#ebeca6', GradientType='1');background: linear-gradient(156deg, #f5cbcb 34%, #ebeca6 98%);">
+                    <div class="modal-header" style="margin-top: 50px">
+                        <button type="button" class="close" data-dismiss="modal" style="font-size:30px">&times;</button>
+                        <h4 class="modal-title text-center">eVean Foundation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img id="detail_img" src="/static/images/ram_kumar_new.jpg" style="max-width:140px">
+                            </div>
+                            <div class="col-md-offset-1 col-md-9" style="text-align:left">
+                                <h4>V. Ramkumar</h4>
+                                <h4>Director</h4>
+                                <p style="font-weight:500">A management consultant by profession, Ram is presently a Senior Partner at Cedar, a global management consulting firm, and had earlier worked with PwC. He is a postgraduate in Management from BITS Pilani and has completed his executive education programs at INSEAD and Harvard. With firm conviction that education is the panacea for sustained growth of a society, Ram brings his experience of formulating and implementing strategy for global clients, in the institutional building of eVidyaloka, and promulgating the philosophy of rural education.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="detail_go" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content" style="background: -moz-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -webkit-gradient(linear, 294deg, color-stop(34%, #f5cbcb), color-stop(98%, #ebeca6));background: -webkit-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -o-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);background: -ms-linear-gradient(294deg, #f5cbcb 34%, #ebeca6 98%);filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5cbcb', endColorstr='#ebeca6', GradientType='1');background: linear-gradient(156deg, #f5cbcb 34%, #ebeca6 98%);">
+                    <div class="modal-header" style="margin-top: 50px">
+                        <button type="button" class="close" data-dismiss="modal" style="font-size:30px">&times;</button>
+                        <h4 class="modal-title text-center">eVean Foundation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img id="detail_img" src="/static/images/Gopal_eVean.jpg" style="max-width:140px">
+                            </div>
+                            <div class="col-md-offset-1 col-md-9" style="text-align:left">
+                                <h4>Gopal Balasubramanian</h4>
+                                <h4>President/CEO</h4>
+                                <p style="font-weight:500">A seasoned IT professional & a thought leader ,known for Innovation & analytical acumen, with
+                                    27+ years of experience across Pre-Sales ,Consulting ,Transition, Transformation & Delivery
+                                    Management of CIS (Cloud, Infrastrcuture and Secuirty) Services.
+                                    
+                                    Most recently he served as the Global practice Head of CIS business at Cognizant where he played
+                                    a critical role in incubating this business from 2004 to its current scale & stature - recognized as a
+                                    Global leader in the industry .
+                                    
+                                    True believer in technology led transformation of rural education space and community
+                                    participation at scale, for every child to get quality education.
+                                    
+                                    Gopal graduated from BITS,Pilani with degrees in the B.E(Hons) EEE & MSc(Hons) Mathematics
+                                    streams.
+                                    
+                                    Gopal is based out of Chennai, India and is an avid reader and also a connoisseur of South Indian
+                                    classical music.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <script src="/static/js_new/jquery-1.10.2.min.js"></script>
+        <link rel="stylesheet" href="/static/css_new/jquery-ui-minified.css">
+        <script src="/static/js_new/jquery-ui.js"></script>
+        <div id="tab" class="tabs-team button-group text-center">
+            <ul>
+                <li class="tab_style"><a class="active"><button data="trustee" class="active">Board of Directors</button></a></li>
+                <li class="tab_style"><a class=""><button data="exe">Leadership</button></a></li>
+                <!--<li class="tab_style"><a class="" ><button data="clas">Class Administrators</button></a></li> -->
+
+            </ul>
+            <div id="trustees" class="tabs_ui">
+                <!-- carousel================================================== -->
+                <section id="testimonials" class="detail_modal">
+                    <div class="container">
+                        <div class='row'>
+                            <div class='col-md-12'>
+                                <div class="carousel slide" data-ride="carousel" id="quote-carouse">
+                                    <!-- Bottom Carousel Indicators -->
+                                    <ol class="carousel-indicators" style="bottom:-40px">
+                                        <li data-target="#quote-carouse" data-slide-to="0" class="active"></li>
+                                    </ol>
+
+                                    <!-- Carousel Slides / Quotes -->
+                                    <div class="carousel-inner" style="margin-left: auto;">
+
+                                        <!-- Quote 1 -->
+                                        <div class="item active">
+                                            <div class="row">
+                                                
+                                                <div id="" class="grid cs-style-1">
+                                                    <div class="col-sm-6 col-md-2 portfolio-item design">
+                                                        <figure>
+                                                            <!-- Thumb Info -->
+                                                            <div class="info" style="bottom:-110px">
+                                                                <h3></h3>
+                                                                <a id="1" data-toggle="modal" data-target="#detail_vish" style="text-decoration:none"><span>Vishy Thiagarajan<br>Director</span></a>
+                                                            </div>
+                                                            <!-- Thumbnail -->
+                                                            <img src="/static/images/vishy2.jpg" alt="Vishy" class="team_img">
+                                                            <!-- Thumb links -->
+                                                            <figcaption>
+                                                                <!--<a href="/static/images/visshy.png" class="preview tooltips popup-gallery" data-toggle="tooltip" data-placement="bottom" title="Preview" style="left:42%"><i class="fa fa-plus"></i></a>
+                                        <a href="/under_construction/" class="link tooltips" data-toggle="tooltip" data-placement="bottom" title="More Details"><i class="fa fa-external-link"></i></a>-->
+                                                            </figcaption>
+                                                        </figure>
+                                                    </div>
+                                                </div>
+
+
+                                                <div id="" class="grid cs-style-1">
+                                                    <div class="col-sm-6 col-md-2 portfolio-item design">
+                                                        <figure>
+                                                            <!-- Thumb Info -->
+                                                            <div class="info" style="bottom:-110px">
+                                                                <a id="3" data-toggle="modal" data-target="#detail_ven" style="text-decoration:none"><span>Venkat Sriraman<br>Director</span></a>
+                                                            </div>
+                                                            <!-- Thumbnail -->
+                                                            <img src="/static/images/venkats.png" alt="Venkat" class="team_img">
+                                                            <!-- Thumb links -->
+                                                            <figcaption>
+                                                                <!--<a href="/static/images/venkatsir.png" class="preview tooltips popup-gallery" data-toggle="tooltip" data-placement="bottom" title="Preview" style="left:42%"><i class="fa fa-plus"></i></a>
+                                        <a href="/under_construction/" class="link tooltips" data-toggle="tooltip" data-placement="bottom" title="More Details"><i class="fa fa-external-link"></i></a>-->
+                                                            </figcaption>
+                                                        </figure>
+                                                    </div>
+                                                </div>
+
+                                                <div id="" class="grid cs-style-1">
+                                                    <div class="col-sm-6 col-md-2 portfolio-item design">
+                                                        <figure>
+                                                            <!-- Thumb Info -->
+                                                            <div class="info" style="bottom:-110px">
+                                                                <a id="4" data-toggle="modal" data-target="#detail_ram" style="text-decoration:none"><span>V.Ramkumar<br>Director</span></a>
+                                                            </div>
+                                                            <!-- Thumbnail -->
+                                                            <img src="/static/images/ram_kumar_new.jpg" alt="Ram" class="team_img">
+                                                            <!-- Thumb links -->
+                                                            <figcaption>
+                                                                <!--<a href="/static/images/ram_kumar.jpg" class="preview tooltips popup-gallery" data-toggle="tooltip" data-placement="bottom" title="Preview" style="left:42%"><i class="fa fa-plus"></i></a>
+                                        <a href="/under_construction/" class="link tooltips" data-toggle="tooltip" data-placement="bottom" title="More Details"><i class="fa fa-external-link"></i></a>-->
+                                                            </figcaption>
+                                                        </figure>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--<div class="item">
+                </div>
+              </div>-->
+
+                                        <!-- Carousel Buttons Next/Prev -->
+                                        <a data-slide="prev" href="#quote-carouse" class="left carousel-control visible-md visible-lg"><i class="fa fa-chevron-left" style="line-height:7"></i></a>
+                                        <a data-slide="next" href="#quote-carouse" class="right carousel-control  visible-md visible-lg"><i class="fa fa-chevron-right" style="line-height:7"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+            <div id="execution" class="tabs_ui hidden">
+                <!-- carousel================================================== -->
+                <section id="testimonials" class="detail_modal">
+                    <div class="container margin_car">
+                        <div class='row'>
+                            <div class='col-md-12'>
+                                <div class="carousel slide" data-ride="carousel" id="quote-carouse">
+                                    <!-- Bottom Carousel Indicators -->
+                                    <ol class="carousel-indicators" style="bottom:-40px">
+                                        <li data-target="#quote-carouse" data-slide-to="0" class="active"></li>
+                                    </ol>
+
+                                    <!-- Carousel Slides / Quotes -->
+                                    <div class="carousel-inner">
+                                        
+                                        <div class="item active">
+                                            <div class="d-flex justify-content-center">
+                                                <div id="" class="grid cs-style-1">
+                                                    <div class=" portfolio-item design">
+                                                        <figure>
+                                                            
+                                                            <div class="info" style="bottom:-110px;">
+                                                                <a id="28" data-toggle="modal" data-target="#detail_go" style="text-decoration:none"><span>Gopal Balasubramanian<br>President/CEO</span></a>
+                                                            </div>
+                                                            
+                                                            <img src="/static/images/Gopal_eVean.jpg" alt="Gopal" class="team_img">
+                                                            
+                                                            <figcaption>
+                                                                                                    </figcaption>
+                                                        </figure>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                </section>
+                </div>
+                <div id="class_adm" class="tabs_ui hidden">
+                    <!-- carousel================================================== -->
+                    <section id="testimonials" class="detail_modal">
+                        <div class="container">
+                            <div class='row'>
+                                <div class='col-md-12'>
+                                    <div class="carousel slide" data-ride="carousel" id="quote-carouse">
+                                        <!-- Bottom Carousel Indicators -->
+                                        <ol class="carousel-indicators" style="bottom:-40px">
+                                            <li data-target="#quote-carouse" data-slide-to="0" class="active"></li>
+                                        </ol>
+
+                                        <!-- Carousel Slides / Quotes -->
+                                        <div class="carousel-inner">
+
+                                            <!-- Quote 1 -->
+                                            <div class="item active">
+                                                <div class="row">
+
+                                                    <div id="" class="grid cs-style-1">
+                                                        <div class="col-sm-6 col-md-2 portfolio-item design">
+                                                            <figure>
+                                                                <!-- Thumb Info -->
+                                                                <div class="info" style="bottom:-110px;margin-left: 100px;">
+                                                                    <!-- <a id="5" data-toggle="modal" data-target="#detail" style="text-decoration:none"><span>Show Details</span></a> -->
+                                                                </div>
+                                                                <!-- Thumbnail -->
+                                                                <!-- <img src="/static/images/Rizwan.jpg" alt="Rizwan"  class="team_img"> -->
+                                                                <!-- Thumb links -->
+                                                                <figcaption>
+                                                                    <!--<a href="/static/images/Rizwan.jpg" class="preview tooltips popup-gallery" data-toggle="tooltip" data-placement="bottom" title="Preview" style="left:42%"><i class="fa fa-plus"></i></a>
+                                <a href="/under_construction/" class="link tooltips" data-toggle="tooltip" data-placement="bottom" title="More Details"><i class="fa fa-external-link"></i></a>-->
+                                                                </figcaption>
+                                                            </figure>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="" class="grid cs-style-1">
+                                                        <div class="col-sm-6 col-md-2 portfolio-item design">
+                                                            <figure>
+                                                                <!-- Thumb Info -->
+                                                                <div class="info" style="bottom:-110px">
+                                                                    <!-- <a id="6" data-toggle="modal" data-target="#detail" style="text-decoration:none"><span>Show Details</span></a> -->
+                                                                </div>
+                                                                <!-- Thumbnail -->
+                                                                <!-- <img src="/static/images/Vyjayanthi.jpg" alt="Vyjayanthi"  class="team_img"> -->
+                                                                <!-- Thumb links -->
+                                                                <figcaption>
+                                                                    <!--<a href="/static/images/Vyjayanthi.jpg" class="preview tooltips popup-gallery" data-toggle="tooltip" data-placement="bottom" title="Preview" style="left:42%"><i class="fa fa-plus"></i></a>
+                                <a href="/under_construction/" class="link tooltips" data-toggle="tooltip" data-placement="bottom" title="More Details"><i class="fa fa-external-link"></i></a>-->
+                                                                </figcaption>
+                                                            </figure>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div id="" class="grid cs-style-1">
+                                                        <div class="col-sm-6 col-md-2 portfolio-item design">
+                                                            <figure>
+                                                                <!-- Thumb Info -->
+                                                                <div class="info" style="bottom:-110px;">
+                                                                    <a id="5" data-toggle="modal" data-target="#detail" style="text-decoration:none"><span>Rizwan<br>Show Details</span></a>
+                                                                </div>
+                                                                <!-- Thumbnail -->
+                                                                <img src="/static/images/Rizwan.jpg" alt="Rizwan" class="team_img">
+                                                                <!-- Thumb links -->
+                                                                <figcaption>
+                                                                    <!--<a href="/static/images/Rizwan.jpg" class="preview tooltips popup-gallery" data-toggle="tooltip" data-placement="bottom" title="Preview" style="left:42%"><i class="fa fa-plus"></i></a>
+                              <a href="/under_construction/" class="link tooltips" data-toggle="tooltip" data-placement="bottom" title="More Details"><i class="fa fa-external-link"></i></a>-->
+                                                                </figcaption>
+                                                            </figure>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="" class="grid cs-style-1">
+                                                        <div class="col-sm-6 col-md-2 portfolio-item design">
+                                                            <figure>
+                                                                <!-- Thumb Info -->
+                                                                <div class="info" style="bottom:-110px">
+                                                                    <a id="6" data-toggle="modal" data-target="#detail" style="text-decoration:none"><span>Vyjayanthi<br>Show Details</span></a>
+                                                                </div>
+                                                                <!-- Thumbnail -->
+                                                                <img src="/static/images/Vyjayanthi.jpg" alt="Vyjayanthi" class="team_img">
+                                                                <!-- Thumb links -->
+                                                                <figcaption>
+                                                                    <!--<a href="/static/images/Vyjayanthi.jpg" class="preview tooltips popup-gallery" data-toggle="tooltip" data-placement="bottom" title="Preview" style="left:42%"><i class="fa fa-plus"></i></a>
+                            <a href="/under_construction/" class="link tooltips" data-toggle="tooltip" data-placement="bottom" title="More Details"><i class="fa fa-external-link"></i></a>-->
+                                                                </figcaption>
+                                                            </figure>
+                                                        </div>
+                                                    </div>
+
+
+
+
+
+                                                </div>
+                                            </div>
+                                            <!--<div class="item">
+        </div>
+      </div>-->
+
+                                            <!-- Carousel Buttons Next/Prev -->
+                                            <a data-slide="prev" href="#quote-carouse" class="left carousel-control visible-md visible-lg"><i class="fa fa-chevron-left" style="line-height:7"></i></a>
+                                            <a data-slide="next" href="#quote-carouse" class="right carousel-control  visible-md visible-lg"><i class="fa fa-chevron-right" style="line-height:7"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+                </div>
+
+                
+
+
+                <!--<div id="class_adm" class="tabs_ui hidden" style="margin-top: -30px;margin-left: 30px;">
+    <section id="testimonials" class="detail_modal">
+
+      <div class="container">
+
+        <div class='row'>
+          <div class='col-md-12'style="margin-left:250px">
+            <div class="carousel slide" data-ride="carousel" id="quote-carousel">
+              <ol class="carousel-indicators"style="left:280px;bottom:-30px">
+                <li data-target="#quote-carousel" data-slide-to="0" class="active"></li>
+                <li data-target="#quote-carousel" data-slide-to="1"></li>
+              </ol>
+
+              <div class="carousel-inner">
+
+                <div class="item active">
+                    <div class="row">
+                        <div id="" class="grid cs-style-1">
+                            <div class="col-sm-6 col-md-2 portfolio-item design">
+                                <figure>
+                                    <div class="info"style="bottom:-110px">
+                                         <a id="16" data-toggle="modal" data-target="#detail" style="text-decoration:none"><span>Show Details</span></a>
+                                    </div>
+                                    <img src="/static/images/class1/ashwini.jpg" alt="name" class="team_img">
+                                    <figcaption>
+                                    </figcaption>
+                                </figure>
+                            </div>
+                            <div class="col-sm-6 col-md-2 portfolio-item design">
+                                <figure>
+                                    <div class="info"style="bottom:-110px">
+                                         <a id="17" data-toggle="modal" data-target="#detail" style="text-decoration:none"><span>Show Details</span></a>
+                                    </div>
+                                    <img src="/static/images/ram.jpg" alt="ram" class="team_img">
+                                    <figcaption>
+                                    </figcaption>
+                                </figure>
+                            </div>
+                            <div class="col-sm-6 col-md-2 portfolio-item design">
+                                <figure>
+                                    <div class="info"style="bottom:-110px">
+                                         <a id="18" data-toggle="modal" data-target="#detail" style="text-decoration:none"><span>Show Details</span></a>
+                                    </div>
+                                    <img src="/static/images/balan.jpg" alt="Balan" class="team_img">
+                                    <figcaption>
+                                    </figcaption>
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="row">
+
+                        <div id="" class="grid cs-style-1">
+
+
+                            <div class="col-sm-6 col-md-2 portfolio-item design">
+                                <figure>
+                                    <div class="info"style="bottom:-110px">
+                                         <a id="19" data-toggle="modal" data-target="#detail" style="text-decoration:none"><span>Show Details</span></a>
+                                    </div>
+                                    <img src="/static/images/dhathri.jpg" alt="Dhathri" class="team_img">
+                                    <figcaption>
+                                    </figcaption>
+                                </figure>
+                            </div>
+
+                            <div class="col-sm-6 col-md-2 portfolio-item design">
+                                <figure>
+                                    <div class="info"style="bottom:-110px">
+                                         <a id="20" data-toggle="modal" data-target="#detail" style="text-decoration:none"><span>Show Details</span></a>
+                                    </div>
+                                    <img src="/static/images/class1/geetha.jpg" alt="Geetha" class="team_img">
+                                    <figcaption>
+                                    </figcaption>
+                                </figure>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+    </section>
+    </div>-->
+
+
+
+                </div>
+            </div>
+</section>
+
+<!-- mission vision values -->
+
+<section class="section-content section-isotope" id="projects" style="background-color:#f2f1f1;height:400px">
+
+    <div class="container">
+        <div id="filters" class="button-group text-center">
+            <button data-filter-value=".vision" class="active"><h4>Vision</h4></button>
+            <button data-filter-value=".mission"><h4>Mission</h4></button>
+            <button data-filter-value=".values"><h4>Values</h4></button>
+        </div>
+        <div class="row demo-3" style="height:100px">
+            <div id="portfolio" class="js-isotope grid cs-style-1" data-isotope-options='{ "columnWidth": 200, "itemSelector": ".portfolio-item" }'>
+                <div class="col-sm-12 col-md-12 portfolio-item mission hidden">
+                    <blockquote>
+                        <div class="row">
+                            <!--<div class="col-sm-3 text-center">
+                        <img class="img-circle" src="/static/images/mission.png"width="250px" height="250px">
+                      </div>-->
+                            <div class="col-sm-12" align="center">
+
+                                <p style="margin:0 0 10px;font-size:1.5em;font-weight:bold"> &nbsp;&nbsp;&nbsp;&nbsp;CONNECTING PASSIONATE VOLUNTEERS TO PROVIDE QUALITY EDUCATION PRIMARILY FOR RURAL CHILDREN</p>
+                                <p style="margin:0 0 10px;font-size:1.5em;font-weight:bold; text-align: left;"> &nbsp;&nbsp;&nbsp;&nbsp;&#x25CF;&nbsp;&nbsp;&nbsp;&nbsp;Working with Government,local communities and other partners</p>
+                                <p style="margin:0 0 10px;font-size:1.5em;font-weight:bold; text-align: left;"> &nbsp;&nbsp;&nbsp;&nbsp;&#x25CF;&nbsp;&nbsp;&nbsp;&nbsp;Leveraging technology to empower learning ecosystem</p>
+                            </div>
+                        </div>
+                    </blockquote>
+                </div>
+                <div class="col-sm-12 col-md-12 portfolio-item vision">
+                    <blockquote>
+                        <div class="row">
+                            <!--<div class="col-sm-3 text-center">
+                        <img class="img-circle" src="/static/images/vision.png"width="250px">
+                      </div>-->
+                            <div class="col-sm-12" align="center">
+                                <p style="font-weight:bold;font-size:1.5em">TO CREATE A KNOWLEDGEABLE & EMPOWERED INDIA THROUGH QUALITY EDUCATION.</p>
+                            </div>
+                        </div>
+                    </blockquote>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 portfolio-item values hidden">
+                <blockquote>
+                    <div class="row">
+                        <!--<div class="col-sm-3 text-center">
+                        <img class="img-circle" src="/static/images/values.png"width="250px">
+                      </div>-->
+                        <div class="col-sm-6 col-md-offset-3">
+                            <ul style="list-style-type:none;font-weight:bold; font-size:1.5em">
+                                <li style="margin:20px 0">Selflessness : Nothing is 'MINE'</li>
+                                <li style="margin:20px 0">Integrity : Non-negotiable</li>
+                                <li style="margin:20px 0">Passion : Giving time to educate</li>
+                                <li style="margin:20px 0">Execution : Committed to make things happen</li>
+                            </ul>
+                        </div>
+                    </div>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+</section>
+
+
+<!-- Our funders
+    ================================================== -->
+<!--<section id="pricing" class="dark" style="background-color:#fff;margin-top:0px;margin-bottom:0px">
+
+    <div class="page-header text-center" style="margin-top:0px;margin-bottom:0px">
+        <h2 style="color:black">The Online Teaching-Learning Platform</h2>
+    </div>
+
+    <div class="container">
+        <div class="text-center" style="margin-top:0px;margin-bottom:0px">
+            <p style="color:black">This platform is a comprehensive ecosystem for managing educational partnerships. It includes a Volunteer Management System for managing volunteers and streamlines the process of onboarding, a Content Management System for accessing educational resources, and a Learning Management System for live and facilitated learning opportunities. This platform provides a flexible and scalable framework for delivering effective education, with a focus on live and recorded teaching, content management, and learning management.</p>
+        </div>
+        <div class="col-md-2 col-sm-6" style="padding-bottom: 50px;margin-top:67px">
+            <img src="/static/images/jupiter-platform.png" style="width:1200px;height:700px; box-shadow: 0px 0px 10px #888888;background-color: #c9e4d3;">
+            </a>
+        </div>
+
+    </div>
+</section>-->
+
+<section id="pricing" class="dark" style="background-color:#fff;margin-top:0px;margin-bottom:0px">
+
+    <div class="page-header text-center" style="margin-top:0px;margin-bottom:0px">
+        <h2 style="color:black">The Online Teaching-Learning Platform</h2>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <p style="color:black">This platform is a comprehensive ecosystem for managing educational partnerships. It includes a Volunteer Management System for managing volunteers and streamlines the process of onboarding, a Content Management System for accessing educational resources, and a Learning Management System for live and facilitated learning opportunities. This platform provides a flexible and scalable framework for delivering effective education, with a focus on live and recorded teaching, content management, and learning management.</p>
+            </div>
+            <div class="col-md-6 col-sm-12 text-center">
+                <img src="/static/images/jupiter-platform.png" style="max-width:100%;height:auto; box-shadow: 0px 0px 10px #888888;background-color: #c9e4d3;">
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- media mensiojpg>
+About Section
+    ================================================== -->
+<section id="about" class="content text-center" style="background:#f2f1f1">
+    <h2 style='font-weight:normal;color:#194961 !important;'>Sunbird Serve</h2>
+    <div class="container">
+
+        <div class="row">
+            <div id="tabs" class="tabs-centre">
+                
+
+                <div class="col-sm-12 overlay-text">
+                    <div class="vertical-align">
+                        <p class="about_p mobileView">
+                            The Online Teaching-Learning platform is now available as an open-source platform known as Serve-Beta under the MIT license. This platform provides a unique opportunity to create a new paradigm of volunteer-to-volunteer interactions, leading to the development of a societal network of volunteering systems.
+                        </p>
+                        <p class="about_p mobileView">
+                            The Serve Beta platform offers a streamlined approach to volunteer interactions that can significantly benefit society and support human development. This platform enables various stakeholders to crowdsource volunteers for their specific needs and participate in interactions to achieve these goals. The Serve Beta platform provides a range of features such as Reference Solution, Volunteering Registries, and Volunteer Services to enable Request, Assignment, Nominations, and Management of Needs and Deliverables. With these capabilities, the platform helps manage and track volunteer engagement in a more efficient and effective manner.
+                        </p>
+                        <button class="my-button" onclick="window.open('https://serve.sunbird.org/', '_blank')">Know More</button>
+                        <button class="my-button" onclick="window.open('https://serve.evean.net/', '_blank')">Serve Sandbox</button>
+                    </div>
+                </div>
+
+               
+
+            </div>
+            <style>
+                .grid figure img {
+                    height: 180px;
+                }
+                
+                .my-button {
+  background-color: #4CAF50; /* set the background color to green */
+  border: none; /* remove the button border */
+  color: white; /* set the text color to white */
+  padding: 10px 20px; /* add padding to the button */
+  text-align: center; /* center the text horizontally */
+  text-decoration: none; /* remove the default underline on the text */
+  display: inline-block; /* display the button as an inline-block element */
+  font-size: 16px; /* set the font size */
+  margin: 10px; /* add margin to the button */
+  cursor: pointer; /* change the mouse cursor to a pointer when hovering over the button */
+}
+                #login-modal {
+                    z-index: 1600 !important;
+                }
+                
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    background-color: white;
+                    min-width: 160px;
+                    margin-top: 9%;
+                    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+                    z-index: 1;
+                }
+                
+                .dropdown-content a {
+                    float: none;
+                    color: black;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    display: block;
+                    text-align: left;
+                }
+                
+                .dropdown-content a:hover {
+                    background-color: white;
+                    color: #02cc26 !important;
+                }
+                
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                }
+                
+                .tab_style.ui-state-focus,
+                .tab_style.ui-state-default,
+                .tab_style.ui-corner-top,
+                .tab_style.ui-state-hover,
+                .tab_style.ui-state-active,
+                .tab_style.ui-state-focus {
+                    border: none;
+                    //background:transparent;
+                }
+                
+                #div-txt-color>ul>li>div>a {
+                    color: rgba(255, 255, 255, 0.5)!important;
+                }
+                
+                .navbar-inverse .navbar-nav>li>a {
+                    font-size: 1.4rem;
+                    font-family: monospace;
+                }
+                
+                .cbp-af-header.cbp-af-header-shrink {
+                    display: none;
+                }
+                
+                .ec-nav__navbar>li>a {
+                    color: black !important;
+                    font-size: 15px;
+                    padding: 2.275rem 2rem 1.875rem 2rem !important;
+                }
+                
+                body {
+                    background: white;
+                }
+                
+                @media (min-width: 992px) {
+                    .offset_tab {
+                        margin-left: 16.66666667% !important;
+                        padding-bottom: 50px !important;
+                    }
+                    .offset_tab2 {
+                        margin-left: 33% !important;
+                        padding-bottom: 50px !important;
+                    }
+                    .offset_tab3 {
+                        padding-bottom: 50px !important;
+                        margin-left: 2% !important;
+                    }
+                    .offset_tab4 {
+                        margin-left: 25% !important;
+                    }
+                }
+                
+                a:focus {
+                    outline: none;
+                }
+                
+                .tab_img img {
+                    width: 100px !important;
+                    height: 50px;
+                    padding-top: 15px;
+                }
+                
+                .tabs-centre {
+                    background: #B5C6CF;
+                    border: none;
+                }
+                
+                .tabs-centre .ui-widget-header {
+                    background: #1A2930;
+                    border: none;
+                    border-bottom: 1px solid #c0c0c0;
+                    -moz-border-radius: 0px;
+                    -webkit-border-radius: 0px;
+                    border-radius: 0px;
+                }
+                
+                .tabs-centre .ui-tabs-nav .ui-state-default {
+                    background: transparent;
+                    border: none;
+                }
+                
+                .tabs-centre .ui-tabs-nav .ui-state-active {
+                    background: transparent url("/static/images/arrow2.png") no-repeat top center;
+                    border: none;
+                    background-size: 30px 15px;
+                }
+                
+
+                .tabs-centre .ui-tabs-nav .ui-state-default a {
+                    color: #c0c0c0;
+                }
+                
+                .tabs-centre .ui-tabs-nav .ui-state-active a {
+                    color: #194961;
+                }
+                
+                .tabs-centre .ui-tabs-nav {
+                    height: 5em;
+                    width: 100%;
+                    text-align: center;
+                    background: #26a15b;
+                }
+                
+                .tabs-centre .ui-tabs-nav li.ui-tabs-selected,
+                .tabs-centre .ui-tabs-nav li.ui-state-active {
+                    margin-top: 0em;
+                    font-size: 100%;
+                }
+                
+                .tabs-centre .ui-tabs-nav {
+                    text-align: center;
+                    position: absolute;
+                    //left: 0.25em; 
+                    right: 0.05em;
+                    bottom: 0px;
+                    padding: 0em 0.2em 0.2em;
+                }
+                
+                .tabs-team .ui-tabs-nav li {
+                    display: inline-block;
+                    float: none;
+                    background: transparent;
+                }
+                
+                .tabs-team .ui-widget-header {
+                    background: transparent;
+                    border: none;
+                    height: 5.5em;
+                }
+                
+                .tabs-centre .ui-tabs-nav li {
+                    display: inline-block;
+                    float: none;
+                    top: 0px;
+                    margin: 0em;
+                    padding-bottom: 0px;
+                    margin-top: -2px !important;
+                    font-size: 80%;
+                }
+                
+                .dropdown-menu.sub_logout {
+                    left: 40px;
+                }
+                
+                @media only screen and (max-width: 480px) and (min-width: 0px) {
+                    .hide_for_mob {
+                        display: none !important;
+                    }
+                    .img_css_mob {
+                        margin-left: 0% !important;
+                    }
+                    .top_cls {
+                        top: 4.7% !important;
+                    }
+                    .site-header {
+                        height: 50px !important;
+                        padding-top: 3%;
+                    }
+                    .log-in {
+                        text-align: right;
+                    }
+                    .hide_in_old_ui {
+                        margin-right: 4%;
+                    }
+                    #login-badge {
+                        margin-right: 3%;
+                        margin-top: 10px !important;
+                    }
+                    .grid figure img {
+                        width: 210px !important;
+                    }
+                }
+            </style>
+            <script>
+                $("#tabs").tabs();
+                $("#tab").tabs();
+                $("#tab").removeClass("ui-corner-all ui-widget ui-widget-content ui-tabs");
+                $("#tabs").removeClass("ui-corner-all ui-widget ui-widget-content ui-tabs");
+                $(".tabs_ui").removeClass("ui-tabs-panel ui-widget-content ui-corner-bottom");
+                $(".tab_hd").removeClass("ui-corner-all ui-widget-header");
+            </script>
+
+        </div>
+    </div>
+    <!--container-->
+</section>
+<style>
+    .history_btn:hover {
+        background: rgb(22, 9, 82) !important;
+    }
+    
+</style>
+{% endblock content %}

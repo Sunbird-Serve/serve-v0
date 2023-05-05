@@ -6803,6 +6803,8 @@ def partners(request):
 def about_us(request):
     return render_response(request, 'new_about_us_temp.html', {})
 
+def eveans_home(request):
+    return render_response(request, 'eveans_home.html', {})
 
 def learn_more(request):
     return render_response(request, 'new_learn_more_temp.html', {})
