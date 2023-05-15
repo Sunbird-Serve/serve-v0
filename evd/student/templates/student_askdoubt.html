@@ -1,53 +1,111 @@
 {% extends 'student_base.html' %}
+{% block head_title %}Ask Doubt{% endblock %}
 
 {% block body_container %}
-<div style="padding-left: 35%; padding-bottom: 10%; padding-top: 7%;">
-    <form method="post" action="/student/student_ask_doubt/"  enctype="multipart/form-data" >
-        {% csrf_token %}
-        <h4 style="padding-left: 15%; padding-bottom: 2%; "><strong>Ask Doubt </strong> </h4>
-            <div style="padding: 1%;">
-              <span style="color:#ffa500"><strong>Student Name:</strong></span>
-                <b style="padding-left: 2%;">{{student.id}} -- {{student.name}}</b>
-            </div>
-        <div style="padding: 1%;">
-          <span style="color:#ffa500"><strong>Planned Topics:</strong> </span>
-            <select id="topics" class="form-control" style="width:40%" name="topics" required>
-              <option value="" >---Select the Topic---</option>
-              {% for topic in topics %}
-                  <option id="{{ topic.id }}" value="{{ topic.id }}" style="background-color:rgb(132, 252, 121);">{{topic.id}}-{{ topic }}</option>
-              {% endfor %}
-            </select> 
+
+<style>
+  .ask-about-content{
+    padding: 20px;
+  }
+    .ask-about{
+      margin: 100px 0px 0px 0px;
+    }
+ 
+  .app-new-form-label{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .app-new-input-group{
+    display: flex !important;
+    justify-content: center !important;
+  }
+  .app-new-form-label input{
+    width: 500px;
+  }
+  .app-new-form-label .form-control{
+    width: 500px;
+  }
+  .app-new-submit-btn2{
+    padding: 5px 20px;
+    background-color: #f15a22;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight:bold;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    /* border: 1px solid #000; */
+  }
+  .submit-btn2{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .ask-for-doubt{
+    background-color: #27A3E2;
+    margin: 0px 0px 60px 0px;
+  }
+  .ask-for-doubt h2{
+    color:#fff;
+    font-weight: 600;
+  }
+  .ask-for-doubt-content{
+    padding: 05px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .ask-about{
+    background-color: #fff;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    margin-bottom: 40px;
+  }
+</style>
+<div class="ask-about">
+  <div class="ask-about-content">
+    <div class="container">
+      <div class="ask-for-doubt">
+        <div class="ask-for-doubt-content">
+          <h2>Ask for doubt</h2>
         </div>
-        <div style="padding: 1%;">
-          <span style="color:orange"><strong>SubTopic :</strong> </span>
-            <select id="subtopics" class="form-control" name="subtopics" style="width:40%" >
-                <option  value="">---Select the Subtopic---</option>
+      </div>
+      <form method="post" action="/student/student_ask_doubt/"  enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group app-new-form-label ">
+          <label for="topics" style="margin-right: 47px;">Topics:</label>
+            <select class="form-control" id="topics" name="topics">
+              <option value="" >---Select the Topic---</option>
+                {% for topic in topics %}
+                    <option id="{{ topic.id }}" value="{{ topic.id }}" style="background-color:rgb(132, 252, 121);">{{topic.id}}-{{ topic }}</option>
+                {% endfor %}
             </select>
         </div>
-            <!-- <div style="width: 40%; padding: 1%;">
-                <label style="color:#ffa500" >Select Image(Only png, jpg):</label>
-                <input type='file' id="file" class="form-control"  name='file' required=""/>
-            </div> -->
-            <div class="h-12 w-96">
-              <label for="imgInp" class="text-gray-700 font-bold">Select Image(Only png, jpg):</label>
-              <input accept=".png, .jpg" type='file' name="file" id="imgInp" />
-            </div>
-            <div style="width: 40%; padding: 1%;">
-                <label for="text"  style="color:#ffa500">Doubt Text:</label>
-                <textarea id="text" class="form-control" name='text' placeholder="Doubt Text" rows="2" required></textarea>
-            </div>
-
-
-        <div class="col-lg-12 col-md-12 col-sm-12" style="padding-top:16px; padding-bottom:16px;">
-            <button type="submit" class="btn btn-success" onclick="postDoubt()">Post Doubt</button>
+        <div class="form-group app-new-form-label">
+          <label for="subtopics" style="margin-right: 30px;">Subtopics:</label>
+          <select class="form-control" id="subtopics" name="subtopics">
+            <option value="" >---Select the Subtopic---</option>
+          </select>
         </div>
-    </form>
-    <!-- <div class="w-1/4 flex items-center justify-center my-4">
-      <img class="w-96 h-96 bg-no-repeat bg-center" id="blah" src="#" alt="" />
-    </div> -->
+        <div class="input-group app-new-input-group">
+          <div class="custom-file app-new-form-label">
+            <label class="custom-file-label" style="margin-right: 13px;" for="imgInp">Upload image:</label>
+            <input accept=".png, .jpg" type="file" class="custom-file-input" id="imgInp" aria-describedby="inputGroupFileAddon04">
+          </div>
+        </div>
+        <div class="form-group app-new-form-label" style="margin-top: 20px;">
+          <label for="text" style="margin-right: 29px;">Doubt Text:</label>
+          <textarea class="form-control" id="text" name='text' placeholder="Write your doubt here.." rows="4" required></textarea>
+        </div>
+        <div class="submit-btn2">
+          <a href="/student/student_dashboard" style="background-color: #535758;" class="app-new-submit-btn2">Cancle</a>
+          <button class="app-new-submit-btn2" onclick="postDoubt()">Post</button>
+        </div>
+      </form>
+    </div>
   </div>
-
-  
+</div>
 {% block javascript %}
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
