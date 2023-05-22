@@ -25,13 +25,20 @@
 </style>
 <div class="container mt-4 pt-4" style="margin-top: 100px">
   <div class="col-6 mx-auto">
-    <h3 class="text-center">Select Student</h3>
+    <h3 class="text-center">Select Student Name</h3>
     <br />
+    {% if messages %}
+      <ul class="messages" style="color: #00008B; text-align: center;">
+          {% for message in messages %}
+          <h4{% if message.tags %} class="{{ messages }}"{% endif %}>{{ message }}</h4>
+          {% endfor %}
+      </ul>
+    {% endif %}
     <form action="" method="post">
       {% csrf_token %}
         <select  class="center" name="student_name">
           {% for d in student %}
-          <option value="{{d.student_id}}">{{d.student_id}}-{{d.student}}</option>
+          <option value="{{d.id}}">{{d.id}} - {{d.name}} - {{d.center}}</option>
           {% endfor %}
         </select>
       <!-- <input style="margin: 30px;" type="submit" /> -->

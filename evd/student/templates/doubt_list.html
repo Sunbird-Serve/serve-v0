@@ -1,6 +1,8 @@
 {% extends 'student_base.html' %}
 
 {% block body_container %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.11.4/datatables.min.css"/>
+
 <style>
 th{
 	border: 1px solid #ffffff;
@@ -21,53 +23,131 @@ table td {
 table tr:nth-child(even) {
 	background-color: #bef2f5;
 }
+.dataTables_length{
+	display: none;
+}
 </style>
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
 
 
 <div class="container">
-<h3 class="text-center" style="padding-top: 100px;"><span><b>{{student.center}} &#x2192; {{course.subject}} Doubts</b></span></h3><br>
-<div>
-<span>Go back to
-<a style="vertical-align:middle;font-family: Arial, Helvetica, sans-serif;font-size: 13.5px;" href="/student/student_dashboard/">Student Dashboard</a>	
-</span>	
-</div>	
-<table class="table table-striped" style="padding-bottom: 100px; ">
-	<thead style="background-color: #27A3E2;">
-	<tr>
-		<th>Topic</th>
-		<th>Subtopic</th>
-		<th>Status</th>
-		<th>Ask Doubt Text</th>
-        <th>Ask Doubt Doc</th>
-        <th>Assigned To</th>
-		<th>Doubt Asked On</th>
+	<div style="background-color: #27A3E2">
+		<h3 class="text-center" style="padding-top: 100px;"><span><b>{{student.center}} &#x2192; {{course.subject}} Doubts</b></span></h3><br>
+	</div>
+	<div>
+		<span>Go back to
+			<a style="vertical-align:middle;font-family: Arial, Helvetica, sans-serif;font-size: 13.5px;" href="/student/student_dashboard/">Home</a>	
+		</span>	
+	</div>	
+		<table id="example" class="table table-striped">
+			<thead style="background-color: #27A3E2;">
+				<tr>
+					<th>Topic</th>
+					<th>Subtopic</th>
+					<th>Status</th>
+					<th>Ask Doubt Text</th>
+					<th>Ask Doubt Doc</th>
+					<th>Assigned To</th>
+					<th>Doubt Asked On</th>
 
-	</tr>
-	</thead>
-	<tbody>
-	<!-- jinja2 Technique -->
-
-	{% for doubt in doubtList %}
-	<tr>
-        <td>{{doubt.topic.title}}</td>
-		<td>{{doubt.subtopic.name}}</td>
-		<td>{%  if doubt.status == '1' %} Open {% elif doubt.status == '2' %} Resloved {% else %} Responded {% endif %}</td>
-		<td>{{doubt.text}}</td>
-        <!-- <td> {% if doubt.resource_url == NULL %} {{doubt.resource_url}} {% else %} <a class="btn btn-success" title="View" style="text-align: center; line-height: initial;"
-            href="{{doubt.resource_url}}"> Image
-            </a>{% endif %}
-        </td> -->
-		<td><a href="{{doubt.resource_url}}"><img src="{{doubt.resource_url}}" width="60px" height="60px" alt="">View</a></td>
-		<td> {% if doubt.assigned_to == None %} Not Assigned{% else %} {{doubt.assigned_to}} {% endif %} </td>
-		<td>{{doubt.created_on|date:"Y-m-d"}}</td>
-
-
-	</tr>
-	{% endfor %}
-
-	</tbody>
-</table>
+				</tr>
+				<tfoot>
+				<tr>
+					<!-- <th><input type="text" placeholder="Search Topic"></th>
+					<th><input type="text" placeholder="Search Subtopic"></th>
+					<th><input type="text" placeholder="Search Status"></th>
+					<th><input type="text" placeholder="Search Ask Doubt Text"></th>
+					<th><input type="text" placeholder="Search Ask Doubt Doc"></th>
+					<th><input type="text" placeholder="Search Assigned To"></th>
+					<th><input type="text" placeholder="Search Doubt Asked On"></th> -->
+					<th>Topic</th>
+					<th>Subtopic</th>
+					<th>Status</th>
+					<th>Ask Doubt Text</th>
+					<th>Ask Doubt Doc</th>
+					<th>Assigned To</th>
+					<th>Doubt Asked On</th>
+				</tr>
+			</tfoot>
+			</thead>
+			<tbody>
+			{% for doubt in doubtList %}
+				<tr>
+					<td>{{doubt.topic.title}}</td>
+					<td>{{doubt.subtopic.name}}</td>
+					<td>{%  if doubt.status == '1' %} Open {% elif doubt.status == '2' %} Resloved {% else %} Responded {% endif %}</td>
+					<td>{{doubt.text}}</td>
+					<!-- <td> {% if doubt.resource_url == NULL %} {{doubt.resource_url}} {% else %} <a class="btn btn-success" title="View" style="text-align: center; line-height: initial;"
+						href="{{doubt.resource_url}}"> Image
+						</a>{% endif %}
+					</td> -->
+					<td><a href="{{doubt.resource_url}}"><img src="{{doubt.resource_url}}" width="60px" height="60px" alt="">View</a></td>
+					<td> {% if doubt.assigned_to == None %} Not Assigned{% else %} {{doubt.assigned_to}} {% endif %} </td>
+					<td>{{doubt.created_on|date:"Y-m-d"}}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
 </div>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.js"></script>
+  <!-- <script type="text/javascript">
+    $(document).ready(function() {
+      var table = $('#myTable').DataTable({
+		searching: false,
+        lengthChange: false,
+        // Set the default sorting order
+        // order: [[1, 'asc']],
+
+        // // Add additional sorting options
+        // columnDefs: [
+        //   { targets: [0, 1], orderable: true }
+        // ]
+      });
+
+      // Add a separate search box for each column
+      $('#myTable tfoot input').on('keyup change', function() {
+        var columnIndex = $(this).parent().index();
+        table.column(columnIndex).search(this.value).draw();
+      });
+    });
+  </script> -->
+  <script>
+    $(document).ready(function () {
+        // Setup - add a text input to each footer cell
+        $('#example tfoot th').each(function () {
+            var title = $(this).text();
+            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+        });
+     
+        // DataTable
+        var table = $('#example').DataTable({
+
+            initComplete: function () {
+						// searching: false,
+		// lengthChange: false
+                // Apply the search
+                this.api()
+                    .columns()
+                    .every(function () {
+                        var that = this;
+     
+                        $('input', this.footer()).on('keyup change clear', function () {
+                            if (that.search() !== this.value) {
+                                that.search(this.value).draw();
+                            }
+                        });
+                    });
+            },
+			// searching: false,
+        	// lengthChange: false,
+
+        });
+        $('#example tfoot tr').appendTo('#example thead');
+
+    });
+
+
+</script>
 
 {% endblock body_container %}

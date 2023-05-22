@@ -21,7 +21,10 @@ def student_login(request):
     if request.method == 'POST':
         mobile = request.POST.get('mobile')
         user = Guardian.objects.filter(mobile = mobile)
-
+        if not user:
+            messages.error(request, 'No student found!, please reach to your coordinator')
+            return redirect('/')
+        
         if len(str(mobile)) > 10 or len(str(mobile)) < 10 :
             context = {'message' : 'Invalid mobile number' , 'class' : 'danger' }
             return render(request, 'student_login_page.html', {'contect':context} )
@@ -31,7 +34,6 @@ def student_login(request):
             expiry_time = time_now + timedelta(minutes = 15)
             UserOtp.objects.create(mobile=mobile,otp=otp,type='guardian',expiry_time=expiry_time)
             send_otp(mobile,otp)
-            # mobile = 'sessionset'
             request.session['mobile'] = mobile
             return redirect('/student/student_verify_otp/')
     return render(request, 'student_login_page.html')
@@ -52,7 +54,7 @@ def send_otp(mobile, otp):
     resp = requests.get(url)
     response = resp.json()
     return redirect('/verify_otp')
-
+    
 def student_verify_otp(request):
     context = {'message' : 'User not found' , 'class' : 'danger' }
     if 'mobile' in request.session:
@@ -63,7 +65,8 @@ def student_verify_otp(request):
                 request.session['guardian'] = Guardian.objects.filter(mobile = mobile)
                 return redirect('/student/select_student')
             else:
-                context = {'message' : 'User not found' , 'class' : 'danger' }
+                messages.error(request, 'Entered OTP is Wrong!')
+                return redirect('/student/student_verify_otp')
     else:
         return redirect('/')
     return render(request, 'verify_otp.html', {'mobile':mobile})
@@ -72,25 +75,39 @@ def student_verify_otp(request):
 def select_student(request):
     guardian = request.session['guardian']
     guardianId = guardian[0].id
+    mobile = request.session['mobile']
+
     student = Student_Guardian_Relation.objects.filter(guardian_id=guardianId)
+    studentObj = Student.objects.filter(phone=mobile)
     if request.method == "POST":
         student = request.POST['student_name']
         request.session['student']=student
         return redirect('/student/student_dashboard/')
-    return render(request, 'select_student.html',{'student':student})
+    return render(request, 'select_student.html',{'student':studentObj})
 
 @GuardianLogin
 @StudentLogin
 def studentdashboard(request):
     studentId = request.session['student']
     studentobj = Student.objects.get(id=studentId)
+    print(studentobj)
     offeringId = Offering_enrolled_students.objects.filter(student_id=studentId).values_list('offering')
-    print (offeringId)
-    offeringobj = Offering.objects.get(id__in=offeringId, status='running')
-    courseId=offeringobj.course_id
-    courseObj = Course.objects.get(id=courseId)
-
-    return render(request, 'evd.html', {'student':studentobj,'offerings':offeringobj,'course':courseObj})
+    print ("offeringId", offeringId)
+    if not offeringId:
+        messages.error(request, "Student `{}-{}` was not enrolled or Student don't have offerings".format(studentobj.id,studentobj.name))
+        return redirect('/student/select_student')
+    else:
+        offeringObj = Offering.objects.filter(id__in=offeringId,status='running')
+        print('offeringObj',offeringObj)
+        if offeringObj:
+            offeringObj = Offering.objects.get(id__in=offeringId,status='running')
+            courseId=offeringObj.course_id
+            courseObj = Course.objects.get(id=courseId)
+        else:
+            messages.error(request, "Student `{}-{}` was don't have running offerings".format(studentobj.id,studentobj.name))
+            return redirect('/student/select_student')
+           
+    return render(request, 'evd.html', {'student':studentobj,'offerings':offeringObj,'course':courseObj})
 
 
 @GuardianLogin
@@ -98,11 +115,13 @@ def studentdashboard(request):
 def student_calendar(request):
     studentId = request.session['student']
     offeringId = Offering_enrolled_students.objects.filter(student_id=studentId).values_list('offering')
+    offeringObj = Offering.objects.get(id__in=offeringId, status='running')
+    courseId=offeringObj.course_id
+    courseObj = Course.objects.get(id=courseId)
     start = request.GET.get('start')
     end   = request.GET.get('end')
     std_sessions = Session.objects.filter(date_start__gte=start,date_start__lte=end,offering_id__in=offeringId).values_list('id','date_start','date_end','ts_link','teacher')
-    offerings = Offering.objects.get(id__in=offeringId, status='running')
-    # print("std_sessions",std_sessions)
+    # sessions = Session.objects.filter(offering_id__in=offeringId)
     out = []
     for tm in std_sessions:
         e_id=tm[0]
@@ -112,12 +131,13 @@ def student_calendar(request):
         teacher = tm[4]
         out.append({   
             'id':e_id,
-            'title': teacher,
+            'title': '{}th {} Click here to join class'.format(courseObj.grade,courseObj.subject),
             'start': start_date,
             'end': end_date,
             'link': link,
-            'tm_type':'live'                                     
+            'tm_type':'live'                                
         })
+
     return HttpResponse(json.dumps(out),content_type="application/json")
 
 @GuardianLogin
@@ -146,7 +166,7 @@ def student_ask_doubt(request):
         offeringObj = Offering.objects.get(id__in=offeringId, status='running')
 
         dtDoc = None; resourceType = '2'; resourceUrl = ''; contentTypeId = 2
-
+        
         if attachmentType == "image":
             cloudFolderName = settings.TEACHER_DOUBT_RESPONSE_STORAGE_FOLDER
             dtDoc = docUploadService.upload_user_document_s3(request, "teacher", None, cloudFolderName,None,"obj")
@@ -156,7 +176,7 @@ def student_ask_doubt(request):
             resourceType = '5'
             resourceUrl = urlString
             contentTypeId = 4
-
+            
         Doubt_Thread.objects.create(
             student=studentObj,
             offering=offeringObj,
@@ -193,7 +213,7 @@ def list_studentdoubts(request):
     studentId = request.session['student']
     student = Student.objects.get(id=studentId)
     doubtObj = Doubt_Thread.objects.filter(student=student).order_by('id')
-
+    
     offeringId = Offering_enrolled_students.objects.filter(student_id=studentId).values_list('offering')
     offeringObj = Offering.objects.get(id__in=offeringId, status='running')
     courseId=offeringObj.course_id
@@ -257,5 +277,5 @@ def update_liveclass_attendance(request):
 
 
 def student_logout(request):
-    request.session.clear()
+    del request.session['student']
     return redirect('/')
