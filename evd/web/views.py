@@ -5,7 +5,7 @@ from django.db.models import signals, Q, Count
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound
 from django.core import serializers
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.contrib.auth.decorators import login_required
@@ -21,6 +21,9 @@ from django.contrib.auth import authenticate
 from django.core.files.base import ContentFile
 from django.db.models.fields.files import FieldFile
 import ast
+import csv
+import io
+import pandas as pd
 # from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
@@ -19349,3 +19352,444 @@ class ManageBooking(View):
         except Exception as e:
             logService.logException("mb PUT error", e.message)
             return genUtility.getStandardErrorResponse(request, 'kUnauthorisedAction')
+        
+def get_course(request):
+    return redirect('/content-admin/')
+
+def my_table_ajax(request):
+    board = request.GET.get('board')
+    request.session['board']=board
+    courseId = request.GET.get('courseId')
+    request.session['courseId']=courseId
+    topic_id = request.GET.getlist('topic_id[]')
+    request.session['topic_id']=topic_id
+
+    if board and not courseId and not topic_id:
+        courses = Course.objects.filter(board_name=board, status='active')
+        course_list = [{'id': course.id, 'grade': course.grade, 'subject': course.subject} for course in courses]
+        response_data = {'courses': course_list}
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+    if board and courseId and not topic_id:
+        topics = Topic.objects.filter(course_id=courseId)
+        topic_list = [{'id': topic.id, 'title': topic.title} for topic in topics]
+        response_data = {'topics': topic_list}
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+    return HttpResponse({'options': '<option value="">Select an option</option>'})
+
+def contentAdmin(request):
+    board_list = Center.objects.filter(status="Active").values_list("board", flat=True).distinct().order_by("board")
+    if 'board' in request.session and 'courseId' in request.session:
+        board_name = request.session['board']
+        courseId = request.session['courseId']
+        # print(courseId)
+        # board_name = "APSB"
+        # courseId = 118
+        course = Course.objects.get(id=courseId)
+        topics_obj = []
+        topics_list = Topic.objects.filter(course_id=courseId)
+        for topic in topics_list:
+            subTopic = []
+            subtopics_list = SubTopics.objects.filter(topic=topic)
+            for subtopics in subtopics_list:
+                sbtopics = {
+                    "id":subtopics.id,
+                    "name":subtopics.name,
+                    "status": subtopics.status,
+                }
+                subTopic.append(sbtopics)
+            topics = {
+                "id":topic.id,
+                "name":topic.title,
+                "status": topic.status,
+                "subTopic":subTopic
+            }
+            topics_obj.append(topics)
+    else:
+
+        return render(request, 'contentadmin.html', {"board_list":board_list})
+    # del request.session['courseId']
+    return render(request, 'contentadmin.html', {"list_objs":topics_obj,"board_list":board_list, "board_name":board_name, 'course':course})
+
+
+def upload_topics(request):
+    board_list = Center.objects.filter(status="Active").values_list("board", flat=True).distinct().order_by("board")
+    context = {"board_list":board_list}
+    return render(request, 'topics_uploads.html', context)
+
+def upload_subtopics(request):
+    board_list = Center.objects.filter(status="Active").values_list("board", flat=True).distinct().order_by("board")
+    context = {"board_list":board_list}
+    return render(request, 'subtopics_upload.html', context)
+
+
+def my_topic_ajax(request):
+    board_name = request.GET.get('board_name')
+    request.session['board_name']=board_name
+    course_id = request.GET.getlist('course_id[]')
+    request.session['course_id']=course_id
+    topic_id = request.GET.get('topic_id')
+    request.session['topic_id']=topic_id
+
+    if board_name and not course_id and not topic_id:
+        courses = Course.objects.filter(board_name=board_name, status='active')
+        course_list = [{'id': course.id, 'grade': course.grade, 'subject': course.subject} for course in courses]
+        response_data = {'courses': course_list}
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+    if board_name and course_id and not topic_id:
+        topics = Topic.objects.filter(course_id=course_id)
+        topic_list = [{'id': topic.id, 'title': topic.title} for topic in topics]
+        response_data = {'topics': topic_list}
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+    return HttpResponse({'options': '<option value="">Select an option</option>'})
+
+
+def download_topic_data(request):
+    board_name = request.session['board_name']
+    course_id = request.session['course_id']
+
+    board = Center.objects.filter(board=board_name,status="Active").values_list("board", flat=True).distinct()
+    courses_list = []
+    for id in course_id:
+        courses = Course.objects.filter(id=id)
+        values = list(courses.values_list('id', 'grade', 'subject'))
+        courses_list.append(values)
+
+    df1 = pd.DataFrame(list(board), columns=['BoardName'])
+    df2 = pd.DataFrame( columns=['CourseID', 'Grade', 'Course'])
+    for course in courses_list:
+        new_row = {'CourseID': course[0][0], 'Grade': course[0][1], 'Course': course[0][2]}
+        df2 = df2.append(new_row, ignore_index=True)
+    df3 = pd.DataFrame(columns=['Topic Title', 'URL', 'Num_Sessions(default=1)', 'Status(default="Not Started")', 'Priority(default=0)' ])
+
+    merged_df = pd.concat([df1, df2, df3], axis=1)
+    excel_file = io.BytesIO()
+
+    writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+    merged_df.to_excel(writer, index=False, startrow=1, header=False)
+    worksheet = writer.sheets['Sheet1']
+    for col_num, value in enumerate(merged_df.columns.values):
+        worksheet.write(0, col_num, value)
+    writer.close()
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="topic_details.csv"'
+    response.write(excel_file.getvalue())
+    return response
+
+
+def import_topics_data(request):
+    if request.method == 'POST' and request.FILES['file']:
+        file = request.FILES['file']
+        xl = pd.read_excel(file)
+        print(xl.head())
+        
+        default_values = {'URL': '', 'Num_Sessions(default=1)': '1', 'Status(default="Not Started")': 'Not Started', 'Priority(default=0)': '0'}
+        xl = xl.fillna(value=default_values)
+        for index, row in xl.iterrows():
+            model1_instance = Topic(
+                course_id_id=row['CourseID'],
+                title=row['Topic Title'],
+                url=row['URL'],
+                num_sessions=row['Num_Sessions(default=1)'],
+                status=row['Status(default="Not Started")'],
+                priority=row['Priority(default=0)'],
+            )
+            model1_instance.save()
+            print(model1_instance)
+        return redirect('upload_topics')
+    return render(request, 'topics_uploads.html')
+
+
+def my_subtopic_ajax(request):
+    board_name = request.GET.get('board_name')
+    request.session['board_name']=board_name
+    course_id = request.GET.get('course_id')
+    request.session['course_id']=course_id
+    topic_id = request.GET.getlist('topic_id[]')
+    request.session['topic_id']=topic_id
+
+    if board_name and not course_id and not topic_id:
+        courses = Course.objects.filter(board_name=board_name, status='active')
+        course_list = [{'id': course.id, 'grade': course.grade, 'subject': course.subject} for course in courses]
+        response_data = {'courses': course_list}
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+    if board_name and course_id and not topic_id:
+        topics = Topic.objects.filter(course_id=course_id)
+        topic_list = [{'id': topic.id, 'title': topic.title} for topic in topics]
+        response_data = {'topics': topic_list}
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+    return HttpResponse({'options': '<option value="">Select an option</option>'})
+
+
+def download_subtopic_data(request):
+    board_name = request.session['board_name']
+    course_id = request.session['course_id']
+    topic_id = request.session['topic_id']
+
+    board = Center.objects.filter(board=board_name,status="Active").values_list("board", flat=True).distinct()
+    course = Course.objects.filter(id=course_id).values_list('id', 'grade', 'subject')
+
+    topics_list = []
+    for id in topic_id:
+        topics = Topic.objects.filter(id=id)
+        values = list(topics.values_list('id', 'title'))
+        topics_list.append(values)
+
+    df1 = pd.DataFrame(list(board), columns=['BoardName'])
+    df2 = pd.DataFrame(list(course), columns=['CourseID', 'Grade', 'Course'])
+    df3 = pd.DataFrame( columns=['TopicID', 'Topic Title'])
+    for topic in topics_list:
+        new_row = {'TopicID': topic[0][0], 'Topic Title': topic[0][1]}
+        df3 = df3.append(new_row, ignore_index=True)
+    df4 = pd.DataFrame(columns=['Subtopic Title', 'Status(default="Not Started")', 'Type(default=1)'])
+
+    merged_df = pd.concat([df1, df2, df3, df4], axis=1)
+    excel_file = io.BytesIO()
+
+    writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+    merged_df.to_excel(writer, index=False, startrow=1, header=False)
+    worksheet = writer.sheets['Sheet1']
+    for col_num, value in enumerate(merged_df.columns.values):
+        worksheet.write(0, col_num, value)
+    writer.close()
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="subtopic_details.csv"'
+    response.write(excel_file.getvalue())
+    return response
+
+
+def import_subtopics_data(request):
+    if request.method == 'POST' and request.FILES['file']:
+        file = request.FILES['file']
+        xl = pd.read_excel(file)
+        print(xl.head())
+        # xl = xl.fillna(method="ffill")
+        default_values = {'Status(default="Not Started")': 'Not Started', 'Type(default=1)': '1'}
+        xl = xl.fillna(value=default_values)
+
+        for index, row in xl.iterrows():
+            model1_instance = SubTopics(
+                topic_id=row['TopicID'],
+                name=row['Subtopic Title'],
+                status=row['Status(default="Not Started")'],
+                type=row['Type(default=1)'],
+
+            )
+            model1_instance.save()
+            print(model1_instance)
+
+        return redirect('upload_subtopics')
+    return render(request, 'topics_subupload.html')
+
+class ContentDetailsView(View):
+     
+    def __init__(self):
+        self.tables = ['web_contentdetail']
+    
+    
+    def get(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return render(request, "content_details.html", {'tables':self.tables})
+        else:
+            return HttpResponseNotFound("Forbidden Access")
+
+    def validateandContentHeaders(self,fieldsArray):
+        try:
+            for i in range(0, len(fieldsArray)):
+                fieldVal = fieldsArray[i]
+                if fieldVal:
+                    if i == 0:
+                        valueStr = "(" + fieldVal 
+                    else:
+                        valueStr = valueStr + "," + fieldVal
+            valueStr = valueStr + ")"
+            return valueStr
+        except Exception as e:
+            print("validateandContentHeaders Exceptions", e)
+            traceback.print_exc()
+            return None
+
+    def getDValueString(self, fieldsArray, csvRow):
+        try:
+            valueStringArray = []
+            valueStr = ""
+            for i in range(0, len(fieldsArray)):
+                fieldVal = csvRow[i]
+                fieldName = fieldsArray[i]
+                if fieldVal is None:
+                    fieldVal = "null"
+                if i == 0:
+                    valueStr = "('" + fieldVal + "'"
+                else:
+                    valueStr = valueStr + ",'" + fieldVal + "'"
+
+            valueStr = valueStr + ")"
+
+            return valueStr
+        except Exception as e:
+            print("getDValueString Exceptions", e)
+            traceback.print_exc()
+            return None
+
+    def post(self, request, *args, **kwargs):
+        try:
+            if request.user.is_superuser:
+                pass
+            else:
+                return HttpResponseNotFound("Forbidden Access")
+
+            tableName = request.POST.get('tableName')
+            print("tableName", tableName)
+
+            inputCsvFile = request.FILES['file']
+            csvReader = csv.reader(inputCsvFile, delimiter=',')
+            j = 0
+            fieldsArray = None
+            fieldsStr = ""
+            valueDataString = ""
+            for row in csvReader:
+                if j == 0:
+                    fieldsArray = row
+                    fieldsStr = self.validateandContentHeaders(row)
+                    if fieldsStr is None:
+                        return render(request, "content_details.html", {"rejectedData": "Improper column value", 'tables':self.tables})
+                else:
+                    if j == 1:
+                        pass
+                    else:
+                        valueDataString = valueDataString + " , "
+
+                    valueString = self.getDValueString(fieldsArray, row)
+                    if valueString is None:
+                            return render(request, "content_details.html",{"rejectedData": "Invalid Values at row " + str(j-2), 'tables':self.tables})
+                    else:
+                        valueDataString = valueDataString + valueString
+                j = j + 1
+            query = "INSERT INTO " + tableName + "" +fieldsStr + " VALUES "+ valueDataString + ";"
+            
+
+            db= MySQLdb.connect(host=settings.DATABASES['default']['HOST'], user=settings.DATABASES['default']['USER'], 
+            passwd=settings.DATABASES['default']['PASSWORD'], db=settings.DATABASES['default']['NAME'], charset="utf8", use_unicode=True, compress=True, connect_timeout=30)
+            users_cur = db.cursor(MySQLdb.cursors.DictCursor)
+            users_cur.execute(query)
+            db.close()
+            users_cur.close()
+            
+            return render(request, "content_details.html", {"message": "Successfully uploaded the records. Table Name "+tableName+". Total number of records " + str(j-1), 'tables':self.tables})
+
+
+        except Exception as e:
+            logService.logExceptionWithFunctionName("ContentUploadView POST",e)
+            msg = genUtility.getErrorMessageFromException(e)
+            return render(request, "content_details.html", {"rejectedData": msg, 'tables':self.tables})
+
+class ContentDemandView(View):
+     
+    def __init__(self):
+        self.tables = ['web_content_demand']
+    
+    
+    def get(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return render(request, "content_demand.html", {'tables':self.tables})
+        else:
+            return HttpResponseNotFound("Forbidden Access")
+
+    def validateandContentHeaders(self,fieldsArray):
+        try:
+            for i in range(0, len(fieldsArray)):
+                fieldVal = fieldsArray[i]
+                if fieldVal:
+                    if i == 0:
+                        valueStr = "(" + fieldVal 
+                    else:
+                        valueStr = valueStr + "," + fieldVal
+            valueStr = valueStr + ")"
+            return valueStr
+        except Exception as e:
+            print("validateandContentHeaders Exceptions", e)
+            traceback.print_exc()
+            return None
+
+    def getDValueString(self, fieldsArray, csvRow):
+        try:
+            valueStringArray = []
+            valueStr = ""
+            for i in range(0, len(fieldsArray)):
+                fieldVal = csvRow[i]
+                fieldName = fieldsArray[i]
+                if fieldVal is None:
+                    fieldVal = "null"
+                if i == 0:
+                    valueStr = "('" + fieldVal + "'"
+                else:
+                    valueStr = valueStr + ",'" + fieldVal + "'"
+
+
+
+            valueStr = valueStr + ")"
+
+            return valueStr
+        except Exception as e:
+            print("getDValueString Exceptions", e)
+            traceback.print_exc()
+            return None
+
+    def post(self, request, *args, **kwargs):
+        try:
+            if request.user.is_superuser:
+                pass
+            else:
+                return HttpResponseNotFound("Forbidden Access")
+
+            tableName = request.POST.get('tableName')
+            print("tableName", tableName)
+
+            inputCsvFile = request.FILES['file']
+            csvReader = csv.reader(inputCsvFile, delimiter=',')
+            j = 0
+            fieldsArray = None
+            fieldsStr = ""
+            valueDataString = ""
+            for row in csvReader:
+                if j == 0:
+                    fieldsArray = row
+                    fieldsStr = self.validateandContentHeaders(row)
+                    if fieldsStr is None:
+                        return render(request, "content_demand.html", {"rejectedData": "Improper column value", 'tables':self.tables})
+                else:
+                    if j == 1:
+                        pass
+                    else:
+                        valueDataString = valueDataString + " , "
+
+                    valueString = self.getDValueString(fieldsArray, row)
+                    if valueString is None:
+                            return render(request, "content_demand.html",{"rejectedData": "Invalid Values at row " + str(j-2), 'tables':self.tables})
+                    else:
+                        valueDataString = valueDataString + valueString
+                j = j + 1
+            query = "INSERT INTO " + tableName + "" +fieldsStr + " VALUES "+ valueDataString + ";"
+            
+
+            db= MySQLdb.connect(host=settings.DATABASES['default']['HOST'], user=settings.DATABASES['default']['USER'], 
+            passwd=settings.DATABASES['default']['PASSWORD'], db=settings.DATABASES['default']['NAME'], charset="utf8", use_unicode=True, compress=True, connect_timeout=30)
+            users_cur = db.cursor(MySQLdb.cursors.DictCursor)
+            users_cur.execute(query)
+            db.close()
+            users_cur.close()
+            
+            return render(request, "content_demand.html", {"message": "Successfully uploaded the records. Table Name "+tableName+". Total number of records " + str(j-1), 'tables':self.tables})
+
+
+        except Exception as e:
+            logService.logExceptionWithFunctionName("ContentUploadView POST",e)
+            msg = genUtility.getErrorMessageFromException(e)
+            return render(request, "content_demand.html", {"rejectedData": msg, 'tables':self.tables})

@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% load filters %}
+
+<!DOCTYPE html>
+{% block body_container2 %}
+{{ block.super }}
+
+<style>
+
+    thead th, thead td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    }
+    thead th {
+        font-weight: bold;
+    }
+    thead th, thead td, tfoot th, tfoot td, tbody th, tbody td {
+        text-align: left;
+    }
+    td, th {
+        padding: 10px;
+    }
+
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+    label {
+    display: none;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+.app-new-button{
+    padding: 05px 10px;
+    background-color:yellowgreen;
+    border: none;
+    color: #fff;
+    border-radius: 10px;
+    margin-left: 5px;
+    margin-top: -1px;
+
+}
+</style>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+
+<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css" rel="stylesheet" />
+
+
+<div style="margin: 30px;">
+    <h3 style="text-align: center;background: darkslateblue;color: white;padding:10px; font-weight:bold;">Content Management</h3>
+    <div style="align-items: center; display: flex; justify-content: center; padding-top: 50px;">
+        <h5>Select Template : &nbsp;</h5>
+        <select id="template-select" onchange="renderTemplate()">
+        <option value="">--Select a Template--</option>
+        <option value="upload_topics">Bulk Upload Topics</option>
+        <option value="upload_subtopics">Bulk Upload Subtopics</option>
+        <option value="web_contentdetails">Web_Contentdetails</option>
+        <option value="web_content_demand">Web_Content_Demand</option>
+        </select>
+    </div>
+    
+    <div style="align-items: center; display: flex; justify-content: center; padding-top: 10px; padding-bottom: 20px;"  id="template-container"></div>
+    <br><hr>
+    <div class="col-md-12">
+        <div class="row" style="margin:10px;">
+            <div class="col-md-3 col-xs-12">
+                <label>Board:</label>
+                <select id="sel_board" style='width: 40%;' class="filters">
+                    <option value=""> --Select Board-- </option>
+                    {% for board in board_list %}
+                        <option value="{{board}}" >{{board}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <label>Course:</label> 
+                <select id="sel_courses" name="sel_courses" style='width: 80%;' class="filters">
+                    <option value=""> --Select Course-- </option>
+                </select>
+                <a href="/get_course/"><button class="app-new-button" type="submit">Submit</button></a>
+            </div>
+        </div>
+    </div>
+    <button onclick="downloadTable()" style="background-color: #02723b; color: #fff;">Excel</button>
+
+    <table id="example"  style="width:100%">
+        <thead>
+          <tr>
+            <th>Board</th>
+            <th>CourseId</th>
+            <th>Course Name</th>
+            <th>Topic Id</th>
+            <th>Topic Name</th>
+            <th>Topic Status</th>
+            <th>Subtopic Id</th>
+            <th>Subtopic Name</th>
+            <th>Subtopic Status</th>
+          </tr>
+          <tfoot>
+            <tr>
+                <th>Board</th>
+                <th>CourseId</th>
+                <th>Course Name</th>
+                <th>Topic Id</th>
+                <th>Topic Name</th>
+                <th>Topic Status</th>
+                <th>Subtopic Id</th>
+                <th>Subtopic Name</th>
+                <th>Subtopic Status</th>
+            </tr>
+          </tfoot>
+        </thead>
+        <tbody> 
+            {% for obj in list_objs %}
+                {% for SB in obj.subTopic %}
+                        <tr>
+                            <th>{{board_name}}</th>
+                            <th>{{course.id}}</th>
+                            <th>{{course.grade}}th {{course.subject}}</th>
+                            <th>{{obj.id}}</th>
+                            <th>{{obj.name}}</th>
+                            <th>{{obj.status}}</th>
+                            <th>{{SB.id}}</th>
+                            <th>{{SB.name}}</th>
+                            <th>{{SB.status}}</th>
+                        </tr>
+                {% endfor %}
+            {% endfor %}
+
+        </tbody>
+      </table>
+</div> 
+{% endblock %}
+
+{% block head_scripts %}
+    {{ block.super }}
+    <script>
+    $(document).ready(function () {
+        // Setup - add a text input to each footer cell
+        $('#example tfoot th').each(function () {
+            var title = $(this).text();
+            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+        });
+     
+        // DataTable
+        var table = $('#example').DataTable({
+            initComplete: function () {
+                
+                // Apply the search
+                this.api()
+                    .columns()
+                    .every(function () {
+                        var that = this;
+     
+                        $('input', this.footer()).on('keyup change clear', function () {
+                            if (that.search() !== this.value) {
+                                that.search(this.value).draw();
+                            }
+                        });
+                    });
+            },
+
+        });
+        $('#example tfoot tr').appendTo('#example thead');
+    });
+
+
+</script>
+<script>
+    function renderTemplate() {
+        var templateSelect = document.getElementById("template-select");
+        var selectedTemplate = templateSelect.options[templateSelect.selectedIndex].value;
+        var templateContainer = document.getElementById("template-container");
+
+        switch (selectedTemplate) {
+        case "upload_topics":
+            templateContainer.innerHTML = "<a href='/upload_topics/'><button class='btn btn-sml' style='background-color: #337ab7;'>submit</button></a>";
+            break;
+        case "upload_subtopics":
+            templateContainer.innerHTML = "<a href='/upload_subtopics/'><button class='btn btn-sml' style='background-color: #337ab7;'>submit</button></a>";
+            break;
+        case "web_contentdetails":
+            templateContainer.innerHTML = "<a href='/content_details/'><button class='btn btn-sml' style='background-color: #337ab7;'>submit</button></a>";
+            break;
+        case "web_content_demand":
+            templateContainer.innerHTML = "<a href='/content_demand/'><button class='btn btn-sml' style='background-color: #337ab7;'>submit</button></a>";
+            // templateContainer.innerHTML = "<form action='/v2/admin/content/upload/' id='form1' enctype='multipart/form-data' method='post'><select name='tableName' id='tableName' seleted><option value='web_content_demand'>web_contentdetail</option></select><a  class='templates' href='/static/downloads/web_content_demand.csv' id='web_content_demand' download>Download Template</a><br/><div class='row' align='center'><span style='display: inline;'> CSV File &nbsp:</span><input type='file' id='files' style='display: inline; width: auto; height: auto;' class='btn btn-info' name='file' required> </div><div class='row' style='margin-left: 40px'><button type='button' class='btn btn-primary' style='background-color: #337ab7; id='confirm_model'>Upload</button><button type='button' class='btn' onclick='cancel_page()'>Cancel</button></div></form>";
+            break;
+        default:
+            templateContainer.innerHTML = "<a href='#'><button class='btn btn-sml' style='background-color: #337ab7;'>submit</button></a>";
+            break;
+        }
+    }
+
+</script>
+
+
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.bootstrap.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $(document).ready(function() {
+        var csrftoken = getCookie('csrftoken');
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+    });
+
+</script>
+<script>
+    $(function() {
+        var board = $('#sel_board');
+        var courses = $('#sel_courses');
+
+        board.change(function() {
+            var board_name = board.val();
+            $.ajax({
+                url: '/my_table_ajax/',
+                data: {'board': board_name},
+                dataType: 'json',
+                success: function(response) {
+                    var stateSelect = $('#sel_courses');
+                    stateSelect.empty();
+                    stateSelect.append('<option value="">---Select the course---</option>');
+                    $.each(response.courses, function(index, course) {
+                        stateSelect.append('<option value="' + course.id + '">' + course.grade + 'th ' + course.subject + '</option>');
+                    });
+                }
+            });
+        });
+
+        courses.change(function() {
+            var board_name = board.val();
+            var course_id = courses.val();
+            console.log(course_id)
+            $.ajax({
+                url: '/my_table_ajax/',
+                data: {'board': board_name, 'courseId': course_id},
+                dataType: 'json',
+                success: function(response) {
+                    var stateSelect = $('#sel_topics');
+                    stateSelect.empty();
+                    stateSelect.append('<option value="">---Select the topicsssss---</option>');
+                    console.log(response.topics)
+                    $.each(response.topics, function(index, topic) {
+                        stateSelect.append('<option style="background-color:rgb(132, 252, 121);" value="' + topic.id + '">' + topic.id + ' - ' + topic.title + '</option>');
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    function downloadTable() {
+      // Select the table element with DataTables plugin
+      var table = $("#example").DataTable();
+    
+      // Remove any search filters to get all the data
+      table.search('').draw();
+    
+      // Get all the data from the table
+      var data = table.data().toArray();
+    
+      // Create a header row for the Excel file
+      var header = ["Board Name", "Course Id", "Course Name","Topic Id", "Topic Name", "Topic Status", "Subtopic Id", "Subtopic Name", "Subtopic Status"];
+    
+      // Create an empty CSV string with the header row
+      var csv = header.join(",") + "\n";
+    
+      // Loop through the rows of data and add them to the CSV string
+      for (var i = 0; i < data.length; i++) {
+        csv += data[i].join(",") + "\n";
+      }
+    
+      // Create a link element to trigger the download
+      var link = document.createElement("a");
+      link.setAttribute("href", "data:text/csv;charset=utf-8," + encodeURIComponent(csv));
+      link.setAttribute("download", "cms_table.csv");
+      link.style.display = "none";
+      document.body.appendChild(link);
+    
+      // Click the link to start the download
+      link.click();
+    
+      // Remove the link from the DOM
+      document.body.removeChild(link);
+    }
+    
+    $(document).ready(function() {
+      // Initialize the DataTables plugin with search filter
+      var table = $("#examle").DataTable({
+        searching: true
+      });
+    
+      // Add event listener to search input to redraw the table when searching
+      $("#my-search").on("keyup", function() {
+        table.search($(this).val()).draw();
+      });
+    });
+    </script>
+
+
+{% endblock head_scripts %}
