@@ -1,10 +1,10 @@
 {% extends "generic/base.html" %}
 {% load tags %}
-{% block head_title %}eVidyaloka{% endblock %}
+{% block head_title %}LPF{% endblock %}
 
 {% block head_styles %}
     <!-- meta yet to be updated from evidyaloka -->
-    <meta name="description" content="eVidyaloka education for all network (eVean) Foundation is a not for profit organisation, a Section 8 company under Companies Act, 2013. A social enterprise evolved from the model of eVidyaloka towards transforming the educational landscape of rural India. ">
+    <meta name="description" content="Lotus Petal Foundation is a non-profit organisation founded in November 2011 with the primary objective to create equal opportunities for underprivileged children living in urban and semi-urban areas.To nurture individuals and bring about a transformation in their lives through education.">
     <meta name="keywords" content="evidyaloka, children, rural school, learn, rural education, children education, teachers, volunteers, volunteers to teach, volunteer teachers, education, student education, online teaching, digital classrooms, virtual teaching, ngo, free education, remote village education, internet education, teaching channel, sponsor for education, sponsor for school, donate for school, donate for education"/>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -64,7 +64,7 @@
     <link rel="stylesheet" href="/static/css/colorbox.css"/>
     <!------------------------------------Inserted block ------------------------->
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-    <link rel="shortcut icon" href="/static/images/evidyalogo.png">
+    <link rel="shortcut icon" href="/static/images/LPF.jpg">
 
     <title>Serve Beta</title>
 
@@ -118,16 +118,6 @@
       <div id="fb-root"></div>
 
     <style>
-        .app-otp-modal.modal{
-            background: transparent;
-        }
-        .app-otp-modal.modal form{
-            border:0;
-        }
-        .button-center{
-            display: flex;
-            justify-content: center;
-        }
         .cust_btn:hover{
            opacity:0.8;
            cursor:pointer;
@@ -1017,8 +1007,7 @@ font-size:18px;
                         {% if user|partnerLogo %}
                         <img class="logo_img_css1" src="/{{ user|partnerLogo }}" alt="" height="75px" class="banner_large" width="275px" style="margin-left:50px;margin-top:-20px;float:left;display:inline;position:absolute"/>
                         {% else  %}
-                        <img class="logo_img_css" src="/static/images/evidyalogo.jpg" alt="evidyaloka logo" width="55px" height="51px" style="margin-top:-14px;border-radius:100%;display:inline;position:absolute"/>
-                        <img class="logo_img_css1" src="/static/images/evidyaban_1000x250.png" alt="evidyaloka banner" height="75px" class="banner_large" width="275px" style="margin-left:50px;margin-top:-20px;float:left;display:inline;position:absolute"/  >
+                        <img class="logo_img_css" src="/static/images/LPF.jpg" alt="evidyaloka logo" width="100px" height="75px" style="margin-top:-14px;border-radius:100%;display:inline;position:absolute"/>
                         {% endif %}
                     </a>
                 </div>
@@ -1030,7 +1019,7 @@ font-size:18px;
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle text_color" data-toggle="dropdown" role="button" aria-expanded="false">About<span class="caret"></span></a>
                         <ul class="dropdown-menu dropdown_css" role="menu">
-                            <li class="li__bgcolor border_radius"><a class="href_color" href='/about/'>About Us</a></li>
+                            <li class="li__bgcolor border_radius"><a class="href_color" href='https://www.lotuspetalfoundation.org/about-us/'>About Us</a></li>
 
                         </ul>
                     </li>
@@ -1109,7 +1098,7 @@ font-size:18px;
                 {% endif %}
             </div>
 
-            <img  class="img_ribon img_ribon_css" src="/static/images/top-colored-bar.jpg" alt="colored bar" style="margin-top:0px;position:absolute;width:100%;">
+            <img  class="img_ribon img_ribon_css" src="/static/images/top-colored-bar.jpg" alt="colored bar" style="margin-top:30px;position:absolute;width:100%;">
 
             </div>
 
@@ -1830,10 +1819,12 @@ font-size:18px;
                 <!--added for login above-->
             </div>
 
+
+
             {% endblock %}
             {% block user_info %}
                 {% if request.user.is_authenticated %}
-                    <div id="content" class="clearfix">
+                    <div id="content" class="clearfix" style="margin-top:40px;">
                         <section id="featured1" class="dark with-bg_my_evd">
                            <div class='row'>
                            <div class="container" style='height:160px;'>
@@ -1990,11 +1981,11 @@ font-size:18px;
                   <div class="col-lg-12">
                     <div class="col-sm-3 col-md-4">
                       <div class="footer-logo">
-                        <h3>eVean Foundation</h2>
-                        <p>10 B, 1st A Main, MCHS Colony<br>5th Block, Sector 6, HSR Layout,<br/>Bangalore-560102</p>
-                        <p class="muted">© eVean Foundation</p>
-                        <a href="/policies_terms_conditions/">Terms of Service</a>
-                        <a href="/policies/">Privacy</a>
+                        <h3>Lotus Petal Foundation</h2>
+                        <p>Gali No. 5, Village Silokhera,<br>
+                            Plot No.3 South City -1 Market,<br>
+                            Beside Unitech House,<br>
+                            Gurugram-122002 Haryana (India)</p>
                       </div>
                     </div>
                     <div class="col-sm-3 col-md-3">
@@ -2934,7 +2925,7 @@ font-size:18px;
                 }
                 });
             }
-            $("#otpverifymodal").modal("show")
+            
             </script>
     {% endblock %}
 {% endblock %}

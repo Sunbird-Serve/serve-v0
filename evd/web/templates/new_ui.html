@@ -58,7 +58,7 @@
     <meta charset="UTF-8" />
     <meta
       name="description"
-      content="eVidyaloka education for all network (eVean) Foundation is a not for profit organisation, a Section 8 company under Companies Act, 2013. A social enterprise evolved from the model of eVidyaloka towards transforming the educational landscape of rural India. "
+      content="Lotus Petal Foundation is a non-profit organisation founded in November 2011 with the primary objective to create equal opportunities for underprivileged children living in urban and semi-urban areas. To nurture individuals and bring about a transformation in their lives through education."
     />
     <meta
       name="keywords"
@@ -72,14 +72,14 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>eVidyaloka</title>
+    <title>LPF</title>
 
     <script
       type="text/javascript"
       src="/static/vendor/jquery/dist/jquery.min.js"
     ></script>
     <!-- Favicon and Apple Icons-->
-    <link rel="shortcut icon" href="/static/images/evidyalogo.png" />
+    <link rel="shortcut icon" href="/static/images/LPF.jpg" />
     <!--<link rel="icon" type="image/x-icon" href="assets/img/favicon/favicon.ico"> -->
     <link rel="shortcut icon" href="assets/img/favicon/114x114.png" />
     <link
@@ -1393,15 +1393,7 @@
                   <a class="nav-link" href="/partner/new_signup/">Partner</a>
                 </li>
 
-                {% if request.session.student %}
-                <li class="nav-item nav-item__has-megamenu megamenu-col-2">
-                  <a class="nav-link" href="/student/student_dashboard/">Student</a>
-                </li>
-                {% else %}
-                <li class="nav-item nav-item__has-megamenu megamenu-col-2">
-                  <a class="nav-link" href="" data-toggle="modal" data-target="#exampleModal">Student</a>
-                </li>
-                {% endif %}
+              
 
                 <li class="nav-item nav-item__has-dropdown dropdown">
                   <a
@@ -1414,8 +1406,8 @@
                     <a class="dropdown-item" href="https://www.sunbird.org/about-us"
                       >Sunbird Overview</a
                     >
-                    <a class="dropdown-item" href="/about/"
-                      >eVidyaloka Overview</a
+                    <a class="dropdown-item" href="https://www.lotuspetalfoundation.org/about-us/"
+                      >Lotus Petal Foundation Overview</a
                     >
                    
                   </div>
@@ -1435,8 +1427,8 @@
                 <img
                   class="img_css"
                   alt="evidyaloka logo"
-                  src="/static/images/evidyalogo.jpg"
-                  width="55px"
+                  src="/static/images/LPF.jpg"
+                  width="100px"
                   height="50px"
                   style="border-radius: 100%"
                 />
@@ -1447,12 +1439,6 @@
                 href="/"
                 style="padding-left: 0px !important"
               >
-                <img
-                  class="img_css1"
-                  alt="evidyaloka banner"
-                  src="/static/images/evidyaban_1000x250.png"
-                  width="275px"
-                />
               </a>
               <span
                 aria-expanded="false"
@@ -1479,46 +1465,6 @@
       />
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-         {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
-
-        {% endfor %}
-
-    {% endif %}
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2>Login</h2>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form method="post" action="/student/student_login/">
-              {% csrf_token %} 
-              <div class="row">
-                <div class="form-group col-12">
-                  <input
-                    type="number"
-                    placeholder="Mobile Number"
-                    class="form-control"
-                    name="mobile"
-                    id=""/>
-                </div>
-              </div>
-              <div class="d-flex justify-content-end">
-              <button  type="submit" class="btn btn-primary" id="model2">Login</button>
-              </div>
-            </form>
-          </div>
-          </div>
-      </div>
-    </div>
-    
     <!--add banner-->
     <nav>
       <!-- <div >
@@ -1913,18 +1859,15 @@
         <div class="container">
           <div class="row">
             <div class="col-lg-3 col-md-6 mt-5" style="margin-left: 80px;">
-              <h4 class="h5 text-white">eVean Foundation</h4>
+              <h4 class="h5 text-white">Lotus Petal Foundation</h4>
               <div class="width-3rem bg-primary height-3 mt-3"></div>
               <div class="margin-y-40">
                 <p>
-                  10 B, 1st A Main, MCHS Colony 5th Block, Sector 6, HSR Layout,
-                  Bangalore-560102
+                  Gali No. 5, Village Silokhera,<br>
+Plot No.3 South City -1 Market,<br>
+Beside Unitech House,<br>
+Gurugram-122002 Haryana (India)
                 </p>
-                <p class="muted">© eVean Foundation</p>
-                <p class="muted">
-                  <a href="/policies_terms_conditions/">Terms of Service </a>
-                </p>
-                <p class="muted"><a href="/policies/">Privacy</a></p>
               </div>
 
               
@@ -1962,7 +1905,7 @@
       <div class="footer-bottom bg-black-0_9 py-5 text-center">
         <div class="container">
           <p class="text-white-0_5 mb-0">
-            &copy; 2018 eVidyaloka. All rights reserved.
+            &copy; 2022 serve.sunbird.org Open Source with MIT License.
           </p>
         </div>
       </div>
