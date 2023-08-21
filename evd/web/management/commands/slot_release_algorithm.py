@@ -90,9 +90,9 @@ class Command(BaseCommand):
                 content = "<p>Hi " + value['name'] + ",</p>" + \
                           "<p>Since you have not completed the teacher onboarding process we are releasing the booking you have done for " + \
                           value['center'] + " , for " + value['slots'][0] + " and " + value['slots'][1] + ".</p>" + \
-                          "<p>KIndly complete the onboarindg process. Please Click here : http://www.evidyaloka.org/onboarding/ to check your" + \
+                          "<p>KIndly complete the onboarindg process. Please Click here : http://vidyasahyog.lotuspetalfoundation.org/onboarding/ to check your" + \
                           " Onboarding Status or reach out to the volunteer management team at volunteer@evidyaloka.org </p>"
-                msg = EmailMessage("Releasing the booking you have done" , content, 'evlsystem@evidyaloka.org', ['akhilraj@headrun.com', value['email']])
+                msg = EmailMessage("Releasing the booking you have done" , content, 'vs@lotuspetalfoundation.org', ['akhilraj@headrun.com', value['email']])
                 msg.content_subtype = "html"
                 msg.send()
         return "success"

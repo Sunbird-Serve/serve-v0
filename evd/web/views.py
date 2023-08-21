@@ -10,8 +10,6 @@ from django.core import serializers
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
-from evd.genutilities.docStorageUtility import getDocStorageServiceCredentials
-import genutilities.docStorageUtility as docStorageService
 from templatetags.tags import crop, thumbnail
 from django.utils.datetime_safe import strftime
 from django.utils.http import int_to_base36
@@ -108,7 +106,7 @@ from student.models import Quiz_History, Quiz_History_Detail
 from django.db.models import Q
 
 import requests
-from django.core.files.storage import FileSystemStorage
+
 from partner.views import profile as partner_profile
 from partner.views import deliverypartner_org, organization_details
 import base64
@@ -4498,7 +4496,7 @@ def centeradmin(request, center_id_value=None):
                     return HttpResponseRedirect('/myevidyaloka/')
     holidays = None
     if center:
-        board = [center.board,'eVidyaloka']
+        board = [center.board,'LPBoard']
         if center.photo:
             print('center phtot',center.photo)
             photopath = os.path.exists(center.photo.path)
@@ -4618,8 +4616,6 @@ def centeradmin(request, center_id_value=None):
         make_course_centeradmin(offering, unassigned_coursesBackfill)  
     
     topics = Topic.objects.all()
-    classtype = ClassType.objects.all()
-    print("Class Type===", classtype)
     teachers = User.objects.filter(userprofile__pref_roles__name="Teacher",
                                    userprofile__pref_medium=center.language).exclude(first_name="", last_name="")
     teacher_profiles_arr = []
@@ -5019,7 +5015,6 @@ def centeradmin(request, center_id_value=None):
           'selected_month' : calendar.month_name[selected_month],
           "selected_year" : selected_year,
           "selected_academic_year" : selected_academic_year,
-          "classtype" : classtype,
           "current_academic_year_available" : current_academic_year_available
           })
 
@@ -6803,8 +6798,6 @@ def partners(request):
 def about_us(request):
     return render_response(request, 'new_about_us_temp.html', {})
 
-def eveans_home(request):
-    return render_response(request, 'eveans_home.html', {})
 
 def learn_more(request):
     return render_response(request, 'new_learn_more_temp.html', {})
@@ -14734,8 +14727,8 @@ def getAllTaskDataForParams(request, selectedTab, filterParam, searchParam, due_
             query += " and taskType='OTHER' "
         if status is not None:
             if status == 'Open':
-                query += " and (taskStatus='open' or taskStatus='WIP' or taskStatus='Submit') "
-            elif status == 'Resolved' or status == 'Closed' or status == 'Submit':
+                query += " and (taskStatus='open' or taskStatus='WIP') "
+            elif status == 'Resolved' or status == 'Closed':
                 query += " and taskStatus='" + status + "' "
         else:
             if filterParam:
@@ -14781,39 +14774,12 @@ def saveTask(request):
         assignedTo = request.POST.get('assign_name_id', '')
         performedOn_name = request.POST.get('prfm_name', '')
         category = request.POST.get('categoryId', '')
-        skillName = request.POST.get('skillsName', '')
-        state=request.POST.get('state', '')
-        city=request.POST.get('city','')
-        #attachment = request.POST.get('attachment', '')
         taskCreatedBy_userId = request.user.username
         taskCreatedDate = datetime.datetime.now()
         dueDate = datetime.datetime.strptime(dd, "%d-%m-%Y").date()
         date_joined = None
         todayDate = datetime.datetime.today()
         todayDay = calendar.day_name[todayDate.weekday()]
-
-        if 'attachment' in request.POST:
-            attachment = request.POST['attachment']
-            # process the attachment file here
-        else:
-            # handle the case where the attachment key is not found
-            attachment = None # or any other default value or error handling code
-
-        #attachment = request.POST.get('attachment')
-    
-        #upload_file = request.FILES['attachment']
-        if(attachment != ''):
-            uploaded_file = request.FILES['attachment']
-            fs = FileSystemStorage(location='/var/www/serve-beta/evd/tempfiles')
-            filename = fs.save(uploaded_file.name, uploaded_file)
-        
-            cloudFolderName = "user_documents/task_documents"
-            filePathToBeuploaded = '/var/www/serve-beta/evd/tempfiles' + "/" + filename
-            permissionType = docStorageService.kSTORAGE_SUPPORTED_PERMISSION_PUBLIC
-            uploadedUrl = docStorageService.uploadDocument(cloudFolderName, filePathToBeuploaded, filename,permissionType)
-        else:
-            uploadedUrl=''
-        
         if userId:
             user = User.objects.get(id=userId)
             date_joined = user.date_joined
@@ -14824,7 +14790,7 @@ def saveTask(request):
             task = Task(comment=comment, subject=subject, assignedTo='', dueDate=dueDate, priority=priority,
                         taskCreatedBy_userId=taskCreatedBy_userId, taskStatus=taskStatus, performedOn_userId='',
                         taskCreatedDate=taskCreatedDate, user_date_joined=date_joined, performedOn_name='',
-                        taskType=task_type, task_other_status=task_other_status, category=category, reminderUrl=uploadedUrl, state=state, city=city, skills=skillName)
+                        taskType=task_type, task_other_status=task_other_status, category=category)
         else:
             task = Task(comment=comment, subject=subject, assignedTo=assignedTo, dueDate=dueDate, priority=priority,
                         taskCreatedBy_userId=taskCreatedBy_userId, taskStatus=taskStatus, performedOn_userId=userId,
@@ -14867,40 +14833,11 @@ def updateTask(request):
         assignedTo = request.POST.get('assign_name_id', '')
         comment = request.POST.get('editor1', '')
         tabName = request.POST.get('tabName')
-        state = request.POST.get('state')
-        city = request.POST.get('city')
-        skillName = request.POST.get('skillName')
         task_type = request.POST.get('type');
         taskUpdatedBy_userId = request.user.username
         taskUpdatedDate = datetime.datetime.now()
         dueDate = datetime.datetime.strptime(dd, "%d-%m-%Y").date()
         category = request.POST.get('categoryId', '')
-        projDetails = request.POST.get('projDetails')
-        uploadedUrl=''
-
-        if 'attachment' in request.POST:
-            attachment = request.POST['attachment']
-            # process the attachment file here
-        else:
-            # handle the case where the attachment key is not found
-            attachment = None # or any other default value or error handling code
-
-        print("Edit attachemnt")
-        print(attachment)  
-        if task_type and task_type == 'OTHER':
-            if(attachment != '' and attachment!= None):
-                uploaded_file = request.FILES['attachment']
-                fs = FileSystemStorage(location='/var/www/serve-beta/evd/tempfiles')
-                filename = fs.save(uploaded_file.name, uploaded_file)
-        
-                cloudFolderNameSubmit = "user_documents/task_submited_documents"
-                filePathToBeuploaded = '/var/www/serve-beta/evd/tempfiles' + "/" + filename
-                permissionType = docStorageService.kSTORAGE_SUPPORTED_PERMISSION_PUBLIC
-                uploadedUrl = docStorageService.uploadDocument(cloudFolderNameSubmit, filePathToBeuploaded, filename,permissionType)
-            else:
-                uploadedUrl=''
-
-        print(projDetails)
         if not request.user.is_superuser:
             task_type = request.POST.get('task_type');
         dateJoined = None
@@ -14918,7 +14855,7 @@ def updateTask(request):
                                                   taskStatus=taskStatus, performedOn_userId='',
                                                   taskUpdatedDate=taskUpdatedDate, user_date_joined=dateJoined,
                                                   performedOn_name='', taskType=task_type,
-                                                  task_other_status=task_other_status, category=category, submitUrl=uploadedUrl, submitDetails=projDetails, state=state, city=city, skills=skillName)
+                                                  task_other_status=task_other_status, category=category)
         else:
             Task.objects.filter(id=taskId).update(comment=comment, subject=subject, assignedTo=assignedTo,
                                                   dueDate=dueDate, priority=priority,
@@ -17519,8 +17456,7 @@ def approve_offering(request):
         
         dict_cur.close()
         db.close()
-    otherTasks = Task.objects.filter(Q(taskType='OTHER') & Q(Q(task_other_status='not_approved') | Q(task_other_status='pre_approved') | Q(task_other_status='nominated')))
-    
+    otherTasks = Task.objects.filter(Q(taskType='OTHER') & Q(task_other_status='not_approved'))
     print 'otherTasks.taskfor', otherTasks
     message = request.GET.get('message', '')
     return render_response(request, "approve_offering.html",
@@ -17540,31 +17476,7 @@ def updateOfferingOrOthersStatus(request):
         if user:
             if demand_page and demand_page is not None:
                 if task_id and task_id is not None:
-                    task = Task.objects.get(pk=task_id)
-                    print(task.taskFor)
-                    if task.taskFor:
-                        try:
-                            
-                            # Get the original task object
-                            original_task = Task.objects.get(id=task_id)
-
-                            # Convert the original task object to a dictionary
-                            original_task_dict = model_to_dict(original_task)
-
-                            # Update the taskFor value in the dictionary
-                            original_task_dict['taskFor'] = user.username
-                            original_task_dict['task_other_status'] = 'nominated'
-                            # Remove the ID field from the dictionary
-                            original_task_dict.pop('id', None)
-                             # Create a new task object with the updated dictionary
-                            new_task = Task.objects.create(**original_task_dict)
-
-                        except Exception as e:
-                            print("TaskCreation POST Exception  e", e)
-                            traceback.print_exc()
-
-                    
-                    task_demand = Task.objects.filter(id=task_id).update(task_other_status='pre_approved',
+                    task_demand = Task.objects.filter(id=task_id).update(task_other_status='not_approved',
                                                                          taskFor=user.username, assignedTo='')
                     if task_demand == 1:
                         message = 'Your request successfully submitted, someone will be reaching to you shortly via email.'
@@ -17611,8 +17523,6 @@ def updateOfferingOrOthersStatus(request):
                 task_id = request.GET.get('task_id')
                 if task_id:
                     task = Task.objects.get(pk=task_id)
-
-                    
                     check_task_update = Task.objects.filter(id=task_id).update(task_other_status='approved',
                                                                                assignedTo=task.taskFor)
                     if check_task_update == 1:
@@ -17641,13 +17551,8 @@ def updateOfferingOrOthersStatus(request):
                     status = 'failure'
             elif flag == 'reject':
                 task_id = request.GET.get('task_id')
-                check_task_update = 0;
                 if task_id:
-                    task = Task.objects.get(pk=task_id)
-                    if task.task_other_status == 'nominated':
-                        Task.objects.filter(id=task_id).delete()
-                    else:
-                        check_task_update = Task.objects.filter(id=task_id).update(task_other_status='pending')
+                    check_task_update = Task.objects.filter(id=task_id).update(task_other_status='pending')
                     if check_task_update == 1:
                         task = Task.objects.get(pk=task_id)
                         try:
@@ -17927,7 +17832,7 @@ def create_task_for_EVD(request,dueDate,comment,category,subject,mail_subject,as
         date_joined = usrobj.date_joined
     except:
         usrobj = None
-    task = Task(comment=comment,subject=task_subject,assignedTo='',dueDate=dueDate,priority="Normal",
+    task = Task(comment=comment,subject=task_subject,assignedTo=usrobj,dueDate=dueDate,priority="Normal",
                taskCreatedBy_userId=taskCreatedBy_userId,taskStatus="Open",performedOn_userId = perfomed_usr_id,
                 taskCreatedDate=taskCreatedDate, user_date_joined=date_joined,performedOn_name=performedOn_name,
                 taskType="MANUAL")
@@ -18388,7 +18293,7 @@ def stat_summary(request):
         student_grades = Course.objects.values_list('grade', flat=True).filter(id__in=courses)
         global_data = {'center_count':0, 'teacher_count' : 0,'active_teacher_count' : 0,'active_offering_count' : 0, 'total_student' : 0, 'planvsact' : 0, 'child_attend': 0, 'session_unique_present_students':0}
         student_grades = Course.objects.values_list('grade', flat=True).filter(id__in=courses)
-        active_students = Student.objects.filter(center__in=centers, grade__in=student_grades, status='Active').count()
+        active_students = Student.objects.filter(center__in=centers, status='Active').count()
         active_students_boys = Student.objects.filter(center__in=centers, grade__in=student_grades, status='Active', gender='Boy').count()
         active_students_girls = Student.objects.filter(center__in=centers, grade__in=student_grades, status='Active', gender='Girl').count()
         active_offering = Offering.objects.values_list('id', flat=True).filter(academic_year__title=ayfy, status__in=['running'], active_teacher__isnull = False, center__in=centers, course__in=courses).distinct()

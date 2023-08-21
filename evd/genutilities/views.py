@@ -622,22 +622,27 @@ def sendOTPToMobileNumber(mobile,otpExpiryTime):
 
         #message = "Your eVidyaLoka login otp is {}. {}".format(otp, mobileHashCode)
         mobileHashCode = " " +mobileHashCode+". -EVIDYALOKA"
-        message = "Your eVidyaLoka login otp is {}. {}".format(otp, mobileHashCode)
+        #message = "Your eVidyaLoka login otp is {}. {}".format(otp, mobileHashCode)
+        #message = "{} is your OTP for Admission Application - Lotus Petal".format(otp)
+        message = "Your e-Lotus Petal login OTP is {} e-Lotuspetal".format(otp)
         sender = appSettingObj.MOBILE_SENDER_ID
         if otpExpiryTime:
             otpExpiry = int(otpExpiryTime)
         else:
             otpExpiry = 5
         extra_params = {}
-        sender = "EVDYLK"
+        #sender = "LPETAL"
+        sender = "VSLPCF"
         baseURL = appSettingObj.BASE_URL_MSG91
 
-        url = baseURL + "/api/sendotp.php?authkey={}&mobile={}&message={}&sender={}&otp={}&otp_expiry={}&DLT_TE_ID=1107164075999531088".format(
+        #url = baseURL + "/api/sendotp.php?authkey={}&mobile={}&message={}&sender={}&otp={}&otp_expiry={}&DLT_TE_ID=1207161760013562899".format(
+            #authKey, mobile, message, sender, otp, otpExpiry)
+        url = baseURL + "/api/sendotp.php?authkey={}&mobile={}&message={}&sender={}&otp={}&otp_expiry={}&DLT_TE_ID=1207168785338492909".format(
             authKey, mobile, message, sender, otp, otpExpiry)
         resp = requests.get(url)
         response = resp.json()
         #logService.logInfo("OTP url " , url)
-
+        logService.logInfo("Request Id " , response.get('message'))
         #print("OTP url", url)
         #print("OTP response",response)
         if response.get('type') and str(response.get('type')) == 'success':
@@ -768,4 +773,3 @@ def send_mail_thread(subject, body, from_email, to, cc=[]):
 
 def error_404(request, message=''):
     return render(request, 'error_404.html', {'message':message})
-
