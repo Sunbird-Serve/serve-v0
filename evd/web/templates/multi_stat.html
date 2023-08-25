@@ -1120,6 +1120,7 @@
         var center_data = [];
         var percentege = 0;
         var total_percentege = 0;
+        console.log(table_data);
         if (table_data.length) {
             for (let index = 0; index < table_data.length; index++) {
                 percentege = percentege + parseFloat(table_data[index]['attendance_perc'])
@@ -1127,6 +1128,8 @@
                     table_data[index]['center_name'],
                     table_data[index]['subject'],
                     parseInt(table_data[index]['grade']),
+                    //SOURAV CHANGES
+                    table_data[index]['batch'],
                     table_data[index]['teacher'],
                     parseInt(table_data[index]['planned_sessions']),
                     parseInt(table_data[index]['online_sessions']),
@@ -1152,6 +1155,8 @@
             data.addColumn('string', 'CENTER');
             data.addColumn('string', 'OFFERING');
             data.addColumn('number', 'GRADE');
+            //SOURAV CHANGES
+            data.addColumn('string', 'BATCH');
             data.addColumn('string', 'TEACHER');
             data.addColumn('number', 'PLANED SESSIONS');
             data.addColumn('number', 'ONLINE SESSIONS');
