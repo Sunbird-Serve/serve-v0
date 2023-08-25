@@ -2,6 +2,7 @@
 import re
 import time
 import json, ast
+from urllib import urlencode 
 import math
 import MySQLdb
 import simplejson
@@ -1653,10 +1654,16 @@ def time_table(request):
 @login_required
 def enroll_student(request):
     message = request.GET.get('message','')
-    #centers = Center.objects.all()
     center_id = request.GET.get('center_id','')
     save_flag = request.GET.get('save_flag','')
-    return render_response(request, "enrollStudent.html",{'centers':center_id,'message':message,'save_flag':save_flag})
+
+    encoded_data = request.GET.get('allData', '')
+    
+    # Decode the JSON data into a dictionary
+    allData = json.loads(encoded_data) if encoded_data else {}
+
+    return render_response(request, "enrollStudent.html", {'centers': center_id, 'message': message, 'save_flag': save_flag, 'allData': allData})
+
 
 def save_enrollStudent(request):
     try:
@@ -1754,7 +1761,7 @@ def save_enrollStudent(request):
                         studentLog.save()
                 return redirect('/v2/enrollStudent_list/?center_id='+centerId+'&message='+message+'&page='+page+'&grade='+gradeId+'&gender='+genderId)
             else:
-                if str(Student.objects.filter(phone = phone_no,name = studentName, gender=gender,dob=date_dob))=='[]':
+                if str(Student.objects.filter(name = studentName, school_rollno=schoolRollNumber,grade=grade))=='[]':
                     message = "Student Enrolled Successfully."
                     enrolledby=request.user
                     enrolled_on=datetime.datetime.now()
@@ -1782,6 +1789,8 @@ def save_enrollStudent(request):
                     except:
                         digitalSchool = None
                         digitalSchoolPartner = None
+
+
                     if digitalSchool and digitalSchoolPartner and guardianName and relationshipType:
                         createGuardianObjectIfNeeded(createdby, student, phone_no, relationshipType, True, guardianName,'3')
                         enrollment = Student_School_Enrollment.objects.create(
@@ -1797,7 +1806,20 @@ def save_enrollStudent(request):
                         enrollment.save()
                     return redirect('/v2/enroll_student/?center_id='+center_id+'&message='+message+'&save_flag='+save_flag)
                 else:
-                    return redirect('/v2/enroll_student/?center_id='+center_id+'&message='+'Student already exists!'+'&save_flag='+save_flag+'&existing=exist')
+                    allData ={
+                        'studentNameId':studentName, 'dob_id':dob, 'genderId':gender, 'rollNumberId':schoolRollNumber, 'grade':grade, 'phone_no':phone_no, 'kycdoctype':kycdoctype, 'kycdocnum':kycdocnum,'guardianNameId':guardianName,'relationshipTypeId':relationshipType,'fatherOccupationId':fatherOccupation,'motherOccupationId':motherOccupation,'strengthId':strengths,'weaknessId':weakness,'observationId':observation,'alumniStatus':status
+                    }
+                    # Serialize the dictionary to JSON
+                    encoded_data = json.dumps(allData)
+
+                    # Encode the JSON data into a query parameter
+                    query_param = urlencode({'allData': encoded_data})
+
+
+                    return redirect('/v2/enroll_student/?center_id=' + center_id +
+                    '&message=Student+already+exists!' +'&save_flag=' + save_flag +'&existing=exist&' + query_param)
+
+
     except Exception as e:
         traceback.print_exc()
         logService.logException("SavestudentsView GET Exception error", e.message)
@@ -4322,7 +4344,7 @@ def my_referrals_details(request):
             'total': userp.paginator.num_pages,'count':user_list_without_pagination}), mimetype = 'application/json')
     else:
         return HttpResponse(user_list)
-    
+
 @login_required
 def plan_topics(request,cent_id,off_id):
     offering = Offering.objects.filter(id=int(off_id))[0]
@@ -5537,7 +5559,6 @@ def submitt_appreciation(request):
 @login_required
 def add_vol_of_month(request):
     return render_response(request, "add_vol_of_month.html", {})
-
 
 def get_vol_of_month(request):
     search_term = request.GET.get('term')
@@ -10830,11 +10851,6 @@ class ContentDemand(View):
             logService.logException("ContentDemand PUT Exception error", e.message)
             return genUtility.getStandardErrorResponse(self.request, 'kInvalidRequest')
 
-
-
-
-
-
 class ContentReviewCheckList(View):
 
     @method_decorator(login_required)
@@ -11602,3 +11618,4 @@ class ActivitySystem(View):
             return genUtility.getStandardErrorResponse(self.request, 'kInvalidRequest')
         
         return genUtility.getSuccessApiResponse(self.request, 'Success')
+
