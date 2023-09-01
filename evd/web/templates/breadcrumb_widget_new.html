@@ -845,6 +845,7 @@
                         <a href="/admin/web/course/add/" target="_blank" class="btn add_course_dj">+</a>
                     </li>
                     <div class="" style="display: grid; grid-auto-flow: column dense;grid-column-gap: -15px ">
+
                         <li>
                             <p style="font-weight: bold;">Program Type:</p>
                             <select name="program_type" required>
@@ -856,21 +857,19 @@
                                 <option value="5">Digital School</option>
                             </select>
                         </li>
-                        <li>Batch Type: 
-                            <select name="batch">
-                                <option selected value="0">None</option>
-                                <option value="1">Batch-1</option>
-                                <option value="2">Batch-2</option>
-                                <option value="3">Batch-3</option>
-                                <option value="4">Batch-4</option>
-                                <option value="5">Batch-5</option>
-                                <option value="6">Batch-6</option>
-                                <option value="7">Batch-7</option>
-                                <option value="8">Batch-8</option>
-                                <option value="9">Batch-9</option>
-                                <option value="10">Batch-10</option>
+                        
+                        <li>
+                            <p style="font-weight: bold;">Batch Type:</p>
+                            <select id="batches" name="batch_id" style="float:left;padding-right:0px;">
+                                <option value="">Select a Batch</option>
+                                {% for batch in batch_all %}
+                                <option value="{{ batch.id }}">{{ batch }}</option>
+                                {% endfor %}
                             </select>
+                            <a href="/admin/web/batch/add/" target="_blank" class="btn add_batch_dj">+</a>
                         </li>
+                        
+
                     </div>
 
                     <li>
@@ -913,6 +912,7 @@
                     </select>
                     </li>
                     <input type="hidden" name="students" />
+                    <input type="hidden" name="classtype"/>
                     <input type="hidden" name="planned_topics" />
                     <input type="hidden" name="center_id" value="{{ center_id }}" />
                 </ul>

@@ -47,6 +47,10 @@ class OfferingAdmin(admin.ModelAdmin):
     list_display = ['course', 'center', 'academic_year','start_date','end_date', 'get_planned_topics', 'get_actual_topics','status','language','course_type','created_date','updated_date','created_by','updated_by']
     ordering = ['id']
 
+class BatchAdmin(admin.ModelAdmin):
+    list_display = ['id', 'batch_name']
+    ordering = ['id']
+
 class SessionAttendanceAdmin(admin.ModelAdmin):
     list_display = ['student','session','is_present']
     ordering = ['id']
@@ -529,4 +533,5 @@ admin.site.register(Offering_Enrolled_Students_History, OfferingEnrolledStudents
 admin.site.register(Content_Demand, Content_DemandAdmin)
 admin.site.register(CenterActivityType, CenterActivityTypesAdmin)
 admin.site.register(CenterActivity, CenterActivityAdmin)
+admin.site.register(Batch, BatchAdmin)
 

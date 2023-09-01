@@ -440,6 +440,12 @@ class Student(models.Model):
     def __unicode__(self):
         return self.name
 
+class Batch(models.Model):
+    id = models.AutoField(primary_key=True)
+    batch_name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.batch_name
+
 class Offering(models.Model):
     course = models.ForeignKey(Course,db_index=True)
     center = models.ForeignKey(Center,db_index=True)
@@ -464,6 +470,7 @@ class Offering(models.Model):
     created_by = models.ForeignKey(User, null=True, blank=True, related_name='offering_created_by')
     updated_by = models.ForeignKey(User, null=True, blank=True, related_name='offering_updated_by')
     batch = models.IntegerField(null=True, blank=True)
+    batch_id = models.ForeignKey(Batch, null=True, blank=True, db_column='batch_id')
     program_type = models.IntegerField(choices=((0, 'None'),(1,'Digital Classroom'),(2,'LFH'),(3,'Worksheets'),
                                                                 (4,'Alumni'),(5,'Digital School')), default=0)
     

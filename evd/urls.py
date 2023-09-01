@@ -250,6 +250,9 @@ urlpatterns = patterns('web.views',
     #url(r'^rubaru17/?', 'rubaru_main', name='rubaru_main'),
     url(r'^rubaru_register/?', 'rubaru_register', name='rubaru_register'),
     url(r'^save_slots/?', 'save_slots', name='save_slots'),
+    url(r'^get_batch/?', 'get_batch_details', name='get_batch_details'),
+    url(r'^batch_edit/?', 'batch_edit', name='batch_edit'),
+
     url(r'^delete_slots/?', 'delete_slots', name='delete_slots'),
     url(r'^publish_slots/?', 'publish_slots', name='publish_slots'),
     url(r'^save_publish_slots/?', 'save_publish_slots', name='save_publish_slots'),
@@ -316,7 +319,8 @@ urlpatterns = patterns('web.views',
     url(r'^rubaru/?', TemplateView.as_view(template_name='rubaru2022.html'), name='rubaru'),
     url(r'^springboard/?', TemplateView.as_view(template_name='springboard.html'), name='springboard'),
     url(r'^nsic/?',TemplateView.as_view(template_name='nsic.html'), name="nsic_home"),
-    url(r'^app_privacy/?',TemplateView.as_view(template_name='app_privacy.html'), name="app_privacy")
+    url(r'^app_privacy/?',TemplateView.as_view(template_name='app_privacy.html'), name="app_privacy"),
+    url(r'^cms/?', include('cms.urls'))
 )
 
 urlpatterns = urlpatterns + patterns('',
