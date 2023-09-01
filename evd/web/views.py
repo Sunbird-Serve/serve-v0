@@ -18474,58 +18474,57 @@ def get_stat_table(request):
 
             identified_centers = [str(center.id) for center in all_centers]
             centers = ",".join(identified_centers)
-            query = '''select distinct(web_offering.id) from web_offering 
+            query = '''select web_offering.id,auth_user.first_name,auth_user.last_name, count(distinct(web_session.id)) as planned_sessions,count(case when web_session.status in ( 'completed') then 1 end) as online_sessions,count(case when web_session.status = 'offline' then 1 end) offline_session,count(case when web_session.status = 'cancelled' then 1 end) cancelled_sessions
+             from web_offering 
+                        join web_session on web_offering.id=web_session.offering_id  
                         join web_ayfy on web_ayfy.id = web_offering.academic_year_id
-                        where center_id in ({centers}) and ((DATE(web_offering.start_date)<='{date_start}' and DATE(web_offering.end_date) >= '{date_start}') 
-                        OR (DATE(web_offering.start_date)<='{date_end}' and DATE(web_offering.end_date) >= '{date_end}'))   
-                        AND web_ayfy.title= "{ay_id}"'''.format(date_start=str(date_start), date_end=str(date_end), centers=centers, ay_id=ay_id)
-
+                        join auth_user on auth_user.id = web_session.teacher_id
+                    where center_id in ({centers}) and ((DATE(web_offering.start_date)<='{date_start}' and DATE(web_offering.end_date) >= '{date_start}') 
+                    OR (DATE(web_offering.start_date)<='{date_end}' and DATE(web_offering.end_date) >= '{date_end}')) AND DATE(web_session.date_start)>='{date_start} 'and DATE(web_session.date_start)<='{date_end}'  
+                    AND web_ayfy.title= "{ay_id}" GROUP BY web_offering.id,web_session.teacher_id'''.format(date_start=str(date_start), date_end=str(date_end), centers=centers, ay_id=ay_id) 
             dict_cur.execute(query)
             offering_ids = dict_cur.fetchall()
-            for id in offering_ids:
-                offering = Offering.objects.get(id=id['id'])
-                query = "select count(distinct(web_session.id)) as planned_sessions, count(case when web_session.status in ( 'completed') then 1 end) as online_sessions, count(case when web_session.status = 'offline' then 1 end) offline_session, count(case when web_session.status = 'cancelled' then 1 end) cancelled_sessions from web_session join web_offering on web_offering.id=web_session.offering_id where web_session.offering_id='"+str(offering.id)+"' and DATE(date_start)>='"+str(date_start)+"' and DATE(date_start)<='"+str(date_end)+"' and (teacher_id is not null or teacher_id !='')"
-                dict_cur.execute(query)
-                session_details = dict_cur.fetchall()
-                query = "select auth_user.first_name, auth_user.last_name from web_session join web_offering on web_offering.id=web_session.offering_id join auth_user on auth_user.id=web_session.teacher_id where web_session.offering_id='"+str(offering.id)+"' and DATE(date_start)>='"+str(date_start)+"' and DATE(date_start)<='"+str(date_end)+"' and (teacher_id is not null or teacher_id !='') limit 1"
-                dict_cur.execute(query)
-                session_teacher = dict_cur.fetchall()
-                if session_details:
-                    query = "select count(distinct(student_id)) as unique_student_count, \
-                            count(web_sessionattendance.is_present) as enrol_student_count, \
-                            count(case when web_sessionattendance.is_present = 'yes' then 1 end) present_student_count  \
-                            from web_sessionattendance join web_session on web_session.id=web_sessionattendance.session_id \
-                            join web_offering on web_offering.id=web_session.offering_id \
-                            join web_student on web_student.id =  web_sessionattendance.student_id\
-                            where DATE(date_start)>='"+str(date_start)+"' \
-                            and DATE(date_start)<='"+str(date_end)+"' \
-                            and web_session.offering_id='"+str(offering.id)+"' \
-                            and (teacher_id is not null or teacher_id !='') and web_student.status='Active'"
-                    dict_cur.execute(query)
-                    student_data = dict_cur.fetchall()
-                    attendance_perc = 0
-                    if student_data and student_data[0]['enrol_student_count']>0:
-                        attendance_perc = str(round(((float(student_data[0]['present_student_count'])/student_data[0]['enrol_student_count'])*100 ),2))
+            for data in offering_ids:
 
-                    teacher_name = ''
-                    if session_teacher:
-                        teacher_name = session_teacher[0]['last_name']
-                        if session_teacher[0]['first_name']:
-                            teacher_name = session_teacher[0]['first_name'] + ' ' + session_teacher[0]['last_name']
-                        details = {'center_name':offering.center.name,
-                                    'subject':offering.course.subject,
-                                    'grade':offering.course.grade,
-                                    'planned_sessions':session_details[0]['planned_sessions'],
-                                    'online_sessions':session_details[0]['online_sessions'],
-                                    'cancelled_sessions':session_details[0]['cancelled_sessions'],
-                                    'offline_sessions': session_details[0]['offline_sessions'] if 'offline_sessions' in session_details[0]  else session_details[0]['offline_session'],
-                                    'teacher':teacher_name,
-                                    'total_students':student_data[0]['unique_student_count'] if student_data[0]['unique_student_count'] else offering.enrolled_students.all().count(),
-                                    'enrol_students':student_data[0]['enrol_student_count'],
-                                    'present_students': student_data[0]['present_student_count'],
-                                    'attendance_perc':attendance_perc,
-                                    }
-                        table_data.append(details)
+                offering = Offering.objects.get(id=data['id'])
+
+                query = "select count(distinct(student_id)) as unique_student_count, \
+                        count(web_sessionattendance.is_present) as enrol_student_count, \
+                        count(case when web_sessionattendance.is_present = 'yes' then 1 end) present_student_count  \
+                        from web_sessionattendance join web_session on web_session.id=web_sessionattendance.session_id \
+                        join web_offering on web_offering.id=web_session.offering_id \
+                        join web_student on web_student.id =  web_sessionattendance.student_id\
+                        where DATE(date_start)>='"+str(date_start)+"' \
+                        and DATE(date_start)<='"+str(date_end)+"' \
+                        and web_session.offering_id='"+str(offering.id)+"' \
+                        and (teacher_id is not null or teacher_id !='') and web_student.status='Active'"
+
+                dict_cur.execute(query)
+                student_data = dict_cur.fetchall()
+                attendance_perc = 0
+                if student_data and student_data[0]['enrol_student_count']>0:
+                    attendance_perc = str(round(((float(student_data[0]['present_student_count'])/student_data[0]['enrol_student_count'])*100 ),2))
+
+                teacher_name = ''
+                teacher_name = data['last_name']
+                if data['first_name']:
+                    teacher_name = data['first_name'] + ' ' + data['last_name']
+                details = {'center_name':offering.center.name,
+                            'subject':offering.course.subject,
+                            'grade':offering.course.grade,
+                            "batch": offering.batch_id.batch_name if offering.batch_id is not None else 'Not Assign',
+
+                            'planned_sessions':data['planned_sessions'],
+                            'online_sessions':data['online_sessions'],
+                            'cancelled_sessions':data['cancelled_sessions'],
+                            'offline_sessions': data['offline_sessions'] if 'offline_sessions' in data  else data['offline_session'],
+                            'teacher':teacher_name,
+                            'total_students':student_data[0]['unique_student_count'] if student_data[0]['unique_student_count'] else offering.enrolled_students.all().count(),
+                            'enrol_students':student_data[0]['enrol_student_count'],
+                            'present_students': student_data[0]['present_student_count'],
+                            'attendance_perc':attendance_perc,
+                            }
+                table_data.append(details)
             global_data['table_data_single'] = table_data
             
         
