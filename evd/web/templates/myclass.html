@@ -269,7 +269,7 @@
             </div>
         </div>
         <div class="row" id="cls-today">
-            <p class="col-sm-3  " style="padding-left:65px; margin-top:30px">
+            <p class="col-sm-3  " style="padding-left:65px; margin-top:43px">
                 <strong style="color:orange">Classes Today :</strong> </p>
             <div class="col-sm-6 slider_class" style="height:20px;width:400px; margin-top: 30px;  border-radius:10px;" id="slider"></div>
             <div class="col-sm-3">
@@ -1026,6 +1026,7 @@
                 "center_id": center_id,
                 'ay_id': ay_id
             }, function(resp) {
+                console.log(resp);
                 var user_sessions = resp[0].user_sessions,
                     other_sessions = resp[0].other_sessions,
                     today_sessions = [],
@@ -1096,6 +1097,7 @@
                     $("#sessstat").css("visibility", "visible");
                     $("#nosess").hide();
                 }
+                
                 for (var i = 0; i < today_sessions.length; i++) {
                     var topic = '';
                     var topic_url = '#';
@@ -1106,8 +1108,11 @@
                     if (topic_url === "") {
                         topic_url = "# ";
                     }
+
                     fmt_topic = topic.split(' ').join('+');
-                    $("#slider").append("<div class='sli btn btn-primary btn-sm'  style='cursor:pointer; font-weight:bold;display:inline;margin-left:5px;width:10px' data-sessid=" + today_sessions[i].id + " data-teacher=" + today_sessions[i].teacher + " data-topic=" + fmt_topic + " data-url=" + topic_url + "  " + " data-center=" + today_sessions[i].center + " data-grade=" + today_sessions[i].grade + " data-subject=" + today_sessions[i].subject + " data-software=" + today_sessions[i].software + " data-link=" + today_sessions[i].software_link + " >" + today_sessions[i].start + "</div>");
+                    batchName = today_sessions[i].batch_name.split(' ').join('')
+
+                    $("#slider").append("<div class='sli btn btn-primary btn-sm'  style='cursor:pointer; font-weight:bold;display:inline;margin-left:5px;width:10px' data-sessid=" + today_sessions[i].id + " data-teacher=" + today_sessions[i].teacher + " data-batch_name=" + batchName + " data-topic=" + fmt_topic + " data-url=" + topic_url + "  " + " data-center=" + today_sessions[i].center + " data-grade=" + today_sessions[i].grade + " data-subject=" + today_sessions[i].subject + " data-software=" + today_sessions[i].software + " data-link=" + today_sessions[i].software_link + " >" + today_sessions[i].start + "</div>");
                     console.log("session - - - - -", today_sessions[i].id)
                 }
 
@@ -1131,6 +1136,9 @@
                     $("#tsLinkId").val($(this).data("link"));
                     $("#sessstat").append("<p><strong style='color:orange'>Teacher   : </strong>  " + $(this).data("teacher") + "</p>");
                     $("#sessstat").append("<p><strong style='color:orange'>Course   :  </strong> <span id='id_offers'>" + $(this).data("grade") + "   " + $(this).data("subject") + "</span></p>");
+                    if($(this).data("batch_name") != 'NotAssign'){
+                        $("#sessstat").append("<p><strong style='color:orange'>Batch   : </strong>  " + $(this).data("batch_name") + "</p>");
+                    }
                     $.get('/get_active_centers/',{},function(resp){
                         
                         var data=resp['data'];
@@ -1914,7 +1922,7 @@
                     topic_url = "# ";
                 }
                 fmt_topic = topic.split(' ').join('+');
-                $("#slider").append("<div class='sli btn btn-primary btn-sm'  style='cursor:pointer; font-weight:bold;display:inline;margin-left:5px;width:10px' data-sessid=" + today_sessions[i].id + " data-teacher=" + today_sessions[i].teacher + " data-topic=" + fmt_topic + " data-url=" + topic_url + "  " + " data-center=" + today_sessions[i].center + " data-grade=" + today_sessions[i].grade + " data-subject=" + today_sessions[i].subject + " data-software=" + today_sessions[i].software + " data-link=" + today_sessions[i].software_link + " >" + today_sessions[i].start + "</div>");
+                $("#slider").append("<div class='sli btn btn-primary btn-sm'  style='cursor:pointer; font-weight:bold;display:inline;margin-left:5px;width:10px' data-sessid=" + today_sessions[i].id + " data-teacher=" + today_sessions[i].teacher + " data-topic=" + fmt_topic + " data-url=" + topic_url + "  " + " data-center=" + today_sessions[i].center + " data-grade=" + today_sessions[i].grade + " data-batch_name=" + today_sessions[i].batch_name + " data-subject=" + today_sessions[i].subject + " data-software=" + today_sessions[i].software + " data-link=" + today_sessions[i].software_link + " >" + today_sessions[i].start + "</div>");
             }
             //begin session corousal
             $(".sli").click(function() {
@@ -1931,8 +1939,9 @@
                 $("#tsLinkId").val($(this).data("link"));
                 $("#sessstat").append("<p><strong style='color:orange'>Teacher   : </strong>  " + $(this).data("teacher") + "</p>");
                 $("#sessstat").append("<p><strong style='color:orange'>Course   :  </strong> <span id='id_offers'>" + $(this).data("grade") + "   " + $(this).data("subject") + "</span></p>");
+                $("#sessstat").append("<p><strong style='color:orange'>Batch   : </strong>  " + $(this).data("batch_name") + "</p>");
+
                 $.get('/get_active_centers/',{},function(resp){
-                    console.log(resp);
                     var data=resp['data'];
                     for (let i = 0; i < data.length; i++){
                         var dict=data[i];

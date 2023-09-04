@@ -136,7 +136,6 @@ import genutilities.views as genUtility
 import genutilities.logUtility as logService
 from genutilities.views import has_role_preference
 
-
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 # *****************************
@@ -3886,7 +3885,8 @@ def get_resp_sessions(request, curr_month, curr_year, current_ay, center_id, ses
             "textColor": "black",
             "id": session.id,
             "software": software,
-            "software_link": software_link
+            "software_link": software_link,
+            "batch_name": session.offering.batch_id.batch_name if session.offering.batch_id is not None else 'NotAssign',
         }
         responses.append(event)
     return responses
@@ -4893,6 +4893,15 @@ def centeradmin(request, center_id_value=None):
     if map_location_link:
         map_location_link=map_location_link.replace("'"," ")
 
+
+    add_course_dropdown_batch = Batch.objects.all().order_by('id')
+    add_course_dropdown_batch_list = []
+    for batch in add_course_dropdown_batch:
+        add_course_dropdown_batch_list_dict = {}
+        add_course_dropdown_batch_list_dict['id'] = int(batch.id)
+        add_course_dropdown_batch_list_dict['batch_name'] = str(batch.batch_name)
+        add_course_dropdown_batch_list.append(add_course_dropdown_batch_list_dict)
+
     student_list ={}
     get_stickers_for_students =[]
     student_ids = Student.objects.values_list('id', flat ='True').filter(center__id = center.id).distinct()
@@ -5008,7 +5017,9 @@ def centeradmin(request, center_id_value=None):
           'is_superuser':is_superuser,'is_centeradmin':is_centeradmin,'is_delivery_coordinator':is_delivery_coordinator,'backfill_offer_slots':backfill_offer_slots,
           'admin_assigned_center':admin_assigned_center,'dc_assigned_center':dc_assigned_center,'ay_id':ay_id,'get_stickers_for_teachers':get_stickers_for_teachers,
           'get_stickers_for_students':get_stickers_for_students, 'current_ay':current_ay,
-          'add_course_dropdown_courses':simplejson.dumps(add_course_dropdown_courses_list),'add_course_dropdown_academic_year':simplejson.dumps(add_course_dropdown_academic_year_list),'map_location_link':map_location_link,
+          'add_course_dropdown_courses':simplejson.dumps(add_course_dropdown_courses_list),
+          'add_course_dropdown_batch':simplejson.dumps(add_course_dropdown_batch_list),
+          'add_course_dropdown_academic_year':simplejson.dumps(add_course_dropdown_academic_year_list),'map_location_link':map_location_link,
           'academic_year_data' : dict(academic_year_date_month_dict),
           'center_id' : center_id,
           'academic_years' : academic_years,
@@ -5219,7 +5230,7 @@ def add_course(request):
         langauge = request.POST['language']
         start_date = request.POST['start_date']
         end_date = request.POST['end_date']
-        batch = request.POST['batch']
+        batch_id = request.POST['batch_id']
         program_type = request.POST['program_type']
         
         print(start_date)
@@ -5234,12 +5245,16 @@ def add_course(request):
         course = Course.objects.get(id=course_id)
         ay = Ayfy.objects.get(id=ay_id)
         center = Center.objects.get(id=center_id)
+        batch = Batch.objects.get(id=batch_id) if batch_id != '' else None
+
+
         course_type = course.type
         if course_type:
             course_type = course_type.lower()
         if course_type is not None and course_type == 'c':
             status = 'not_approved'
-        offering = Offering.objects.create(course=course, academic_year=ay, center=center, language=langauge, batch=int(batch),
+
+        offering = Offering.objects.create(course=course, academic_year=ay, center=center, language=langauge, batch_id= batch ,
                                         start_date=start_date, end_date=end_date, status=status, course_type=course_type,
                                         created_date = cur_date,created_by = request.user, program_type = str(program_type))
         if planned_topics:
@@ -7239,7 +7254,7 @@ def make_course_centeradmin(offering, courses, user=None):
                     "end_date": make_date_time(offering.end_date)["date"] + ", " + make_date_time(offering.end_date)[
                         "year"], "start_date_orig": offering.start_date, \
                     'end_date_orig': offering.end_date, "start_date_ts": start_date_ts, "end_date_ts": end_date_ts,
-                    "offering_id": offering.id, "batch":offering.batch, \
+                    "offering_id": offering.id, "batch_name": offering.batch_id.batch_name if offering.batch_id else None,\
                     "is_assigned_offering": is_assigned_offering, "session_id": session_id,
                     "subject": offering.course.subject, "center": offering.center.name, \
                     "language": offering.language,
@@ -13190,7 +13205,21 @@ def rubaru_register(request):
 
     return HttpResponse("success")
 
+def get_batch_details(request):
+    batch_data = Batch.objects.values('id', 'batch_name')
+    batch_data_list = list(batch_data)
+    return HttpResponse(json.dumps(batch_data_list), content_type='application/json')
 
+def batch_edit(request):
+    batchId = request.POST.get('batchId')
+    offeringId = request.POST.get('offeringId')
+    offering = Offering.objects.get(pk=offeringId)
+    batch = Batch.objects.get(pk=batchId)
+
+    offering.batch_id = batch
+    offering.save()
+    
+    return HttpResponse("Success")
 # manage slots UI
 
 def save_slots(request):
@@ -17675,7 +17704,7 @@ def running_courses(offering, courses, user=None):
                     "end_date": make_date_time(offering.end_date)["date"] + ", " + make_date_time(offering.end_date)[
                         "year"], "start_date_orig": offering.start_date, \
                     'end_date_orig': offering.end_date, "start_date_ts": start_date_ts, "end_date_ts": end_date_ts,
-                    "offering_id": offering.id, "batch":offering.batch, \
+                    "offering_id": offering.id, "batch_name": offering.batch_id.batch_name if offering.batch_id else None,\
                     "is_assigned_offering": is_assigned_offering, "session_id": session_id,
                     "subject": offering.course.subject, "center": offering.center.name, \
                     "language": offering.language,
@@ -17713,7 +17742,7 @@ def backfill_courses(offering, courses, user=None):
                         "end_date": make_date_time(offering.end_date)["date"] + ", " +
                                     make_date_time(offering.end_date)["year"], "start_date_orig": offering.start_date, \
                         'end_date_orig': offering.end_date, "start_date_ts": start_date_ts, "end_date_ts": end_date_ts,
-                        "offering_id": offering.id, "batch":offering.batch, \
+                        "offering_id": offering.id, "batch_name": offering.batch_id.batch_name if offering.batch_id else None,\
                         "is_assigned_offering": is_assigned_offering, "session_id": session_id,
                         "subject": offering.course.subject, "center": offering.center.name, \
                         "language": offering.language,
@@ -18471,7 +18500,6 @@ def get_stat_table(request):
             global_data['table_data'] = table_data
         # --------------------------------------
         else:
-
             identified_centers = [str(center.id) for center in all_centers]
             centers = ",".join(identified_centers)
             query = '''select web_offering.id,auth_user.first_name,auth_user.last_name, count(distinct(web_session.id)) as planned_sessions,count(case when web_session.status in ( 'completed') then 1 end) as online_sessions,count(case when web_session.status = 'offline' then 1 end) offline_session,count(case when web_session.status = 'cancelled' then 1 end) cancelled_sessions
@@ -18733,7 +18761,7 @@ def get_course_coverage(request):
                 join web_center wc on wc.id=wo.center_id \
                 where wc.id in ("+centers+") and ws.date_start >='"+str(date_start)+"' and ws.date_end <='"+str(date_end)+"'\
                 and (teacher_id is not null or teacher_id !='') group by wco.board_name, wco.grade, wco.subject"
-
+    
     dict_cur.execute(query)
     sessions = dict_cur.fetchall()
     
@@ -19052,9 +19080,6 @@ class ContentReviwerView(View):
         checklist = Content_Demand_Review_Checklist.objects.all().values()
         save_user_activity(request, 'Viewed Page: My Book - Manage Contents', 'Page Visit')
         return render_response(request,'content_reviewer.html', {"checklist":list(checklist), 'review_content':list(review_content), 'published_content':list(published_content)})
-    
-    
-
 
 class ModifyStudentEnroll(View):
 

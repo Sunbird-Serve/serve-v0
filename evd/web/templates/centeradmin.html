@@ -987,7 +987,7 @@
 										{% endif %} 
 
 										{% if offering.batch %}
-											-- Batch:  {{offering.batch}}
+											{{offering.batch}}
 										{% endif %}
 										
 									</span>
@@ -1025,9 +1025,12 @@
 											to {{ offering.end_date }}
 											{% endif %}
 										
-										{% if offering.batch %}
+										<!-- {% if offering.batch %}
 											-- Batch:  {{offering.batch}}
-										{% endif %}
+										{% endif %} -->
+										{% if offering.batch_name %}
+											{{offering.batch_name}}
+										{% endif %} 
 									</span>
 									
 									</br>
@@ -1045,7 +1048,19 @@
 											<a href="#" class="tag mark_it_ascomplete" data-offering-id="{{ offering.offering_id }}">Mark As complete</a>
 						   					<a  href="/v2/plan_topics/{{center.id}}/{{offering.offering_id}}" target="_blank"  class="tag modifenroll">Plan your Topics</a>
 						     			{% endif %}
+
+										
+										<a href="#" id="batchModify"  class="tag" data-toggle="modal" data-offering="{{ offering.offering_id }}" data-center="{{center.id}}" data-batchid="{{offering.batch_name}}">
+											{% if offering.batch_name%}
+												Modify Batch
+											{% else %}
+												Assign Batch
+											{% endif %}
+										</a>
+
                             			<a href="#apply-cal-modal"  class='tag app_cal'  data-toggle="modal" data-offering="{{ offering.offering_id }}">Apply Holidays</a>
+
+
                             			{% if offering.teachers_id  %}
                             				<a href="#{{ offering.teachers_id }}" class='tag my_teacher' data-offering="{{ offering.offering_id }}">{{ offering.teachers_first_name }} {{ offering.teachers_last_name }}-{{ offering.teachers_id }}</a>
                             			{% endif %}
@@ -1085,7 +1100,7 @@
 												to {{ offering.end_date }}
 											{% endif %}
 											{% if offering.batch %}
-												-- Batch:  {{offering.batch}}
+												{{offering.batch}}
 											{% endif %}
 										</span>
 										<p style="padding-left:5px;"> Batch: </p>
@@ -1117,9 +1132,12 @@
 										{% if offering.end_date %} 
 											to {{ offering.end_date }}
 										{% endif %}
-										{% if offering.batch %}
+										<!-- {% if offering.batch %}
 											-- Batch:  {{offering.batch}}
-										{% endif %}
+										{% endif %}  -->
+										{% if offering.batch_name %}
+											{{offering.batch_name}}
+										{% endif %} 
 									</span>
 									 <div>
 										<a href="/v2/offering/topic-details/?center_id={{center.id}}&offering_id={{ offering.offering_id }}&ayfy_id={{ ay_id }}" class="tag" target="_blank">My Content Reference</a>
@@ -1139,6 +1157,15 @@
 											   <a href="#" class="tag mark_it_ascomplete" data-offering-id="{{ offering.offering_id }}">Mark As complete</a>
 						    			{% endif %}
 										<a class="tag offering_manage_slot" href="#manage-offering-slot-modal-{{ offering.offering_id }}" data-toggle="modal" data-offering_id="{{ offering.offering_id }}" data-start-date="{{ offering.start_date_ts }}" data-end-date="{{ offering.end_date_ts }}" data-topics="{{ offering.planned_topics }}">Manage Slot</a>
+										
+										<a href="#" id="batchModify" class="tag" data-toggle="modal" data-offering="{{ offering.offering_id }}" data-center="{{ center.id }}" data-batchid="{{ offering.batch_name }}">
+											{% if offering.batch_name %}
+												Modify Batch
+											{% else %}
+												Assign Batch
+											{% endif %}
+										</a>
+
                             			<a class="tag confirm_reject" href="#confirm-modal-{{ offering.offering_id }}" data-toggle="modal" data-offering_id="{{ offering.offering_id }}" data-start-date="{{ offering.start_date_ts }}" data-end-date="{{ offering.end_date_ts }}" data-topics="{{ offering.planned_topics }}">Confirm / Reject</a>  
 									</div>
                         			{% endif %}
@@ -1169,9 +1196,12 @@
 										{% if offering.end_date %} 
 											to {{ offering.end_date }}
 										{% endif %}
-										{% if offering.batch %}
+										<!-- {% if offering.batch %}
 											-- Batch:  {{offering.batch}}
-										{% endif %}
+										{% endif %} -->
+										{% if offering.batch_name %}
+											{{offering.batch_name}}
+										{% endif %} 
 									</span>
 									</br>
                          			{% if is_superuser %}
@@ -1202,7 +1232,7 @@
 											 to {{ offering.end_date }}
 										{% endif %}
 										{% if offering.batch %}
-											-- Batch:  {{offering.batch}}
+											{{offering.batch}}
 										{% endif %}
 									</span>
 									</br>
@@ -2120,6 +2150,33 @@
         	<div style='border:10px solid;padding:50px;text-align:center;' id='ack_msg'></div>
         </div>
 </div>
+
+<!-- Apply Batch Modify modal -->
+<div id='batch_modify_modal' class="modal hide" style="max-height:500px; min-height:200px;background-color:white;overflow-y:auto;">
+	<a class="close" data-dismiss="modal" style="float:right;cursor:pointer;position:absolute;top:0px;right:0px;">X</a>
+
+	<div id="modal_title" style="background-color:#F15A22;color:white;padding:20px;height:55px;">
+		{% if batchName == 'None' %} 
+			Assign Batch
+		{% else %}
+			Modify Batch
+		{% endif %}
+	</div>
+
+    	<div style='margin-top:30px;text-align:center;'>
+        	<label style="display:inline; font-size:18px;">Select a Batch &nbsp&nbsp&nbsp&nbsp: &nbsp&nbsp&nbsp&nbsp </label>
+        	<select id='editAndCreateBatch'></select>
+			<div id="offering" input="type"></div>
+			<input type="hidden" name="offeringEdt" id="offeringEdt" value={{offering.offering_id}}>
+        	<div class='btn' id='batch_submit' style='margin-top:30px;cursor:pointer;width:80px;background-color:#27AE60;font-size:18px;margin-left:236px; color:white;'>Submit </div>
+       </div>
+	   
+       	<div style="display:none;padding:20px" id='bck'>
+        	<div style='border:10px solid;padding:50px;text-align:center;' id='batch_msg'></div>
+        </div>
+</div>
+
+
 <div class="modal fade" id="my_teacher_modal" role="dialog">
 	<div>
 		<!-- Modal content-->
@@ -2799,43 +2856,74 @@ $(".ajax_loader").css('display', 'none');
 
     <script>
         $(document).ready(function() {
-        var add_course_dropdown_courses = {{add_course_dropdown_courses|safe}}
-        $("select[name='course_id'] option").remove();
-        $("select[name='course_id']").append($('<option>', {
-                value: '',
-                text: 'Select a Course'
-        }));
+			var add_course_dropdown_courses = {{add_course_dropdown_courses|safe}}
+			$("select[name='course_id'] option").remove();
+			$("select[name='course_id']").append($('<option>', {
+					value: '',
+					text: 'Select a Course'
+			}));
 
-        for (i = 0; i < add_course_dropdown_courses.length; i++) {
-			var language = ''
-			if(add_course_dropdown_courses[i].language != 'None'){
-				language= '::' + add_course_dropdown_courses[i].language
+			for (i = 0; i < add_course_dropdown_courses.length; i++) {
+				var language = ''
+				if(add_course_dropdown_courses[i].language != 'None'){
+					language= '::' + add_course_dropdown_courses[i].language
+				}
+				$("select[name='course_id']").append($('<option>', {
+					value: add_course_dropdown_courses[i].id,
+					text : add_course_dropdown_courses[i].board_name + language
+				}));
 			}
-            $("select[name='course_id']").append($('<option>', {
-                value: add_course_dropdown_courses[i].id,
-                text : add_course_dropdown_courses[i].board_name + language
-            }));
-        }
 
-        var add_course_dropdown_academic_year = {{add_course_dropdown_academic_year|safe}}
-        $("select[name='ay_id'] option").remove();
+			var add_course_dropdown_academic_year = {{add_course_dropdown_academic_year|safe}}
+			$("select[name='ay_id'] option").remove();
 
-        if(add_course_dropdown_academic_year.length > 0){
-            for (i = 0; i < add_course_dropdown_academic_year.length; i++) {
-                $("select[name='ay_id']").append($('<option>', {
-                    value: add_course_dropdown_academic_year[i].id,
-                    text : add_course_dropdown_academic_year[i].academic_year
-                }));
-            }
-        }
-        else{
-            $("select[name='ay_id']").append($('<option>', {
-                value: '',
-                text: 'No Academic Year found'
-            }));
-        }
+			if(add_course_dropdown_academic_year.length > 0){
+				for (i = 0; i < add_course_dropdown_academic_year.length; i++) {
+					$("select[name='ay_id']").append($('<option>', {
+						value: add_course_dropdown_academic_year[i].id,
+						text : add_course_dropdown_academic_year[i].academic_year
+					}));
+				}
+			}
+			else{
+				$("select[name='ay_id']").append($('<option>', {
+					value: '',
+					text: 'No Academic Year found'
+				}));
+			}
 
+			// Put Batch name and id in Add Offering dropdown 
+			var add_course_dropdown_batch = {{add_course_dropdown_batch|safe}}
+			$("select[name='batch_id'] option").remove();
+			$("select[name='batch_id']").append($('<option>', {
+			        value: '',
+			        text: 'Select a Batch'
+			}));
+
+			for (i = 0; i < add_course_dropdown_batch.length; i++) {
+			    $("select[name='batch_id']").append($('<option>', {
+			        value: add_course_dropdown_batch[i].id,
+			        text : add_course_dropdown_batch[i].batch_name
+			    }));
+			}
+
+			// Put Batch name and id in modify batch modal dropdown 
+			var add_course_dropdown_batch = {{add_course_dropdown_batch|safe}}
+			$("select[name='editAndCreateBatch'] option").remove();
+			$("select[name='editAndCreateBatch']").append($('<option>', {
+					value: '',
+					text: 'Select a Batch'
+			}));
+
+			for (i = 0; i < add_course_dropdown_batch.length; i++) {
+				$("select[name='editAndCreateBatch']").append($('<option>', {
+					value: add_course_dropdown_batch[i].id,
+					text : add_course_dropdown_batch[i].batch_name
+				}));
+			}
         });
+
+
 
     </script>
 	<script>
@@ -3619,7 +3707,62 @@ $("#message_alert").fadeTo(6000, 1000).slideUp(500, function(){
 		document.getElementById("enter_class").click();
 	}
 	})
+	
+	$(document).ready(function(){
+		$(document).on('click','#batchModify', function(e){
+			e.preventDefault();
+			var offeringId = $(this).data('offering');
+			var centerId = $(this).data('center');
+			var batchName = $(this).data('batchid');
 
+			var hiddenInput = $("#offeringEdt");
+			hiddenInput.val(offeringId);
+
+			var data= {'offeringId':offeringId,'centerId':centerId,'batchName':batchName}
+
+			$('#batch_modify_modal').modal('show')
+			var dropdown = $("#editAndCreateBatch");
+
+			$.get('/get_batch/',data,function(response){
+				dropdown.empty();
+				response.forEach(function(batch) {
+					var option = $('<option>', {
+						value: batch.id,
+						text: batch.batch_name
+					});
+					if (batchName == batch.batch_name) {
+						option.attr('selected', 'selected'); // Set 'selected' attribute for the matched option
+					}
+					dropdown.append(option);
+				});
+			})
+		})
+
+		$(document).on('click','#batch_submit',function(e){
+			e.preventDefault;
+			var $this = $(this);
+			//var offeringId = $(this).data('offering');
+			var batchId = $('#editAndCreateBatch').val()
+			var offeringId = $('#offeringEdt').val()
+			var data = {'batchId':batchId, 'offeringId':offeringId}
+
+			$.post('/batch_edit/',data, function(response){
+				if(response.toString()=='Success'){
+					$('#bck').css('color','green');
+					$('#batch_msg').css('border','10px solid green').text($('#modal_title').text()+' '+'Successfully!');
+					$('#bck').show();
+				}else{
+					$('#bck').css('color','red');
+					$('#batch_msg').css('border','10px solid red').text('An Error Occurred');
+					$('#bck').show();
+				}
+			})
+			window.location.reload();
+			
+		})
+	})
+
+	
 </script>
     <script type='text/javascript' src='/static/js/calendar/fullcalendar.js'></script>
     <!--<script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>-->

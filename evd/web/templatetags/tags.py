@@ -406,6 +406,7 @@ def breadcrumb(context, user, user_id=None):
     centers = Center.objects.all()
     
     all_ay = Ayfy.objects.filter(types= 'Academic Year')
+    batch_all = Batch.objects.all()
     print '10 : ' + str(datetime.datetime.now())
 
     is_approved =False
